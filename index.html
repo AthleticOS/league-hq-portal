@@ -6,6 +6,25 @@
   <title>League HQ - Public Fan & Parent Portal</title>
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Tailwind Custom Brand Configuration -->
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            athleticos: {
+              green: '#52C920',      // Lime Green (Connectivity / Progression)
+              yellow: '#F9FF00',     // Neon Yellow (OS Emphasis / Highlights)
+              evergreen: '#012300',  // Evergreen (Foundational Deep Contrast)
+              carbon: '#1A1A1A',     // Carbon Black (Typography / Premium Anchor)
+              teal: '#A6CCBA',       // Muted Teal (Subtle Support)
+              porcelain: '#F5F8F1'   // Porcelain (Clean Off-White Layouts)
+            }
+          }
+        }
+      }
+    }
+  </script>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -26,24 +45,41 @@
     }
   </style>
 </head>
-<body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
+<body class="bg-athleticos-porcelain text-athleticos-carbon min-h-screen flex flex-col">
 
   <!-- TOP BRAND BANNER -->
-  <header class="bg-slate-900 text-white shadow-xl border-b-4 border-amber-500">
+  <header class="bg-athleticos-evergreen text-white shadow-xl border-b-4 border-athleticos-green">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
-        <div class="flex items-center space-x-3">
-          <div class="bg-amber-500 p-2.5 rounded-lg text-slate-950 font-extrabold text-xl tracking-wider shadow-md">
-            LHQ
+        <div class="flex items-center space-x-3.5">
+          <!-- AthleticOS SVG Node Logo Icon -->
+          <div class="bg-athleticos-carbon/30 p-2 rounded-xl border border-athleticos-green/20">
+            <svg class="h-9 w-9" viewBox="0 0 100 100" fill="none">
+              <!-- Interconnected Gradient Paths -->
+              <path d="M 50 15 C 50 15, 25 50, 35 80" stroke="url(#logo-grad)" stroke-width="5.5" stroke-linecap="round"/>
+              <path d="M 50 15 C 50 15, 75 50, 65 80" stroke="url(#logo-grad)" stroke-width="5.5" stroke-linecap="round"/>
+              <path d="M 30 50 C 45 40, 60 50, 65 80" stroke="url(#logo-grad)" stroke-width="5.5" stroke-linecap="round"/>
+              <!-- Circular Nodes -->
+              <circle cx="50" cy="15" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
+              <circle cx="30" cy="50" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
+              <circle cx="35" cy="80" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
+              <circle cx="65" cy="80" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
+              <defs>
+                <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#F9FF00" />
+                  <stop offset="100%" stop-color="#52C920" />
+                </linearGradient>
+              </defs>
+            </svg>
           </div>
           <div>
-            <span class="text-xs uppercase tracking-widest text-amber-500 font-bold">Public Portal</span>
-            <h1 class="text-lg sm:text-2xl font-black tracking-tight leading-none">AthleticOS League HQ</h1>
+            <span class="text-[10px] uppercase tracking-widest text-athleticos-green font-bold">Public Portal</span>
+            <h1 class="text-lg sm:text-2xl font-black tracking-tight leading-none">Athletic<span class="text-athleticos-yellow">OS</span> League HQ</h1>
           </div>
         </div>
         <!-- STATUS INDICATOR -->
-        <div id="connectionStatus" class="flex items-center space-x-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold">
-          <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+        <div id="connectionStatus" class="flex items-center space-x-2 bg-athleticos-carbon/55 px-4 py-2 rounded-full text-xs font-semibold border border-athleticos-green/10">
+          <span class="h-2 w-2 rounded-full bg-athleticos-green animate-pulse"></span>
           <span id="connectionStatusText" class="text-slate-300">Syncing Live Schedule...</span>
         </div>
       </div>
@@ -54,23 +90,23 @@
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex space-x-8 overflow-x-auto py-4 custom-scrollbar whitespace-nowrap">
-        <button onclick="switchTab('bulletins')" id="tab-bulletins" class="tab-btn flex items-center space-x-2 border-b-2 border-amber-500 text-slate-950 px-1 pb-2 text-sm font-bold transition-all">
-          <i class="fa-solid fa-bullhorn text-amber-500"></i>
+        <button onclick="switchTab('bulletins')" id="tab-bulletins" class="tab-btn flex items-center space-x-2 border-b-2 border-athleticos-green text-athleticos-evergreen px-1 pb-2 text-sm font-bold transition-all">
+          <i class="fa-solid fa-bullhorn text-athleticos-green"></i>
           <span>League Announcements</span>
         </button>
-        <button onclick="switchTab('fixtures')" id="tab-fixtures" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 px-1 pb-2 text-sm font-medium transition-all">
+        <button onclick="switchTab('fixtures')" id="tab-fixtures" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-calendar-days"></i>
           <span>Schedules & Results</span>
         </button>
-        <button onclick="switchTab('standings')" id="tab-standings" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 px-1 pb-2 text-sm font-medium transition-all">
+        <button onclick="switchTab('standings')" id="tab-standings" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-trophy"></i>
           <span>Standings</span>
         </button>
-        <button onclick="switchTab('schools')" id="tab-schools" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 px-1 pb-2 text-sm font-medium transition-all">
+        <button onclick="switchTab('schools')" id="tab-schools" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-school"></i>
           <span>School Directory</span>
         </button>
-        <button onclick="switchTab('rosters')" id="tab-rosters" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-slate-800 px-1 pb-2 text-sm font-medium transition-all">
+        <button onclick="switchTab('rosters')" id="tab-rosters" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-users-rectangle"></i>
           <span>Rosters</span>
         </button>
@@ -84,7 +120,7 @@
     <!-- TAB: ANNOUNCEMENTS -->
     <section id="view-bulletins" class="tab-view space-y-6">
       <div class="border-b border-slate-200 pb-4">
-        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Public Bulletins</h2>
+        <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Public Bulletins</h2>
         <p class="text-slate-500 text-sm">Real-time alerts, league-wide news, and operational details for parents and fans.</p>
       </div>
       <div id="bulletinsContainer" class="grid gap-6 md:grid-cols-2">
@@ -96,18 +132,18 @@
     <section id="view-fixtures" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Schedules & Scores</h2>
+          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Schedules & Scores</h2>
           <p class="text-slate-500 text-sm">Review kickoff times, game locations, and official score summaries.</p>
         </div>
         <!-- Filters Layout -->
         <div class="flex flex-wrap gap-2">
-          <select id="filterSport" onchange="onSportFilterChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="filterSport" onchange="onSportFilterChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <option value="All">All Sports</option>
           </select>
-          <select id="filterDivision" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="filterDivision" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <option value="All">All Divisions</option>
           </select>
-          <select id="filterSchool" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="filterSchool" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <option value="All">All Schools</option>
           </select>
         </div>
@@ -121,14 +157,14 @@
     <section id="view-standings" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">League Standings</h2>
+          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">League Standings</h2>
           <p class="text-slate-500 text-sm">Live calculated ranks, wins, losses, and point spreads.</p>
         </div>
         <div class="flex gap-2">
-          <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <!-- Dynamic options -->
           </select>
-          <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <!-- Dynamic options -->
           </select>
         </div>
@@ -159,7 +195,7 @@
     <!-- TAB: SCHOOLS -->
     <section id="view-schools" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
-        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">School Directory</h2>
+        <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">School Directory</h2>
         <p class="text-slate-500 text-sm">Directory of all league schools, primary contacts, and administrative notes.</p>
       </div>
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -171,14 +207,14 @@
     <section id="view-rosters" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
-          <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Official Rosters</h2>
+          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Official Rosters</h2>
           <p class="text-slate-500 text-sm">Verify registered school athletes and squad eligibility rosters.</p>
         </div>
         <div class="flex gap-2">
-          <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <!-- Dynamic options -->
           </select>
-          <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <!-- Dynamic options -->
           </select>
         </div>
@@ -205,7 +241,7 @@
 
   </main>
 
-  <footer class="bg-slate-900 border-t border-slate-800 text-slate-500 py-6 text-center text-xs">
+  <footer class="bg-athleticos-evergreen border-t border-athleticos-green/20 text-slate-400 py-6 text-center text-xs">
     <div class="max-w-7xl mx-auto px-4 space-y-1">
       <p>&copy; 2026 AthleticOS. Deployed via HQ Engine V12.</p>
       <p>Secure administrative access remains exclusive to registered Athletic Directors and managers.</p>
@@ -253,16 +289,15 @@
     function switchTab(tabId) {
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('border-b-2', 'border-amber-500', 'text-slate-950');
+        btn.classList.remove('border-b-2', 'border-athleticos-green', 'text-athleticos-evergreen', 'font-bold');
         btn.classList.add('border-b-2', 'border-transparent', 'text-slate-500');
       });
 
-      document.getElementById('view-' + tabId).classList.add('hidden');
       document.getElementById('view-' + tabId).classList.remove('hidden');
       const activeBtn = document.getElementById('tab-' + tabId);
       if (activeBtn) {
         activeBtn.classList.remove('border-transparent', 'text-slate-500');
-        activeBtn.classList.add('border-amber-500', 'text-slate-950');
+        activeBtn.classList.add('border-athleticos-green', 'text-athleticos-evergreen', 'font-bold');
       }
     }
 
@@ -284,14 +319,14 @@
         .map(t => t.DivisionID)
       )];
 
-      const valid divisions = divisions.filter(div => {
+      const validDivisions = divisions.filter(div => {
         const isDivActive = activeDivIDs.includes(div.DivisionID);
         const matchesSport = selectedSportID === 'All' || div.SportID === selectedSportID;
         return isDivActive && matchesSport;
       });
 
       validDivisions.forEach(div => {
-        divSelect.innerHTML += '<option value="' + div.DivisionID + '">' + div.Age_Limit + ' (' + div.Gender + ')</option>';
+        divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
       });
 
       if ([...divSelect.options].some(opt => opt.value === savedDivValue)) {
@@ -360,7 +395,7 @@
       );
 
       validDivisions.forEach(div => {
-        divSelect.innerHTML += '<option value="' + div.DivisionID + '">' + div.Age_Limit + ' (' + div.Gender + ')</option>';
+        divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
       });
 
       if (savedDivValue && [...divSelect.options].some(opt => opt.value === savedDivValue)) {
@@ -395,14 +430,14 @@
         const hasApprovedTeams = activeSportIDs.includes(sport.SportID);
         if (hasApprovedTeams) {
           const label = sport.Season ? (sport.Name + ' (' + sport.Season + ')') : sport.Name;
-          sportSelect.innerHTML += '<option value="' + sport.SportID + '">' + label + '</option>';
-          standingSport.innerHTML += '<option value="' + sport.SportID + '">' + label + '</option>';
+          sportSelect.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
+          standingSport.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
         }
       });
 
       // Populate Schools
       schools.forEach(sch => {
-        schoolSelect.innerHTML += '<option value="' + sch.SchoolID + '">' + sch.Name + '</option>';
+        schoolSelect.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
       });
 
       if (savedSport) sportSelect.value = savedSport;
@@ -443,13 +478,13 @@
         container.innerHTML += `
           <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4 hover:shadow-md transition-all">
             <div class="flex items-start justify-between">
-              <span class="bg-amber-100 text-amber-900 border border-amber-200 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
-                Official Alert
+              <span class="bg-athleticos-porcelain text-athleticos-evergreen border border-athleticos-teal/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
+                Official Announcement
               </span>
               <span class="text-xs text-slate-400 font-mono font-medium">${msg.Timestamp}</span>
             </div>
             <div>
-              <h3 class="text-base font-bold text-slate-900 mb-1">${msg.TopicSubject}</h3>
+              <h3 class="text-base font-bold text-athleticos-carbon mb-1">${msg.TopicSubject}</h3>
               <p class="text-slate-500 text-xs font-semibold">Posted by: Management</p>
             </div>
             <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">${msg.Content}</p>
@@ -516,7 +551,7 @@
           <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div class="space-y-1.5 flex-grow">
               <div class="flex flex-wrap items-center gap-2">
-                <span class="bg-slate-100 text-slate-800 text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded border border-slate-200">
+                <span class="bg-athleticos-porcelain text-athleticos-evergreen text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded border border-slate-200">
                   ${sport ? sport.Name : "Sport"}
                 </span>
                 <span class="text-xs text-slate-400 font-medium">
@@ -526,22 +561,22 @@
               
               <div class="flex items-center space-x-6 py-2">
                 <div class="flex flex-col">
-                  <span class="text-base font-extrabold text-slate-900">${homeName}</span>
+                  <span class="text-base font-extrabold text-athleticos-carbon">${homeName}</span>
                   <span class="text-xs text-slate-400 uppercase font-semibold">Home</span>
                 </div>
 
-                <div class="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
-                  <span class="text-lg font-black ${isCompleted && Number(game.HomeScore) > Number(game.AwayScore) ? 'text-amber-500' : 'text-slate-800'}">
+                <div class="flex items-center space-x-3 bg-athleticos-porcelain px-4 py-2 rounded-lg border border-slate-100">
+                  <span class="text-lg font-black ${isCompleted && Number(game.HomeScore) > Number(game.AwayScore) ? 'text-athleticos-green' : 'text-athleticos-carbon'}">
                     ${isCompleted || isLive ? game.HomeScore : '-'}
                   </span>
                   <span class="text-xs font-black text-slate-300">VS</span>
-                  <span class="text-lg font-black ${isCompleted && Number(game.AwayScore) > Number(game.HomeScore) ? 'text-amber-500' : 'text-slate-800'}">
+                  <span class="text-lg font-black ${isCompleted && Number(game.AwayScore) > Number(game.HomeScore) ? 'text-athleticos-green' : 'text-athleticos-carbon'}">
                     ${isCompleted || isLive ? game.AwayScore : '-'}
                   </span>
                 </div>
 
                 <div class="flex flex-col">
-                  <span class="text-base font-extrabold text-slate-900">${awayName}</span>
+                  <span class="text-base font-extrabold text-athleticos-carbon">${awayName}</span>
                   <span class="text-xs text-slate-400 uppercase font-semibold">Away</span>
                 </div>
               </div>
@@ -567,7 +602,7 @@
                 ? `<span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">Final</span>`
                 : isLive 
                 ? `<span class="bg-rose-50 text-rose-800 border border-rose-200 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider animate-pulse">Live Now</span>`
-                : `<span class="bg-amber-50 text-amber-800 border border-amber-100 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">Scheduled</span>`
+                : `<span class="bg-athleticos-porcelain text-slate-600 border border-slate-200 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">Scheduled</span>`
               }
             </div>
           </div>
@@ -661,8 +696,8 @@
         const diff = stat.pointsFor - stat.pointsAgainst;
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 transition-all">
-            <td class="px-6 py-4 font-black text-slate-900 text-left">${idx + 1}</td>
-            <td class="px-6 py-4 font-extrabold text-slate-900">${stat.name}</td>
+            <td class="px-6 py-4 font-black text-athleticos-carbon text-left">${idx + 1}</td>
+            <td class="px-6 py-4 font-extrabold text-athleticos-carbon">${stat.name}</td>
             <td class="px-6 py-4 text-center font-bold">${stat.played}</td>
             <td class="px-6 py-4 text-center text-emerald-600 font-extrabold">${stat.won}</td>
             <td class="px-6 py-4 text-center text-rose-500 font-extrabold">${stat.lost}</td>
@@ -679,12 +714,12 @@
     // --- HELPER: COLOR GENERATOR FOR SHIELD BASE ---
     function getSchoolColor(name) {
       const colors = [
-        { bg: 'bg-blue-900 text-blue-100 border-blue-500', svg: '#1e3a8a' },
-        { bg: 'bg-emerald-900 text-emerald-100 border-emerald-500', svg: '#064e3b' },
+        { bg: 'bg-blue-900 text-blue-100 border-blue-500', svg: '#1E40AF' },
+        { bg: 'bg-emerald-900 text-emerald-100 border-emerald-500', svg: '#064E3B' },
         { bg: 'bg-rose-900 text-rose-100 border-rose-500', svg: '#881337' },
-        { bg: 'bg-indigo-900 text-indigo-100 border-indigo-500', svg: '#312e81' },
-        { bg: 'bg-amber-900 text-amber-100 border-amber-500', svg: '#78350f' },
-        { bg: 'bg-violet-950 text-violet-100 border-violet-500', svg: '#2e1065' },
+        { bg: 'bg-indigo-900 text-indigo-100 border-indigo-500', svg: '#312E81' },
+        { bg: 'bg-amber-900 text-amber-100 border-amber-500', svg: '#78350F' },
+        { bg: 'bg-violet-950 text-violet-100 border-violet-500', svg: '#2E1065' },
         { bg: 'bg-cyan-950 text-cyan-100 border-cyan-500', svg: '#083344' }
       ];
       let hash = 0;
@@ -727,21 +762,21 @@
         // Default to the vector shield (starts fully visible). 
         // Image element starts with 'hidden' and removes it, while hiding the fallback, upon successful dynamic load callback.
         const logoHtml = logoUrl 
-          ? '<div class="relative h-20 w-20 shrink-0 flex items-center justify-center bg-white rounded-xl border border-slate-200 shadow-sm p-1.5">' +
-              '<img src="' + logoUrl + '" class="hidden max-h-full max-w-full object-contain" onload="this.classList.remove(\'hidden\\); this.nextElementSibling.classList.add(\'hidden\\);" onerror="this.nextElementSibling.classList.remove(\'hidden\\);" />' +
-              '<div class="w-full h-full">' +
-                '<svg class="h-full w-full drop-shadow-sm" viewBox="0 0 100 100">' +
-                  '<path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="' + schoolColor.svg + '" stroke="#f59e0b" stroke-width="4"/>' +
-                  '<text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="\'Plus Jakarta Sans\', sans-serif" font-size="28" font-weight="900" fill="#ffffff">' + acronym + '</text>' +
-                '</svg>' +
-              '</div>' +
-            '</div>'
-          : '<div class="h-20 w-20 relative shrink-0">' +
-              '<svg class="h-20 w-20 drop-shadow-sm" viewBox="0 0 100 100">' +
-                '<path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="' + schoolColor.svg + '" stroke="#f59e0b" stroke-width="4"/>' +
-                '<text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="\'Plus Jakarta Sans\', sans-serif" font-size="28" font-weight="900" fill="#ffffff">' + acronym + '</text>' +
-              '</svg>' +
-            '</div>';
+          ? `<div class="relative h-20 w-20 shrink-0 flex items-center justify-center bg-white rounded-xl border border-slate-200 shadow-sm p-1.5">
+               <img src="${logoUrl}" class="hidden max-h-full max-w-full object-contain" onload="this.classList.remove('hidden'); this.nextElementSibling.classList.add('hidden');" onerror="this.nextElementSibling.classList.remove('hidden');" />
+               <div class="w-full h-full">
+                 <svg class="h-full w-full drop-shadow-sm" viewBox="0 0 100 100">
+                   <path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="${schoolColor.svg}" stroke="#f59e0b" stroke-width="4"/>
+                   <text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="900" fill="#ffffff">${acronym}</text>
+                 </svg>
+               </div>
+             </div>`
+          : `<div class="h-20 w-20 relative shrink-0">
+               <svg class="h-20 w-20 drop-shadow-sm" viewBox="0 0 100 100">
+                 <path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="${schoolColor.svg}" stroke="#f59e0b" stroke-width="4"/>
+                 <text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="900" fill="#ffffff">${acronym}</text>
+               </svg>
+             </div>`;
 
         container.innerHTML += `
           <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md transition-all">
@@ -749,7 +784,7 @@
               ${logoHtml}
               <div>
                 <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-200">${sch.Region || 'Conference'}</span>
-                <h3 class="text-base font-extrabold text-slate-900 mt-0.5">${sch.Name || 'School Name'}</h3>
+                <h3 class="text-base font-extrabold text-athleticos-carbon mt-0.5">${sch.Name || 'School Name'}</h3>
               </div>
             </div>
             
@@ -764,7 +799,7 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-slate-400">Member Since:</span>
-                <span class="font-bold text-amber-600">${yearJoined}</span>
+                <span class="font-bold text-athleticos-green">${yearJoined}</span>
               </div>
             </div>
 
@@ -786,7 +821,7 @@
       if (schools.length === 0) return;
 
       schools.forEach(sch => {
-        schoolSelector.innerHTML += '<option value="' + sch.SchoolID + '">' + sch.Name + '</option>';
+        schoolSelector.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
       });
 
       onRosterSelectionChange();
@@ -812,7 +847,7 @@
         // Build readable label incorporating the season
         const sportLabel = sport ? (sport.Season ? (sport.Name + ' (' + sport.Season + ')') : sport.Name) : "Sport";
         const label = sportLabel + ' - ' + (div ? (div.Age_Limit + ' (' + div.Gender + ')') : "Bracket");
-        teamSelector.innerHTML += '<option value="' + team.TeamID + '">' + label + '</option>';
+        teamSelector.innerHTML += `<option value="${team.TeamID}">${label}</option>`;
       });
 
       renderRoster();
@@ -839,8 +874,8 @@
       players.forEach(p => {
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 transition-all font-medium text-slate-600 text-xs sm:text-sm">
-            <td class="px-6 py-4 text-center font-black text-slate-900">${p.JerseyNumber || '-'}</td>
-            <td class="px-6 py-4 text-left font-bold text-slate-900">${p.Nickname}</td>
+            <td class="px-6 py-4 text-center font-black text-athleticos-carbon">${p.JerseyNumber || '-'}</td>
+            <td class="px-6 py-4 text-left font-bold text-athleticos-carbon">${p.Nickname}</td>
             <td class="px-6 py-4 text-center font-mono">${p.DateOfBirth}</td>
             <td class="px-6 py-4 text-center">
               <span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-full text-[10px] font-bold">
@@ -870,10 +905,10 @@
         
         if (data.Fixtures && data.Schools && data.Teams && data.Roster) {
           activeDatabase = data;
-          statusElement.className = "flex items-center space-x-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold";
+          statusElement.className = "flex items-center space-x-2 bg-athleticos-carbon/55 px-4 py-2 rounded-full text-xs font-semibold border border-athleticos-green/10";
           statusElement.innerHTML = `
-            <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-emerald-400">Official Live Stream Connected</span>
+            <span class="h-2 w-2 rounded-full bg-athleticos-green animate-pulse"></span>
+            <span class="text-athleticos-green">Official Live Stream Connected</span>
           `;
           processAppInit();
         } else {
@@ -881,7 +916,7 @@
         }
       } catch (err) {
         console.error("Pipeline failure:", err);
-        statusElement.className = "flex items-center space-x-2 bg-rose-950 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-300 border border-rose-800";
+        statusElement.className = "flex items-center space-x-2 bg-rose-950/90 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-300 border border-rose-800";
         statusElement.innerHTML = `
           <span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
           <span class="text-rose-400 font-bold">Data Connection Offline</span>
