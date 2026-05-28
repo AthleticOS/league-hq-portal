@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>League HQ - Public Fan & Parent Portal</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -28,7 +26,6 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
 
-  <!-- TOP BRAND BANNER -->
   <header class="bg-slate-900 text-white shadow-xl border-b-4 border-amber-500">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
@@ -41,16 +38,14 @@
             <h1 class="text-lg sm:text-2xl font-black tracking-tight leading-none">AthleticOS League HQ</h1>
           </div>
         </div>
-        <!-- STATUS INDICATOR -->
         <div id="connectionStatus" class="flex items-center space-x-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold">
-          <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span class="text-slate-300">Viewing Mock Demo Data</span>
+          <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
+          <span class="text-slate-300">Syncing Live Schedule...</span>
         </div>
       </div>
     </div>
   </header>
 
-  <!-- NAVIGATION TABS -->
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex space-x-8 overflow-x-auto py-4 custom-scrollbar whitespace-nowrap">
@@ -74,36 +69,27 @@
           <i class="fa-solid fa-users-rectangle"></i>
           <span>Rosters</span>
         </button>
-        <button onclick="switchTab('integration')" id="tab-integration" class="tab-btn flex items-center space-x-2 bg-amber-50 border border-amber-200 text-amber-800 px-3.5 py-1.5 rounded-full text-xs font-bold hover:bg-amber-100 transition-all ml-auto">
-          <i class="fa-solid fa-plug text-amber-600 animate-pulse"></i>
-          <span>Link Live Google Sheet</span>
-        </button>
       </div>
     </div>
   </nav>
 
-  <!-- MAIN VIEW CONTAINER -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- TAB: ANNOUNCEMENTS -->
     <section id="view-bulletins" class="tab-view space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Public Bulletins</h2>
         <p class="text-slate-500 text-sm">Real-time alerts, league-wide news, and operational details for parents and fans.</p>
       </div>
       <div id="bulletinsContainer" class="grid gap-6 md:grid-cols-2">
-        <!-- Rendered dynamically -->
-      </div>
+        </div>
     </section>
 
-    <!-- TAB: FIXTURES -->
     <section id="view-fixtures" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Schedules & Scores</h2>
           <p class="text-slate-500 text-sm">Review kickoff times, game locations, and official score summaries.</p>
         </div>
-        <!-- Filters Layout -->
         <div class="flex flex-wrap gap-2">
           <select id="filterSport" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
             <option value="All">All Sports</option>
@@ -117,11 +103,9 @@
         </div>
       </div>
       <div id="fixturesContainer" class="grid gap-4">
-        <!-- Rendered dynamically -->
-      </div>
+        </div>
     </section>
 
-    <!-- TAB: STANDINGS -->
     <section id="view-standings" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -130,11 +114,9 @@
         </div>
         <div class="flex gap-2">
           <select id="standingsSport" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            <!-- Dynamic options -->
-          </select>
+            </select>
           <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            <!-- Dynamic options -->
-          </select>
+            </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -149,29 +131,25 @@
                 <th scope="col" class="px-6 py-4 text-center">Lost</th>
                 <th scope="col" class="px-6 py-4 text-center">Points For</th>
                 <th scope="col" class="px-6 py-4 text-center">Points Against</th>
-                <th scope="col" class="px-6 py-4 class text-center">Difference</th>
+                <th scope="col" class="px-6 py-4 text-center">Difference</th>
               </tr>
             </thead>
             <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600">
-              <!-- Rendered dynamically -->
-            </tbody>
+              </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- TAB: SCHOOLS -->
     <section id="view-schools" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">School Directory</h2>
         <p class="text-slate-500 text-sm">Directory of all league schools, primary contacts, and administrative notes.</p>
       </div>
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <!-- Rendered dynamically -->
-      </div>
+        </div>
     </section>
 
-    <!-- TAB: ROSTERS -->
     <section id="view-rosters" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -180,11 +158,9 @@
         </div>
         <div class="flex gap-2">
           <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            <!-- Rendered dynamically -->
-          </select>
+            </select>
           <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            <!-- Rendered dynamically -->
-          </select>
+            </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -200,135 +176,14 @@
               </tr>
             </thead>
             <tbody id="rosterBody" class="divide-y divide-slate-200 text-slate-600">
-              <!-- Rendered dynamically -->
-            </tbody>
+              </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- TAB: GOOGLE SHEETS LIVE SETUP -->
-    <section id="view-integration" class="tab-view hidden space-y-6">
-      <div class="bg-slate-900 rounded-2xl text-white p-6 sm:p-8 shadow-xl border-l-4 border-amber-500">
-        <div class="flex items-center space-x-3 mb-4">
-          <div class="p-2.5 bg-amber-500/20 rounded-lg text-amber-400">
-            <i class="fa-solid fa-server text-xl"></i>
-          </div>
-          <div>
-            <span class="text-xs uppercase tracking-widest text-amber-500 font-bold font-mono">Integration Dashboard</span>
-            <h2 class="text-2xl font-black">Link Your Google Sheets</h2>
-          </div>
-        </div>
-        <p class="text-slate-300 max-w-3xl text-sm leading-relaxed">
-          Because your platform is hosted inside Google Workspace, you can turn your Google Spreadsheet into a <strong>read-only public database</strong> using Google Apps Script. Paste your deployed Web App URL in the box below to swap the mock demo data with your real-time league records!
-        </p>
-
-        <!-- INPUT FIELD FOR API -->
-        <div class="mt-8 bg-slate-950 p-6 rounded-xl border border-slate-800 space-y-4">
-          <label class="block text-xs uppercase tracking-widest text-slate-400 font-bold font-mono">Paste Your Google Apps Script Web App URL</label>
-          <div class="flex flex-col sm:flex-row gap-2">
-            <input type="url" id="liveApiUrl" placeholder="https://script.google.com/macros/s/AKfycb..._abc123/exec" class="flex-grow bg-slate-900 border border-slate-700 text-white rounded-lg px-4 py-3 outline-none focus:border-amber-500 font-mono text-sm">
-            <button onclick="connectLiveApi()" class="bg-amber-500 hover:bg-amber-400 text-slate-950 px-6 py-3 font-extrabold rounded-lg transition-all flex items-center justify-center space-x-2 shrink-0">
-              <i class="fa-solid fa-cloud-arrow-down"></i>
-              <span>Link Spreadsheet</span>
-            </button>
-          </div>
-          <div class="flex items-center justify-between text-xs pt-1">
-            <span class="text-slate-500">Requires a deployed Web App script</span>
-            <button onclick="clearLiveConnection()" class="text-rose-400 hover:text-rose-300 underline font-semibold">Disconnect & Use Demo Data</button>
-          </div>
-        </div>
-      </div>
-
-      <!-- STEP-BY-STEP INSTRUCTIONS -->
-      <div class="space-y-4">
-        <h3 class="text-lg font-extrabold text-slate-900 flex items-center gap-2">
-          <i class="fa-solid fa-clipboard-list text-amber-500"></i>
-          <span>Setup Guide: Deploying Your Read-Only Google Apps Script API</span>
-        </h3>
-
-        <!-- STEP 1 -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-2">
-          <div class="flex items-center space-x-2 text-sm font-bold text-slate-800">
-            <span class="bg-slate-100 text-slate-800 border border-slate-200 h-6 w-6 rounded-full flex items-center justify-center text-xs font-mono">1</span>
-            <span>Open Google Spreadsheet Script Editor</span>
-          </div>
-          <p class="text-slate-500 text-xs pl-8">
-            Open the Google Sheet that houses your league database. Click on <strong>Extensions > Apps Script</strong> from the top menu.
-          </p>
-        </div>
-
-        <!-- STEP 2 -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-3">
-          <div class="flex items-center space-x-2 text-sm font-bold text-slate-800">
-            <span class="bg-slate-100 text-slate-800 border border-slate-200 h-6 w-6 rounded-full flex items-center justify-center text-xs font-mono">2</span>
-            <span>Paste the API Code</span>
-          </div>
-          <p class="text-slate-500 text-xs pl-8">
-            Delete any auto-generated code and paste the complete, read-only API script below.
-          </p>
-          <div class="bg-slate-950 rounded-lg p-4 pl-8 relative group">
-            <pre class="text-slate-300 font-mono text-[11px] overflow-x-auto custom-scrollbar leading-relaxed">
-function doGet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  const tables = ["Messages", "Fixtures", "Sports", "Schools", "Teams", "Roster", "Divisions"];
-  const database = {};
-
-  tables.forEach(tableName => {
-    const sheet = ss.getSheetByName(tableName);
-    if (!sheet) {
-      database[tableName] = [];
-      return;
-    }
-    const values = sheet.getDataRange().getValues();
-    if (values.length <= 1) {
-      database[tableName] = [];
-      return;
-    }
-    const headers = values[0];
-    const rows = [];
-    for (let i = 1; i < values.length; i++) {
-      const rowObj = {};
-      headers.forEach((header, index) => {
-        let val = values[i][index];
-        // Clean Date Objects into readable string formats
-        if (val instanceof Date) {
-          val = val.toISOString().split('T')[0];
-        }
-        rowObj[header] = val;
-      });
-      rows.push(rowObj);
-    }
-    database[tableName] = rows;
-  });
-
-  return ContentService.createTextOutput(JSON.stringify(database))
-    .setMimeType(ContentService.MimeType.JSON);
-}</pre>
-          </div>
-        </div>
-
-        <!-- STEP 3 -->
-        <div class="bg-white rounded-xl border border-slate-200 p-5 space-y-2">
-          <div class="flex items-center space-x-2 text-sm font-bold text-slate-800">
-            <span class="bg-slate-100 text-slate-800 border border-slate-200 h-6 w-6 rounded-full flex items-center justify-center text-xs font-mono">3</span>
-            <span>Deploy as a Web App</span>
-          </div>
-          <p class="text-slate-500 text-xs pl-8">
-            1. In the upper right corner, click <strong>Deploy > New Deployment</strong>.<br>
-            2. Click the gear icon next to "Select type" and choose <strong>Web app</strong>.<br>
-            3. Set "Execute as" to <strong>Me (your email address)</strong>.<br>
-            4. Set "Who has access" to <strong>Anyone</strong> (this allows the read-only portal to view schedules without asking viewers to log into Google).<br>
-            5. Click <strong>Deploy</strong> and copy the generated <strong>Web App URL</strong>! Paste that URL into the input field above.
-          </p>
-        </div>
-
-      </div>
-    </section>
-
   </main>
 
-  <!-- FOOTER -->
   <footer class="bg-slate-900 border-t border-slate-800 text-slate-500 py-6 text-center text-xs">
     <div class="max-w-7xl mx-auto px-4 space-y-1">
       <p>&copy; 2026 AthleticOS. Deployed via HQ Engine V12.</p>
@@ -336,65 +191,21 @@ function doGet() {
     </div>
   </footer>
 
-  <!-- SCRIPT ENGINE -->
   <script>
-    // --- SECURE SCHEMATIC DEMO DATA (REPLICATING ACTIVE SHEETS) ---
-    const DEMO_DATABASE = {
-      Messages: [
-        { MessageID: "MSG-1", Timestamp: "2026-05-20", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Term 2 Kickoff & Protocols", Content: "Welcome back! All team rosters for Soccer and Volleyball must be submitted by Friday. Check out the rosters page to verify eligibility details." },
-        { MessageID: "MSG-2", Timestamp: "2026-05-22", SenderEmail: "soccer.mgr@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Severe Weather Policy", Content: "In the event of weather cancellations, match updates will be broadcast to this public feed by 2:00 PM on game days." },
-        { MessageID: "MSG-3", Timestamp: "2026-05-25", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Playoff Bracket Formatting", Content: "The top 4 teams from both North and South conferences will qualify directly for the Regional Tournament bracket starting next month." }
-      ],
-      Sports: [
-        { SportID: "SPT-1", Name: "Basketball" },
-        { SportID: "SPT-2", Name: "Football" },
-        { SportID: "SPT-3", Name: "Volleyball" }
-      ],
-      Divisions: [
-        { DivisionID: "DIV-1", Age_Limit: "Under 15", Gender: "Boys", SportID: "SPT-1" },
-        { DivisionID: "DIV-2", Age_Limit: "Under 17", Gender: "Girls", SportID: "SPT-3" },
-        { DivisionID: "DIV-3", Age_Limit: "Under 16", Gender: "Mixed", SportID: "SPT-2" }
-      ],
-      Schools: [
-        { SchoolID: "SCH-1", Name: "North Academy", Region: "North Conference", PrimaryContact: "Coach Carter", Notes: "Field access is from Maple Street.", Acronym: "NAC", "Year Joined": "2021" },
-        { SchoolID: "SCH-2", Name: "South Summit High", Region: "South Conference", PrimaryContact: "Coach Davis", Notes: "Gymnasium is located behind the main athletic pavilion.", Acronym: "SSH", "Year Joined": "2022" },
-        { SchoolID: "SCH-3", Name: "Lakeside Collegiate", Region: "North Conference", PrimaryContact: "Coach Henderson", Notes: "Strict facility gate policy.", Acronym: "LKC", "Year Joined": "2019" }
-      ],
-      Teams: [
-        { TeamID: "TM-1", RegistrationStatus: "Approved", SchoolID: "SCH-1", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { TeamID: "TM-2", RegistrationStatus: "Approved", SchoolID: "SCH-2", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { TeamID: "TM-3", RegistrationStatus: "Approved", SchoolID: "SCH-3", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { TeamID: "TM-4", RegistrationStatus: "Approved", SchoolID: "SCH-1", SportID: "SPT-3", DivisionID: "DIV-2" },
-        { TeamID: "TM-5", RegistrationStatus: "Approved", SchoolID: "SCH-2", SportID: "SPT-3", DivisionID: "DIV-2" }
-      ],
-      Roster: [
-        { RosterID: "R-1", TeamID: "TM-1", Nickname: "M. Jordan", DateOfBirth: "2012-02-17", JerseyNumber: "23", EligibilityStatus: "Eligible", DateRegistered: "2026-05-01" },
-        { RosterID: "R-2", TeamID: "TM-1", Nickname: "S. Pippen", DateOfBirth: "2012-09-25", JerseyNumber: "33", EligibilityStatus: "Eligible", DateRegistered: "2026-05-01" },
-        { RosterID: "R-3", TeamID: "TM-2", Nickname: "L. James", DateOfBirth: "2012-12-30", JerseyNumber: "6", EligibilityStatus: "Eligible", DateRegistered: "2026-05-03" },
-        { RosterID: "R-4", TeamID: "TM-2", Nickname: "A. Davis", DateOfBirth: "2013-03-11", JerseyNumber: "3", EligibilityStatus: "Eligible", DateRegistered: "2026-05-04" },
-        { RosterID: "R-5", TeamID: "TM-3", Nickname: "K. Bryant", DateOfBirth: "2012-08-23", JerseyNumber: "8", EligibilityStatus: "Eligible", DateRegistered: "2026-05-01" }
-      ],
-      Fixtures: [
-        { GameID: "GM-101", Date: "2026-05-28", Time: "15:30", Venue: "North Arena Center", HomeTeamID: "TM-1", AwayTeamID: "TM-2", HomeScore: 84, AwayScore: 78, MatchStatus: "Completed", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { GameID: "GM-102", Date: "2026-05-29", Time: "16:00", Venue: "South Gymnasium", HomeTeamID: "TM-2", AwayTeamID: "TM-3", HomeScore: 62, AwayScore: 68, MatchStatus: "Completed", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { GameID: "GM-103", Date: "2026-06-02", Time: "15:30", Venue: "Lakeside Dome", HomeTeamID: "TM-3", AwayTeamID: "TM-1", HomeScore: 0, AwayScore: 0, MatchStatus: "Scheduled", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { GameID: "GM-104", Date: "2026-06-03", Time: "15:30", Venue: "North Arena Center", HomeTeamID: "TM-1", AwayTeamID: "TM-3", HomeScore: 72, AwayScore: 70, MatchStatus: "Completed", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { GameID: "GM-105", Date: "2026-06-04", Time: "16:15", Venue: "South Gymnasium", HomeTeamID: "TM-5", AwayTeamID: "TM-4", HomeScore: 0, AwayScore: 0, MatchStatus: "Scheduled", SportID: "SPT-3", DivisionID: "DIV-2" }
-      ]
+    // --- SECURE HARDCODED LIVE API LINK ---
+    const GOOGLE_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyF8wNn1PokuSCReOo0o6a1MflRQrKxS-rxklbDjZy7cFx5bCx6iebIDRRvkrDRIJUL/exec";
+
+    // Fallback Mock Data if Google Server is unreachable
+    const FALLBACK_DATABASE = {
+      Messages: [{ MessageID: "M-1", Timestamp: "2026-05-28", SenderEmail: "system@hq.org", Category: "Public", TargetID: "Public", TopicSubject: "Syncing Error", Content: "Connecting to live server. If this takes longer than 10 seconds, please refresh the browser." }],
+      Sports: [], Divisions: [], Schools: [], Teams: [], Roster: [], Fixtures: []
     };
 
-    let activeDatabase = DEMO_DATABASE;
+    let activeDatabase = FALLBACK_DATABASE;
 
     // --- INITIALIZE APPLICATION ---
     window.onload = function() {
-      // Check for previously saved API connection in LocalStorage
-      const savedUrl = localStorage.getItem('LHQ_LiveApiUrl');
-      if (savedUrl) {
-        document.getElementById('liveApiUrl').value = savedUrl;
-        fetchLiveSheetData(savedUrl);
-      } else {
-        processAppInit();
-      }
+      fetchLiveSheetData(GOOGLE_API_ENDPOINT);
     };
 
     function processAppInit() {
@@ -431,7 +242,14 @@ function doGet() {
       const standingSport = document.getElementById('standingsSport');
       const standingDiv = document.getElementById('standingsDivision');
 
-      // Reset options
+      // Preserve values if user changes tabs
+      const savedSport = sportSelect.value;
+      const savedDiv = divSelect.value;
+      const savedSchool = schoolSelect.value;
+
+      const savedStandSport = standingSport.value;
+      const savedStandDiv = standingDiv.value;
+
       sportSelect.innerHTML = '<option value="All">All Sports</option>';
       divSelect.innerHTML = '<option value="All">All Divisions</option>';
       schoolSelect.innerHTML = '<option value="All">All Schools</option>';
@@ -455,6 +273,13 @@ function doGet() {
       activeDatabase.Schools.forEach(sch => {
         schoolSelect.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
       });
+
+      // Restore saved selection markers if they still exist
+      if (savedSport) sportSelect.value = savedSport;
+      if (savedDiv) divSelect.value = savedDiv;
+      if (savedSchool) schoolSelect.value = savedSchool;
+      if (savedStandSport) standingSport.value = savedStandSport;
+      if (savedStandDiv) standingDiv.value = savedStandDiv;
     }
 
     // --- RENDER BULLETIN BOARD ---
@@ -474,20 +299,23 @@ function doGet() {
         return;
       }
 
+      // Sort by date newest first
+      publicMessages.sort((a,b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+
       publicMessages.forEach(msg => {
         container.innerHTML += `
           <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4 hover:shadow-md transition-all">
             <div class="flex items-start justify-between">
-              <span class="bg-amber-100 text-amber-900 border border-amber-200 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                Public Announcement
+              <span class="bg-amber-100 text-amber-900 border border-amber-200 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                Official Alert
               </span>
               <span class="text-xs text-slate-400 font-mono font-medium">${msg.Timestamp}</span>
             </div>
             <div>
               <h3 class="text-base font-bold text-slate-900 mb-1">${msg.TopicSubject}</h3>
-              <p class="text-slate-500 text-xs font-semibold">Posted by: ${msg.SenderEmail}</p>
+              <p class="text-slate-500 text-xs font-semibold">Posted by: Management</p>
             </div>
-            <p class="text-slate-600 text-sm leading-relaxed">${msg.Content}</p>
+            <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">${msg.Content}</p>
           </div>
         `;
       });
@@ -503,12 +331,9 @@ function doGet() {
       const schoolVal = document.getElementById('filterSchool').value;
 
       const filtered = activeDatabase.Fixtures.filter(game => {
-        // Sport ID match
         if (sportVal !== 'All' && game.SportID !== sportVal) return false;
-        // Division match
         if (divVal !== 'All' && game.DivisionID !== divVal) return false;
         
-        // School ID filter
         if (schoolVal !== 'All') {
           const homeTeam = activeDatabase.Teams.find(t => t.TeamID === game.HomeTeamID);
           const awayTeam = activeDatabase.Teams.find(t => t.TeamID === game.AwayTeamID);
@@ -529,7 +354,6 @@ function doGet() {
         return;
       }
 
-      // Sort by Date then Time
       filtered.sort((a,b) => new Date(a.Date + ' ' + a.Time) - new Date(b.Date + ' ' + b.Time));
 
       filtered.forEach(game => {
@@ -545,13 +369,11 @@ function doGet() {
         const sport = activeDatabase.Sports.find(s => s.SportID === game.SportID);
         const division = activeDatabase.Divisions.find(d => d.DivisionID === game.DivisionID);
 
-        const isCompleted = game.MatchStatus === 'Completed';
-        const isLive = game.MatchStatus === 'In Progress';
+        const isCompleted = game.MatchStatus === 'Completed' || game.MatchStatus === 'Finished';
+        const isLive = game.MatchStatus === 'In Progress' || game.MatchStatus === 'Live';
 
         container.innerHTML += `
           <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
-            
-            <!-- GAME INFO/METRICS -->
             <div class="space-y-1.5 flex-grow">
               <div class="flex flex-wrap items-center gap-2">
                 <span class="bg-slate-100 text-slate-800 text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded border border-slate-200">
@@ -562,33 +384,28 @@ function doGet() {
                 </span>
               </div>
               
-              <!-- MATCHUP & SCORE ROW -->
               <div class="flex items-center space-x-6 py-2">
-                <!-- HOME -->
                 <div class="flex flex-col">
                   <span class="text-base font-extrabold text-slate-900">${homeName}</span>
                   <span class="text-xs text-slate-400 uppercase font-semibold">Home</span>
                 </div>
 
-                <!-- SCORE INDICATOR -->
                 <div class="flex items-center space-x-3 bg-slate-50 px-4 py-2 rounded-lg border border-slate-100">
-                  <span class="text-lg font-black ${isCompleted && game.HomeScore > game.AwayScore ? 'text-amber-500' : 'text-slate-800'}">
+                  <span class="text-lg font-black ${isCompleted && Number(game.HomeScore) > Number(game.AwayScore) ? 'text-amber-500' : 'text-slate-800'}">
                     ${isCompleted || isLive ? game.HomeScore : '-'}
                   </span>
                   <span class="text-xs font-black text-slate-300">VS</span>
-                  <span class="text-lg font-black ${isCompleted && game.AwayScore > game.HomeScore ? 'text-amber-500' : 'text-slate-800'}">
+                  <span class="text-lg font-black ${isCompleted && Number(game.AwayScore) > Number(game.HomeScore) ? 'text-amber-500' : 'text-slate-800'}">
                     ${isCompleted || isLive ? game.AwayScore : '-'}
                   </span>
                 </div>
 
-                <!-- AWAY -->
                 <div class="flex flex-col">
                   <span class="text-base font-extrabold text-slate-900">${awayName}</span>
                   <span class="text-xs text-slate-400 uppercase font-semibold">Away</span>
                 </div>
               </div>
 
-              <!-- DATE & LOCATION DETAILS -->
               <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-slate-500">
                 <span class="flex items-center space-x-1.5">
                   <i class="fa-regular fa-calendar text-slate-400"></i>
@@ -605,7 +422,6 @@ function doGet() {
               </div>
             </div>
 
-            <!-- STATUS BOX -->
             <div class="shrink-0 flex items-center justify-start md:justify-end">
               ${isCompleted 
                 ? `<span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">Final</span>`
@@ -614,7 +430,6 @@ function doGet() {
                 : `<span class="bg-amber-50 text-amber-800 border border-amber-100 px-3.5 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">Scheduled</span>`
               }
             </div>
-
           </div>
         `;
       });
@@ -632,44 +447,44 @@ function doGet() {
 
       tbody.innerHTML = '';
 
-      if (!sportVal || !divVal) return;
+      if (!sportVal || !divVal) {
+        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 font-medium">Select a sport bracket above to display ranking tallies.</td></tr>`;
+        return;
+      }
 
-      // Extract teams participating in this sport/division
       const targetTeams = activeDatabase.Teams.filter(t => t.SportID === sportVal && t.DivisionID === divVal);
-      
       const teamStats = {};
+
       targetTeams.forEach(team => {
         const school = activeDatabase.Schools.find(s => s.SchoolID === team.SchoolID);
         teamStats[team.TeamID] = {
           name: school ? school.Name : 'Team Name',
-          played: 0,
-          won: 0,
-          lost: 0,
-          pointsFor: 0,
-          pointsAgainst: 0
+          played: 0, won: 0, lost: 0, pointsFor: 0, pointsAgainst: 0
         };
       });
 
-      // Calculate stats from Completed Fixtures
       activeDatabase.Fixtures.forEach(game => {
-        if (game.SportID === sportVal && game.DivisionID === divVal && game.MatchStatus === 'Completed') {
+        if (game.SportID === sportVal && game.DivisionID === divVal && (game.MatchStatus === 'Completed' || game.MatchStatus === 'Finished')) {
           const homeId = game.HomeTeamID;
           const awayId = game.AwayTeamID;
 
           if (teamStats[homeId] && teamStats[awayId]) {
+            const hScore = Number(game.HomeScore) || 0;
+            const aScore = Number(game.AwayScore) || 0;
+
             teamStats[homeId].played++;
             teamStats[awayId].played++;
 
-            teamStats[homeId].pointsFor += game.HomeScore;
-            teamStats[homeId].pointsAgainst += game.AwayScore;
+            teamStats[homeId].pointsFor += hScore;
+            teamStats[homeId].pointsAgainst += aScore;
 
-            teamStats[awayId].pointsFor += game.AwayScore;
-            teamStats[awayId].pointsAgainst += game.HomeScore;
+            teamStats[awayId].pointsFor += aScore;
+            teamStats[awayId].pointsAgainst += hScore;
 
-            if (game.HomeScore > game.AwayScore) {
+            if (hScore > aScore) {
               teamStats[homeId].won++;
               teamStats[awayId].lost++;
-            } else if (game.AwayScore > game.HomeScore) {
+            } else if (aScore > hScore) {
               teamStats[awayId].won++;
               teamStats[homeId].lost++;
             }
@@ -677,15 +492,15 @@ function doGet() {
         }
       });
 
-      // Convert into sortable array
       const statsList = Object.keys(teamStats).map(id => ({ id, ...teamStats[id] }));
 
-      // Sort by: Wins (desc), Diff (desc), PointsFor (desc)
+      // Sort criteria: Wins (desc), Point Spread Difference (desc), Gross Points For (desc)
       statsList.sort((a,b) => {
         if (b.won !== a.won) return b.won - a.won;
         const diffA = a.pointsFor - a.pointsAgainst;
         const diffB = b.pointsFor - b.pointsAgainst;
-        return diffB - diffA;
+        if (diffB !== diffA) return diffB - diffA;
+        return b.pointsFor - a.pointsFor;
       });
 
       if (statsList.length === 0) {
@@ -723,6 +538,11 @@ function doGet() {
       const container = document.getElementById('schoolsContainer');
       container.innerHTML = '';
 
+      if (activeDatabase.Schools.length === 0) {
+        container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400">Loading directory...</div>`;
+        return;
+      }
+
       activeDatabase.Schools.forEach(sch => {
         container.innerHTML += `
           <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md transition-all">
@@ -738,18 +558,18 @@ function doGet() {
             
             <div class="space-y-2 text-xs border-t border-slate-100 pt-3 text-slate-600 font-medium">
               <div class="flex justify-between">
-                <span class="text-slate-400">Athletic Director:</span>
-                <span class="font-bold text-slate-800">${sch.PrimaryContact}</span>
+                <span class="text-slate-400">Athletic Contact:</span>
+                <span class="font-bold text-slate-800">${sch.PrimaryContact || 'Staff Coordinator'}</span>
               </div>
               <div class="flex justify-between">
-                <span class="text-slate-400">Year Joined:</span>
-                <span>${sch["Year Joined"] || '2024'}</span>
+                <span class="text-slate-400">Member Classification:</span>
+                <span>Active Member</span>
               </div>
             </div>
 
             <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1">
               <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Venue Logistics</span>
-              <p class="text-xs text-slate-600 leading-relaxed italic">"${sch.Notes || 'No specific logistic entries'}"</p>
+              <p class="text-xs text-slate-600 leading-relaxed italic">"${sch.Notes || sch["Notes/Instructions"] || 'No custom track profiles documented.'}"</p>
             </div>
           </div>
         `;
@@ -761,7 +581,9 @@ function doGet() {
       const schoolSelector = document.getElementById('rosterSchoolFilter');
       schoolSelector.innerHTML = '';
 
-      activeDatabase.Schools.forEach((sch, i) => {
+      if (activeDatabase.Schools.length === 0) return;
+
+      activeDatabase.Schools.forEach(sch => {
         schoolSelector.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
       });
 
@@ -773,11 +595,10 @@ function doGet() {
       const teamSelector = document.getElementById('rosterTeamFilter');
       teamSelector.innerHTML = '';
 
-      // Find all teams owned by this school
       const schoolTeams = activeDatabase.Teams.filter(t => t.SchoolID === schoolId);
 
       if (schoolTeams.length === 0) {
-        teamSelector.innerHTML = '<option value="">No registered teams</option>';
+        teamSelector.innerHTML = '<option value="">No registered squads</option>';
         renderRoster();
         return;
       }
@@ -785,7 +606,7 @@ function doGet() {
       schoolTeams.forEach(team => {
         const sport = activeDatabase.Sports.find(s => s.SportID === team.SportID);
         const div = activeDatabase.Divisions.find(d => d.DivisionID === team.DivisionID);
-        const label = `${sport ? sport.Name : "Sport"} - ${div ? div.Age_Limit : "Age"}`;
+        const label = `${sport ? sport.Name : "Sport"} - ${div ? `${div.Age_Limit} (${div.Gender})` : "Bracket"}`;
         teamSelector.innerHTML += `<option value="${team.TeamID}">${label}</option>`;
       });
 
@@ -798,26 +619,14 @@ function doGet() {
       tbody.innerHTML = '';
 
       if (!teamId) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">
-              No registered team selected.
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No active squad roster selected.</td></tr>`;
         return;
       }
 
       const players = activeDatabase.Roster.filter(p => p.TeamID === teamId);
 
       if (players.length === 0) {
-        tbody.innerHTML = `
-          <tr>
-            <td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">
-              No players currently assigned to this roster bracket.
-            </td>
-          </tr>
-        `;
+        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No verified athletes found on this squad's official registry ledger.</td></tr>`;
         return;
       }
 
@@ -838,65 +647,35 @@ function doGet() {
       });
     }
 
-    // --- ESTABLISHING LIVE GOOGLE SHEET PIPELINE ---
+    // --- STREAMING PIPELINE ENGINE ---
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
-      statusElement.innerHTML = `
-        <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
-        <span class="text-slate-300">Synchronizing...</span>
-      `;
-
+      
       try {
         const response = await fetch(apiUrl);
-        if (!response.ok) throw new Error("HTTP connection failed");
+        if (!response.ok) throw new Error("Network data exchange failure");
         
         const data = await response.json();
         
-        // Safety validate: ensure spreadsheet tables matches expected format
         if (data.Fixtures && data.Schools && data.Teams && data.Roster) {
           activeDatabase = data;
           statusElement.innerHTML = `
             <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-            <span class="text-amber-400">CONNECTED: Live Database</span>
+            <span class="text-emerald-400">Official Live Stream Connected</span>
           `;
-          localStorage.setItem('LHQ_LiveApiUrl', apiUrl);
           processAppInit();
         } else {
-          throw new Error("Data model lacks critical tables");
+          throw new Error("Target mismatch on data schema mapping");
         }
       } catch (err) {
-        console.error(err);
+        console.error("Pipeline failure:", err);
         statusElement.innerHTML = `
           <span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
-          <span class="text-rose-400 font-extrabold">Live Connection Error</span>
+          <span class="text-rose-400 font-bold">Data Connection Offline</span>
         `;
-        // Fallback
-        activeDatabase = DEMO_DATABASE;
-        processAppInit();
+        // Keep checking periodically if deployment is restarting or locked
+        setTimeout(() => fetchLiveSheetData(apiUrl), 15000);
       }
-    }
-
-    function connectLiveApi() {
-      const url = document.getElementById('liveApiUrl').value.trim();
-      if (!url) {
-        alert("Please paste a valid Google Apps Script deployment URL first.");
-        return;
-      }
-      fetchLiveSheetData(url);
-    }
-
-    function clearLiveConnection() {
-      localStorage.removeItem('LHQ_LiveApiUrl');
-      document.getElementById('liveApiUrl').value = '';
-      activeDatabase = DEMO_DATABASE;
-      
-      const statusElement = document.getElementById('connectionStatus');
-      statusElement.innerHTML = `
-        <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
-        <span class="text-slate-300 font-medium">Viewing Mock Demo Data</span>
-      `;
-      
-      processAppInit();
     }
   </script>
 </body>
