@@ -28,7 +28,7 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -52,25 +52,9 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         <div class="flex items-center space-x-3.5">
-          <!-- AthleticOS SVG Node Logo Icon -->
-          <div class="bg-athleticos-carbon/30 p-2 rounded-xl border border-athleticos-green/20">
-            <svg class="h-9 w-9" viewBox="0 0 100 100" fill="none">
-              <!-- Interconnected Gradient Paths -->
-              <path d="M 50 15 C 50 15, 25 50, 35 80" stroke="url(#logo-grad)" stroke-width="5.5" stroke-linecap="round"/>
-              <path d="M 50 15 C 50 15, 75 50, 65 80" stroke="url(#logo-grad)" stroke-width="5.5" stroke-linecap="round"/>
-              <path d="M 30 50 C 45 40, 60 50, 65 80" stroke="url(#logo-grad)" stroke-width="5.5" stroke-linecap="round"/>
-              <!-- Circular Nodes -->
-              <circle cx="50" cy="15" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
-              <circle cx="30" cy="50" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
-              <circle cx="35" cy="80" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
-              <circle cx="65" cy="80" r="7.5" fill="#012300" stroke="#52C920" stroke-width="3.5"/>
-              <defs>
-                <linearGradient id="logo-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-                  <stop offset="0%" stop-color="#F9FF00" />
-                  <stop offset="100%" stop-color="#52C920" />
-                </linearGradient>
-              </defs>
-            </svg>
+          <!-- AthleticOS Logo Icon (Using your uploaded file) -->
+          <div class="bg-athleticos-carbon/30 p-1.5 rounded-xl border border-athleticos-green/20 flex items-center justify-center h-11 w-11 shrink-0">
+            <img src="Logo Icon.png" alt="AthleticOS" class="max-h-full max-w-full object-contain" onerror="this.onerror=null; this.src='https://via.placeholder.com/150?text=Logo';">
           </div>
           <div>
             <span class="text-[10px] uppercase tracking-widest text-athleticos-green font-bold">Public Portal</span>
@@ -313,7 +297,6 @@
       const approvedTeams = getApprovedTeams();
       const divisions = activeDatabase.Divisions || [];
       
-      // Select divisions linked to approved teams and current sport selection
       const activeDivIDs = [...new Set(approvedTeams
         .filter(t => selectedSportID === 'All' || t.SportID === selectedSportID)
         .map(t => t.DivisionID)
@@ -336,41 +319,24 @@
       }
     }
 
-    // --- CASING AND KEY-SPACE ROBUST LOGO HELPER ---
+    // --- NEW SIMPLIFIED LOGO HELPER (No regex parsing tricks, just direct extraction) ---
     function getSchoolLogo(sch) {
       if (!sch) return '';
       
-      // Standard direct matches first to optimize execution speed
-      const directAttempts = [
-        sch.Website_Logo, sch.Website_logo, sch.website_logo, sch.WebsiteLogo, sch.websitelogo,
-        sch.Logo, sch.logo, sch.LogoURL, sch.logourl, sch.LogoUrl, sch.Image, sch.image
-      ];
-      for (const val of directAttempts) {
-        if (val && String(val).trim() !== '') {
-          const sVal = String(val).trim();
-          if (sVal.startsWith('http://') || sVal.startsWith('https://') || sVal.includes('drive.google.com')) {
-            return convertDriveLink(sVal);
-          }
+      // Step 1: Direct property check (Very fast and explicit)
+      const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
+      for (const key of directKeys) {
+        if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) {
+          return convertDriveLink(sch[key].trim());
         }
       }
 
-      // Dynamic scanning fallback (stripping ALL non-alphanumeric characters for total compatibility)
+      // Step 2: Loop through properties and find ANY column with "logo" or "image" in the name
       for (const rawKey in sch) {
-        const normalizedKey = rawKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (normalizedKey === 'websitelogo' || normalizedKey === 'logo' || normalizedKey === 'logourl' || normalizedKey === 'schoollogo' || normalizedKey === 'image') {
+        const cleanKey = rawKey.toLowerCase().replace(/[^a-z]/g, '');
+        if (cleanKey.includes('logo') || cleanKey.includes('image')) {
           const val = String(sch[rawKey]).trim();
-          if (val && (val.startsWith('http://') || val.startsWith('https://') || val.includes('drive.google.com'))) {
-            return convertDriveLink(val);
-          }
-        }
-      }
-
-      // Wildcard scanning fallback (if column key just contains 'logo' or 'image' anywhere)
-      for (const rawKey in sch) {
-        const normalizedKey = rawKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-        if (normalizedKey.includes('logo') || normalizedKey.includes('image')) {
-          const val = String(sch[rawKey]).trim();
-          if (val && (val.startsWith('http://') || val.startsWith('https://') || val.includes('drive.google.com'))) {
+          if (val.startsWith('http')) {
             return convertDriveLink(val);
           }
         }
@@ -378,22 +344,14 @@
       return '';
     }
 
-    // Helper to dynamically translate Google Drive share URLs to raw binary viewing streams on the fly
+    // New Regex-based Drive Link Converter (Extracts ID perfectly regardless of URL format)
     function convertDriveLink(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
-        let fileId = '';
-        if (url.includes('/file/d/')) {
-          fileId = url.split('/file/d/')[1].split('/')[0];
-        } else if (url.includes('?id=')) {
-          const parts = url.split('?id=')[1];
-          fileId = parts.split('&')[0];
-        } else if (url.includes('&id=')) {
-          const parts = url.split('&id=')[1];
-          fileId = parts.split('&')[0];
-        }
-        if (fileId) {
-          return `https://drive.google.com/uc?export=view&id=${fileId}`;
+        // Find a string of 25+ alphanumeric/dash characters (The standard Drive ID format)
+        const match = url.match(/[-\w]{25,}/);
+        if (match && match[0]) {
+          return `https://drive.google.com/uc?export=view&id=${match[0]}`;
         }
       }
       return url;
@@ -737,16 +695,16 @@
       });
     }
 
-    // --- HELPER: COLOR GENERATOR FOR SHIELD BASE ---
+    // --- HELPER: COLOR GENERATOR FOR BACKUP SQUARES ---
     function getSchoolColor(name) {
       const colors = [
-        { bg: 'bg-blue-900 text-blue-100 border-blue-500', svg: '#1E40AF' },
-        { bg: 'bg-emerald-900 text-emerald-100 border-emerald-500', svg: '#064E3B' },
-        { bg: 'bg-rose-900 text-rose-100 border-rose-500', svg: '#881337' },
-        { bg: 'bg-indigo-900 text-indigo-100 border-indigo-500', svg: '#312E81' },
-        { bg: 'bg-amber-900 text-amber-100 border-amber-500', svg: '#78350F' },
-        { bg: 'bg-violet-950 text-violet-100 border-violet-500', svg: '#2E1065' },
-        { bg: 'bg-cyan-950 text-cyan-100 border-cyan-500', svg: '#083344' }
+        { bg: 'bg-blue-900 text-white' },
+        { bg: 'bg-emerald-900 text-white' },
+        { bg: 'bg-rose-900 text-white' },
+        { bg: 'bg-indigo-900 text-white' },
+        { bg: 'bg-amber-900 text-white' },
+        { bg: 'bg-violet-950 text-white' },
+        { bg: 'bg-cyan-950 text-white' }
       ];
       let hash = 0;
       const cleanName = name || "";
@@ -781,28 +739,13 @@
         const acronym = sch.Acronym || (sch.Name ? sch.Name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase() : "SCH");
         const yearJoined = sch["Year Joined"] || sch.YearJoined || sch.Year_Joined || "2024";
         
-        // Robust header resolution & dynamic Drive-to-UC path converter
         const logoUrl = getSchoolLogo(sch);
 
-        // Layered Aspect-Ratio Correct Shield & Logo Wrapper
+        // SIMPLE LOGO HTML: Just a standard image tag, and if it errors out, replace itself with a colored square.
+        // The shields are completely removed.
         const logoHtml = logoUrl 
-          ? `<div class="relative h-20 w-20 shrink-0 flex items-center justify-center bg-white rounded-xl border border-slate-200 shadow-sm p-1.5 overflow-hidden">
-               <!-- Fallback Shield Base Layer -->
-               <div class="absolute inset-1.5 flex items-center justify-center z-0">
-                 <svg class="h-full w-full drop-shadow-sm" viewBox="0 0 100 100">
-                   <path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="${schoolColor.svg}" stroke="#f59e0b" stroke-width="4"/>
-                   <text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="900" fill="#ffffff">${acronym}</text>
-                 </svg>
-               </div>
-               <!-- Overlay Logo Layer (object-contain guarantees perfect proportions) -->
-               <img src="${logoUrl}" class="absolute inset-1.5 w-[calc(100%-12px)] h-[calc(100%-12px)] object-contain z-10 bg-white rounded-lg" onload="this.previousElementSibling.style.display='none';" onerror="this.style.display='none';" />
-             </div>`
-          : `<div class="h-20 w-20 relative shrink-0">
-               <svg class="h-20 w-20 drop-shadow-sm" viewBox="0 0 100 100">
-                 <path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="${schoolColor.svg}" stroke="#f59e0b" stroke-width="4"/>
-                 <text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="'Plus Jakarta Sans', sans-serif" font-size="28" font-weight="900" fill="#ffffff">${acronym}</text>
-               </svg>
-             </div>`;
+          ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" onerror="this.onerror=null; this.outerHTML='<div class=\\'h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}\\'>${acronym}</div>';" />`
+          : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
 
         container.innerHTML += `
           <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md transition-all">
