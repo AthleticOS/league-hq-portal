@@ -4,7 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>League HQ - Public Fan & Parent Portal</title>
+  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
@@ -26,6 +28,7 @@
 </head>
 <body class="bg-slate-50 text-slate-900 min-h-screen flex flex-col">
 
+  <!-- TOP BRAND BANNER -->
   <header class="bg-slate-900 text-white shadow-xl border-b-4 border-amber-500">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
@@ -38,6 +41,7 @@
             <h1 class="text-lg sm:text-2xl font-black tracking-tight leading-none">AthleticOS League HQ</h1>
           </div>
         </div>
+        <!-- STATUS INDICATOR -->
         <div id="connectionStatus" class="flex items-center space-x-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold">
           <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
           <span class="text-slate-300">Syncing Live Schedule...</span>
@@ -46,6 +50,7 @@
     </div>
   </header>
 
+  <!-- NAVIGATION TABS -->
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex space-x-8 overflow-x-auto py-4 custom-scrollbar whitespace-nowrap">
@@ -73,8 +78,10 @@
     </div>
   </nav>
 
+  <!-- MAIN VIEW CONTAINER -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
+    <!-- TAB: ANNOUNCEMENTS -->
     <section id="view-bulletins" class="tab-view space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Public Bulletins</h2>
@@ -84,14 +91,16 @@
         </div>
     </section>
 
+    <!-- TAB: FIXTURES -->
     <section id="view-fixtures" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Schedules & Scores</h2>
           <p class="text-slate-500 text-sm">Review kickoff times, game locations, and official score summaries.</p>
         </div>
+        <!-- Filters Layout -->
         <div class="flex flex-wrap gap-2">
-          <select id="filterSport" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="filterSport" onchange="onSportFilterChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
             <option value="All">All Sports</option>
           </select>
           <select id="filterDivision" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
@@ -106,6 +115,7 @@
         </div>
     </section>
 
+    <!-- TAB: STANDINGS -->
     <section id="view-standings" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -113,7 +123,7 @@
           <p class="text-slate-500 text-sm">Live calculated ranks, wins, losses, and point spreads.</p>
         </div>
         <div class="flex gap-2">
-          <select id="standingsSport" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
+          <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
             </select>
           <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
             </select>
@@ -141,6 +151,7 @@
       </div>
     </section>
 
+    <!-- TAB: SCHOOLS -->
     <section id="view-schools" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">School Directory</h2>
@@ -150,6 +161,7 @@
         </div>
     </section>
 
+    <!-- TAB: ROSTERS -->
     <section id="view-rosters" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -217,6 +229,16 @@
       renderRosterSelectors();
     }
 
+    // --- HELPER: GET APPROVED TEAMS ---
+    function getApprovedTeams() {
+      if (!activeDatabase.Teams) return [];
+      return activeDatabase.Teams.filter(t => 
+        t.RegistrationStatus === 'Approved' || 
+        t.RegistrationStatus === 'approved' ||
+        !t.RegistrationStatus // Fallback if no status field is set
+      );
+    }
+
     // --- TAB SWITCHER LOGIC ---
     function switchTab(tabId) {
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
@@ -233,40 +255,94 @@
       }
     }
 
+    // --- DYNAMIC DIVISION GENERATORS FOR CASCADING ---
+    function updateDivisionFilterOptions() {
+      const sportSelect = document.getElementById('filterSport');
+      const divSelect = document.getElementById('filterDivision');
+      const selectedSportID = sportSelect.value;
+      const savedDivValue = divSelect.value;
+
+      divSelect.innerHTML = '<option value="All">All Divisions</option>';
+
+      const approvedTeams = getApprovedTeams();
+      
+      // Select divisions linked to approved teams and current sport selection
+      const activeDivIDs = [...new Set(approvedTeams
+        .filter(t => selectedSportID === 'All' || t.SportID === selectedSportID)
+        .map(t => t.DivisionID)
+      )];
+
+      const validDivisions = activeDatabase.Divisions.filter(div => {
+        const isDivActive = activeDivIDs.includes(div.DivisionID);
+        const matchesSport = selectedSportID === 'All' || div.SportID === selectedSportID;
+        return isDivActive && matchesSport;
+      });
+
+      validDivisions.forEach(div => {
+        divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
+      });
+
+      if ([...divSelect.options].some(opt => opt.value === savedDivValue)) {
+        divSelect.value = savedDivValue;
+      } else {
+        divSelect.value = 'All';
+      }
+    }
+
+    function updateStandingsDivisionOptions() {
+      const sportSelect = document.getElementById('standingsSport');
+      const divSelect = document.getElementById('standingsDivision');
+      const selectedSportID = sportSelect.value;
+      const savedDivValue = divSelect.value;
+
+      divSelect.innerHTML = '';
+
+      if (!selectedSportID) return;
+
+      const approvedTeams = getApprovedTeams();
+      const activeDivIDs = [...new Set(approvedTeams
+        .filter(t => t.SportID === selectedSportID)
+        .map(t => t.DivisionID)
+      )];
+
+      const validDivisions = activeDatabase.Divisions.filter(div => 
+        div.SportID === selectedSportID && activeDivIDs.includes(div.DivisionID)
+      );
+
+      validDivisions.forEach(div => {
+        divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
+      });
+
+      if (savedDivValue && [...divSelect.options].some(opt => opt.value === savedDivValue)) {
+        divSelect.value = savedDivValue;
+      } else if (divSelect.options.length > 0) {
+        divSelect.selectedIndex = 0;
+      }
+    }
+
     // --- FILTER INITIALIZATION ---
     function populateFilterSelections() {
       const sportSelect = document.getElementById('filterSport');
-      const divSelect = document.getElementById('filterDivision');
       const schoolSelect = document.getElementById('filterSchool');
-
       const standingSport = document.getElementById('standingsSport');
-      const standingDiv = document.getElementById('standingsDivision');
 
-      // Preserve values if user changes tabs
       const savedSport = sportSelect.value;
-      const savedDiv = divSelect.value;
       const savedSchool = schoolSelect.value;
-
       const savedStandSport = standingSport.value;
-      const savedStandDiv = standingDiv.value;
 
       sportSelect.innerHTML = '<option value="All">All Sports</option>';
-      divSelect.innerHTML = '<option value="All">All Divisions</option>';
       schoolSelect.innerHTML = '<option value="All">All Schools</option>';
-
       standingSport.innerHTML = '';
-      standingDiv.innerHTML = '';
 
-      // Populate sports
-      activeDatabase.Sports.forEach(sport => {
-        sportSelect.innerHTML += `<option value="${sport.SportID}">${sport.Name}</option>`;
-        standingSport.innerHTML += `<option value="${sport.SportID}">${sport.Name}</option>`;
-      });
+      // Only display sports that have active approved teams
+      const approvedTeams = getApprovedTeams();
+      const activeSportIDs = [...new Set(approvedTeams.map(t => t.SportID))];
+      const activeSports = activeDatabase.Sports.filter(s => activeSportIDs.includes(s.SportID));
 
-      // Populate Divisions
-      activeDatabase.Divisions.forEach(div => {
-        divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
-        standingDiv.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
+      activeSports.forEach(sport => {
+        const label = sport.Season ? `${sport.Name} (${sport.Season})` : sport.Name;
+        sportSelect.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
+        standingSport.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
       });
 
       // Populate Schools
@@ -274,12 +350,23 @@
         schoolSelect.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
       });
 
-      // Restore saved selection markers if they still exist
       if (savedSport) sportSelect.value = savedSport;
-      if (savedDiv) divSelect.value = savedDiv;
       if (savedSchool) schoolSelect.value = savedSchool;
       if (savedStandSport) standingSport.value = savedStandSport;
-      if (savedStandDiv) standingDiv.value = savedStandDiv;
+
+      // Initialize matching cascading options
+      updateDivisionFilterOptions();
+      updateStandingsDivisionOptions();
+    }
+
+    function onSportFilterChange() {
+      updateDivisionFilterOptions();
+      renderFixtures();
+    }
+
+    function onStandingsSportChange() {
+      updateStandingsDivisionOptions();
+      calculateStandings();
     }
 
     // --- RENDER BULLETIN BOARD ---
@@ -299,7 +386,6 @@
         return;
       }
 
-      // Sort by date newest first
       publicMessages.sort((a,b) => new Date(b.Timestamp) - new Date(a.Timestamp));
 
       publicMessages.forEach(msg => {
@@ -330,13 +416,15 @@
       const divVal = document.getElementById('filterDivision').value;
       const schoolVal = document.getElementById('filterSchool').value;
 
+      const approvedTeams = getApprovedTeams();
+
       const filtered = activeDatabase.Fixtures.filter(game => {
         if (sportVal !== 'All' && game.SportID !== sportVal) return false;
         if (divVal !== 'All' && game.DivisionID !== divVal) return false;
         
         if (schoolVal !== 'All') {
-          const homeTeam = activeDatabase.Teams.find(t => t.TeamID === game.HomeTeamID);
-          const awayTeam = activeDatabase.Teams.find(t => t.TeamID === game.AwayTeamID);
+          const homeTeam = approvedTeams.find(t => t.TeamID === game.HomeTeamID);
+          const awayTeam = approvedTeams.find(t => t.TeamID === game.AwayTeamID);
           const homeSchool = homeTeam ? homeTeam.SchoolID : '';
           const awaySchool = awayTeam ? awayTeam.SchoolID : '';
           if (homeSchool !== schoolVal && awaySchool !== schoolVal) return false;
@@ -357,8 +445,8 @@
       filtered.sort((a,b) => new Date(a.Date + ' ' + a.Time) - new Date(b.Date + ' ' + b.Time));
 
       filtered.forEach(game => {
-        const homeTeam = activeDatabase.Teams.find(t => t.TeamID === game.HomeTeamID);
-        const awayTeam = activeDatabase.Teams.find(t => t.TeamID === game.AwayTeamID);
+        const homeTeam = approvedTeams.find(t => t.TeamID === game.HomeTeamID);
+        const awayTeam = approvedTeams.find(t => t.TeamID === game.AwayTeamID);
 
         const homeSchool = homeTeam ? activeDatabase.Schools.find(s => s.SchoolID === homeTeam.SchoolID) : null;
         const awaySchool = awayTeam ? activeDatabase.Schools.find(s => s.SchoolID === awayTeam.SchoolID) : null;
@@ -452,7 +540,8 @@
         return;
       }
 
-      const targetTeams = activeDatabase.Teams.filter(t => t.SportID === sportVal && t.DivisionID === divVal);
+      const approvedTeams = getApprovedTeams();
+      const targetTeams = approvedTeams.filter(t => t.SportID === sportVal && t.DivisionID === divVal);
       const teamStats = {};
 
       targetTeams.forEach(team => {
@@ -595,7 +684,8 @@
       const teamSelector = document.getElementById('rosterTeamFilter');
       teamSelector.innerHTML = '';
 
-      const schoolTeams = activeDatabase.Teams.filter(t => t.SchoolID === schoolId);
+      const approvedTeams = getApprovedTeams();
+      const schoolTeams = approvedTeams.filter(t => t.SchoolID === schoolId);
 
       if (schoolTeams.length === 0) {
         teamSelector.innerHTML = '<option value="">No registered squads</option>';
@@ -606,8 +696,10 @@
       schoolTeams.forEach(team => {
         const sport = activeDatabase.Sports.find(s => s.SportID === team.SportID);
         const div = activeDatabase.Divisions.find(d => d.DivisionID === team.DivisionID);
-        const label = `${sport ? sport.Name : "Sport"} - ${div ? `${div.Age_Limit} (${div.Gender})` : "Bracket"}`;
-        teamSelector.innerHTML += `<option value="${team.TeamID}">${label}</option>`;
+        // Display sport with season and division info
+        const sportLabel = sport ? (sport.Season ? `${sport.Name} (${sport.Season})` : sport.Name) : "Sport";
+        const label = `${sportLabel} - ${div ? `${div.Age_Limit} (${div.Gender})` : "Bracket"}`;
+        teamSelector.innerHTML += `<option value="${team.TeamID}">${label}</option>';
       });
 
       renderRoster();
