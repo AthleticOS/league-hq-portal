@@ -284,7 +284,7 @@
         .map(t => t.DivisionID)
       )];
 
-      const validDivisions = divisions.filter(div => {
+      const valid divisions = divisions.filter(div => {
         const isDivActive = activeDivIDs.includes(div.DivisionID);
         const matchesSport = selectedSportID === 'All' || div.SportID === selectedSportID;
         return isDivActive && matchesSport;
@@ -304,20 +304,34 @@
     // --- CASING AND KEY-SPACE ROBUST LOGO HELPER ---
     function getSchoolLogo(sch) {
       if (!sch) return '';
-      // Explicit priority lookup list
-      const keys = ['Website_Logo', 'Website_logo', 'website_logo', 'WebsiteLogo', 'Logo', 'LogoURL', 'Image'];
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        if (sch[key] && String(sch[key]).trim() !== '') {
-          return String(sch[key]).trim();
+      // Explicit priority lookup list using clean, normalized keys
+      const targetKeys = ['website_logo', 'websitelogo', 'logo', 'logourl', 'image'];
+      
+      // Create a map of normalized keys to actual raw keys
+      const normalizedKeys = {};
+      for (const rawKey in sch) {
+        normalizedKeys[rawKey.toLowerCase().trim().replace(/[\s_-]/g, '')] = rawKey;
+      }
+      
+      for (let i = 0; i < targetKeys.length; i++) {
+        const target = targetKeys[i];
+        const actualKey = normalizedKeys[target];
+        if (actualKey && sch[actualKey] && String(sch[actualKey]).trim() !== '') {
+          const val = String(sch[actualKey]).trim();
+          // Verify it's a valid web link, not an Appsheet local folder relative string
+          if (val.startsWith('http://') || val.startsWith('https://')) {
+            return val;
+          }
         }
       }
-      // Wildcard matcher to catch trailing/leading spaces or custom headers
+      
+      // Wildcard matcher as standard fallback
       for (const rawKey in sch) {
         const cleanKey = rawKey.toLowerCase().replace(/[\s_-]/g, '');
         if (cleanKey.includes('logo') || cleanKey.includes('image')) {
-          if (sch[rawKey] && String(sch[rawKey]).trim() !== '') {
-            return String(sch[rawKey]).trim();
+          const val = String(sch[rawKey]).trim();
+          if (val && (val.startsWith('http://') || val.startsWith('https://'))) {
+            return val;
           }
         }
       }
@@ -708,14 +722,14 @@
         
         // Priority checks via robust helper
         const logoUrl = getSchoolLogo(sch);
-        const isWebUrl = logoUrl && (logoUrl.startsWith('http://') || logoUrl.startsWith('https://'));
 
         // Enlarged Dynamic Logo Builder (h-20 w-20)
-        // Defaulting to the background vector shield, revealing image on successful loaded callbacks
-        const logoHtml = isWebUrl 
+        // Default to the vector shield (starts fully visible). 
+        // Image element starts with 'hidden' and removes it, while hiding the fallback, upon successful dynamic load callback.
+        const logoHtml = logoUrl 
           ? '<div class="relative h-20 w-20 shrink-0 flex items-center justify-center bg-white rounded-xl border border-slate-200 shadow-sm p-1.5">' +
-              '<img src="' + logoUrl + '" class="max-h-full max-w-full object-contain" onload="this.nextElementSibling.style.display=\'none\';" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'block\';" />' +
-              '<div class="w-full h-full" style="display: block;">' +
+              '<img src="' + logoUrl + '" class="hidden max-h-full max-w-full object-contain" onload="this.classList.remove(\'hidden\\); this.nextElementSibling.classList.add(\'hidden\\);" onerror="this.nextElementSibling.classList.remove(\'hidden\\);" />' +
+              '<div class="w-full h-full">' +
                 '<svg class="h-full w-full drop-shadow-sm" viewBox="0 0 100 100">' +
                   '<path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="' + schoolColor.svg + '" stroke="#f59e0b" stroke-width="4"/>' +
                   '<text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="\'Plus Jakarta Sans\', sans-serif" font-size="28" font-weight="900" fill="#ffffff">' + acronym + '</text>' +
