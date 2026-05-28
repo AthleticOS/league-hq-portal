@@ -9,7 +9,7 @@
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -44,7 +44,7 @@
         <!-- STATUS INDICATOR -->
         <div id="connectionStatus" class="flex items-center space-x-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold">
           <span class="h-2 w-2 rounded-full bg-amber-500 animate-pulse"></span>
-          <span class="text-slate-300">Syncing Live Schedule...</span>
+          <span id="connectionStatusText" class="text-slate-300">Syncing Live Schedule...</span>
         </div>
       </div>
     </div>
@@ -88,7 +88,8 @@
         <p class="text-slate-500 text-sm">Real-time alerts, league-wide news, and operational details for parents and fans.</p>
       </div>
       <div id="bulletinsContainer" class="grid gap-6 md:grid-cols-2">
-        </div>
+        <!-- Rendered dynamically -->
+      </div>
     </section>
 
     <!-- TAB: FIXTURES -->
@@ -112,7 +113,8 @@
         </div>
       </div>
       <div id="fixturesContainer" class="grid gap-4">
-        </div>
+        <!-- Rendered dynamically -->
+      </div>
     </section>
 
     <!-- TAB: STANDINGS -->
@@ -124,9 +126,11 @@
         </div>
         <div class="flex gap-2">
           <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            </select>
+            <!-- Dynamic options -->
+          </select>
           <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            </select>
+            <!-- Dynamic options -->
+          </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -145,7 +149,8 @@
               </tr>
             </thead>
             <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600">
-              </tbody>
+              <!-- Rendered dynamically -->
+            </tbody>
           </table>
         </div>
       </div>
@@ -158,7 +163,8 @@
         <p class="text-slate-500 text-sm">Directory of all league schools, primary contacts, and administrative notes.</p>
       </div>
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        </div>
+        <!-- Rendered dynamically -->
+      </div>
     </section>
 
     <!-- TAB: ROSTERS -->
@@ -170,9 +176,11 @@
         </div>
         <div class="flex gap-2">
           <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            </select>
+            <!-- Dynamic options -->
+          </select>
           <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none">
-            </select>
+            <!-- Dynamic options -->
+          </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -188,7 +196,8 @@
               </tr>
             </thead>
             <tbody id="rosterBody" class="divide-y divide-slate-200 text-slate-600">
-              </tbody>
+              <!-- Rendered dynamically -->
+            </tbody>
           </table>
         </div>
       </div>
@@ -207,16 +216,17 @@
     // --- SECURE HARDCODED LIVE API LINK ---
     const GOOGLE_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyF8wNn1PokuSCReOo0o6a1MflRQrKxS-rxklbDjZy7cFx5bCx6iebIDRRvkrDRIJUL/exec";
 
-    // Fallback Mock Data if Google Server is unreachable
-    const FALLBACK_DATABASE = {
-      Messages: [{ MessageID: "M-1", Timestamp: "2026-05-28", SenderEmail: "system@hq.org", Category: "Public", TargetID: "Public", TopicSubject: "Syncing Error", Content: "Connecting to live server. If this takes longer than 10 seconds, please refresh the browser." }],
+    // Initial Loading State Placeholder Data
+    const LOADING_DATABASE = {
+      Messages: [{ MessageID: "L-1", Timestamp: "", SenderEmail: "", Category: "Public", TargetID: "Public", TopicSubject: "Loading Stream...", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
       Sports: [], Divisions: [], Schools: [], Teams: [], Roster: [], Fixtures: []
     };
 
-    let activeDatabase = FALLBACK_DATABASE;
+    let activeDatabase = LOADING_DATABASE;
 
     // --- INITIALIZE APPLICATION ---
     window.onload = function() {
+      processAppInit();
       fetchLiveSheetData(GOOGLE_API_ENDPOINT);
     };
 
@@ -231,11 +241,11 @@
 
     // --- HELPER: GET APPROVED TEAMS ---
     function getApprovedTeams() {
-      if (!activeDatabase.Teams) return [];
-      return activeDatabase.Teams.filter(t => 
+      const teams = activeDatabase.Teams || [];
+      return teams.filter(t => 
         t.RegistrationStatus === 'Approved' || 
         t.RegistrationStatus === 'approved' ||
-        !t.RegistrationStatus // Fallback if no status field is set
+        !t.RegistrationStatus // Fallback if status isn't set yet
       );
     }
 
@@ -247,6 +257,7 @@
         btn.classList.add('border-b-2', 'border-transparent', 'text-slate-500');
       });
 
+      document.getElementById('view-' + tabId).classList.add('hidden');
       document.getElementById('view-' + tabId).classList.remove('hidden');
       const activeBtn = document.getElementById('tab-' + tabId);
       if (activeBtn) {
@@ -265,6 +276,7 @@
       divSelect.innerHTML = '<option value="All">All Divisions</option>';
 
       const approvedTeams = getApprovedTeams();
+      const divisions = activeDatabase.Divisions || [];
       
       // Select divisions linked to approved teams and current sport selection
       const activeDivIDs = [...new Set(approvedTeams
@@ -272,14 +284,14 @@
         .map(t => t.DivisionID)
       )];
 
-      const validDivisions = activeDatabase.Divisions.filter(div => {
+      const validDivisions = divisions.filter(div => {
         const isDivActive = activeDivIDs.includes(div.DivisionID);
         const matchesSport = selectedSportID === 'All' || div.SportID === selectedSportID;
         return isDivActive && matchesSport;
       });
 
       validDivisions.forEach(div => {
-        divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
+        divSelect.innerHTML += '<option value="' + div.DivisionID + '">' + div.Age_Limit + ' (' + div.Gender + ')</option>';
       });
 
       if ([...divSelect.options].some(opt => opt.value === savedDivValue)) {
@@ -300,17 +312,18 @@
       if (!selectedSportID) return;
 
       const approvedTeams = getApprovedTeams();
+      const divisions = activeDatabase.Divisions || [];
       const activeDivIDs = [...new Set(approvedTeams
         .filter(t => t.SportID === selectedSportID)
         .map(t => t.DivisionID)
       )];
 
-      const validDivisions = activeDatabase.Divisions.filter(div => 
+      const validDivisions = divisions.filter(div => 
         div.SportID === selectedSportID && activeDivIDs.includes(div.DivisionID)
       );
 
       validDivisions.forEach(div => {
-        divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
+        divSelect.innerHTML += '<option value="' + div.DivisionID + '">' + div.Age_Limit + ' (' + div.Gender + ')</option>';
       });
 
       if (savedDivValue && [...divSelect.options].some(opt => opt.value === savedDivValue)) {
@@ -334,27 +347,32 @@
       schoolSelect.innerHTML = '<option value="All">All Schools</option>';
       standingSport.innerHTML = '';
 
-      // Only display sports that have active approved teams
       const approvedTeams = getApprovedTeams();
       const activeSportIDs = [...new Set(approvedTeams.map(t => t.SportID))];
-      const activeSports = activeDatabase.Sports.filter(s => activeSportIDs.includes(s.SportID));
+      
+      const sports = activeDatabase.Sports || [];
+      const schools = activeDatabase.Schools || [];
 
-      activeSports.forEach(sport => {
-        const label = sport.Season ? `${sport.Name} (${sport.Season})` : sport.Name;
-        sportSelect.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
-        standingSport.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
+      // Filter and dynamically build human-readable Sport options with their Seasons
+      sports.forEach(sport => {
+        const hasApprovedTeams = activeSportIDs.includes(sport.SportID);
+        if (hasApprovedTeams) {
+          const label = sport.Season ? (sport.Name + ' (' + sport.Season + ')') : sport.Name;
+          sportSelect.innerHTML += '<option value="' + sport.SportID + '">' + label + '</option>';
+          standingSport.innerHTML += '<option value="' + sport.SportID + '">' + label + '</option>';
+        }
       });
 
       // Populate Schools
-      activeDatabase.Schools.forEach(sch => {
-        schoolSelect.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
+      schools.forEach(sch => {
+        schoolSelect.innerHTML += '<option value="' + sch.SchoolID + '">' + sch.Name + '</option>';
       });
 
       if (savedSport) sportSelect.value = savedSport;
       if (savedSchool) schoolSelect.value = savedSchool;
       if (savedStandSport) standingSport.value = savedStandSport;
 
-      // Initialize matching cascading options
+      // Cascade matching lists
       updateDivisionFilterOptions();
       updateStandingsDivisionOptions();
     }
@@ -364,17 +382,13 @@
       renderFixtures();
     }
 
-    function onStandingsSportChange() {
-      updateStandingsDivisionOptions();
-      calculateStandings();
-    }
-
     // --- RENDER BULLETIN BOARD ---
     function renderAnnouncements() {
       const container = document.getElementById('bulletinsContainer');
       container.innerHTML = '';
 
-      const publicMessages = activeDatabase.Messages.filter(msg => msg.Category === 'Public' || msg.Category === 'Public Bulletin');
+      const messages = activeDatabase.Messages || [];
+      const publicMessages = messages.filter(msg => msg.Category === 'Public' || msg.Category === 'Public Bulletin');
 
       if (publicMessages.length === 0) {
         container.innerHTML = `
@@ -417,8 +431,9 @@
       const schoolVal = document.getElementById('filterSchool').value;
 
       const approvedTeams = getApprovedTeams();
+      const fixtures = activeDatabase.Fixtures || [];
 
-      const filtered = activeDatabase.Fixtures.filter(game => {
+      const filtered = fixtures.filter(game => {
         if (sportVal !== 'All' && game.SportID !== sportVal) return false;
         if (divVal !== 'All' && game.DivisionID !== divVal) return false;
         
@@ -552,7 +567,9 @@
         };
       });
 
-      activeDatabase.Fixtures.forEach(game => {
+      const fixtures = activeDatabase.Fixtures || [];
+
+      fixtures.forEach(game => {
         if (game.SportID === sportVal && game.DivisionID === divVal && (game.MatchStatus === 'Completed' || game.MatchStatus === 'Finished')) {
           const homeId = game.HomeTeamID;
           const awayId = game.AwayTeamID;
@@ -627,12 +644,14 @@
       const container = document.getElementById('schoolsContainer');
       container.innerHTML = '';
 
-      if (activeDatabase.Schools.length === 0) {
+      const schools = activeDatabase.Schools || [];
+
+      if (schools.length === 0) {
         container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400">Loading directory...</div>`;
         return;
       }
 
-      activeDatabase.Schools.forEach(sch => {
+      schools.forEach(sch => {
         container.innerHTML += `
           <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md transition-all">
             <div class="flex items-center space-x-3.5">
@@ -670,10 +689,11 @@
       const schoolSelector = document.getElementById('rosterSchoolFilter');
       schoolSelector.innerHTML = '';
 
-      if (activeDatabase.Schools.length === 0) return;
+      const schools = activeDatabase.Schools || [];
+      if (schools.length === 0) return;
 
-      activeDatabase.Schools.forEach(sch => {
-        schoolSelector.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
+      schools.forEach(sch => {
+        schoolSelector.innerHTML += '<option value="' + sch.SchoolID + '">' + sch.Name + '</option>';
       });
 
       onRosterSelectionChange();
@@ -696,10 +716,10 @@
       schoolTeams.forEach(team => {
         const sport = activeDatabase.Sports.find(s => s.SportID === team.SportID);
         const div = activeDatabase.Divisions.find(d => d.DivisionID === team.DivisionID);
-        // Display sport with season and division info
-        const sportLabel = sport ? (sport.Season ? `${sport.Name} (${sport.Season})` : sport.Name) : "Sport";
-        const label = `${sportLabel} - ${div ? `${div.Age_Limit} (${div.Gender})` : "Bracket"}`;
-        teamSelector.innerHTML += `<option value="${team.TeamID}">${label}</option>';
+        // Build readable label incorporating the season
+        const sportLabel = sport ? (sport.Season ? (sport.Name + ' (' + sport.Season + ')') : sport.Name) : "Sport";
+        const label = sportLabel + ' - ' + (div ? (div.Age_Limit + ' (' + div.Gender + ')') : "Bracket");
+        teamSelector.innerHTML += '<option value="' + team.TeamID + '">' + label + '</option>';
       });
 
       renderRoster();
@@ -715,7 +735,8 @@
         return;
       }
 
-      const players = activeDatabase.Roster.filter(p => p.TeamID === teamId);
+      const rosters = activeDatabase.Roster || [];
+      const players = rosters.filter(p => p.TeamID === teamId);
 
       if (players.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No verified athletes found on this squad's official registry ledger.</td></tr>`;
@@ -739,6 +760,11 @@
       });
     }
 
+    function onStandingsSportChange() {
+      updateStandingsDivisionOptions();
+      calculateStandings();
+    }
+
     // --- STREAMING PIPELINE ENGINE ---
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
@@ -751,6 +777,7 @@
         
         if (data.Fixtures && data.Schools && data.Teams && data.Roster) {
           activeDatabase = data;
+          statusElement.className = "flex items-center space-x-2 bg-slate-800 px-3.5 py-1.5 rounded-full text-xs font-semibold";
           statusElement.innerHTML = `
             <span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span>
             <span class="text-emerald-400">Official Live Stream Connected</span>
@@ -761,6 +788,7 @@
         }
       } catch (err) {
         console.error("Pipeline failure:", err);
+        statusElement.className = "flex items-center space-x-2 bg-rose-950 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-300 border border-rose-800";
         statusElement.innerHTML = `
           <span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
           <span class="text-rose-400 font-bold">Data Connection Offline</span>
