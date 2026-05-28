@@ -236,10 +236,26 @@
     // --- SECURE HARDCODED LIVE API LINK ---
     const GOOGLE_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyF8wNn1PokuSCReOo0o6a1MflRQrKxS-rxklbDjZy7cFx5bCx6iebIDRRvkrDRIJUL/exec";
 
-    // Initial Loading State Placeholder Data
+    // Initial Loading State Placeholder Data (Added your real Drive links to verify logos!)
     const LOADING_DATABASE = {
-      Messages: [{ MessageID: "L-1", Timestamp: "", SenderEmail: "", Category: "Public", TargetID: "Public", TopicSubject: "Loading Stream...", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
-      Sports: [], Divisions: [], Schools: [], Teams: [], Roster: [], Fixtures: []
+      Messages: [{ MessageID: "L-1", Timestamp: "2026-05-20", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Term 2 Kickoff & Protocols", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
+      Sports: [
+        { SportID: "SPT-1", Name: "Basketball" }
+      ],
+      Divisions: [
+        { DivisionID: "DIV-1", Age_Limit: "Under 18", Gender: "Boys", SportID: "SPT-1" }
+      ],
+      Schools: [
+        { SchoolID: "SCH-1", Name: "North Academy", Region: "North Conference", PrimaryContact: "Coach Carter", Notes: "Field access is from Maple Street.", Acronym: "NAC", "Year Joined": "2021", Website_Logo: "https://drive.google.com/file/d/108TAUuT3NYLzrZqdTcJwpGWJzJtYEXV7/view" },
+        { SchoolID: "SCH-2", Name: "South Summit High", Region: "South Conference", PrimaryContact: "Coach Davis", Notes: "Gymnasium is located behind the main athletic pavilion.", Acronym: "SSH", "Year Joined": "2022", Website_Logo: "https://drive.google.com/file/d/13mql1iszbG8-IbOUnypVMiWe4hp5xN8i/view" },
+        { SchoolID: "SCH-3", Name: "Lakeside Collegiate", Region: "North Conference", PrimaryContact: "Coach Henderson", Notes: "Strict facility gate policy.", Acronym: "LKC", "Year Joined": "2019", Website_Logo: "https://drive.google.com/file/d/1139ue28f0GiIfxJFHzB-oMhwYr274e-q/view" }
+      ], 
+      Teams: [
+        { TeamID: "TM-1", RegistrationStatus: "Approved", SchoolID: "SCH-1", SportID: "SPT-1", DivisionID: "DIV-1" },
+        { TeamID: "TM-2", RegistrationStatus: "Approved", SchoolID: "SCH-2", SportID: "SPT-1", DivisionID: "DIV-1" }
+      ], 
+      Roster: [], 
+      Fixtures: []
     };
 
     let activeDatabase = LOADING_DATABASE;
@@ -319,7 +335,7 @@
       }
     }
 
-    // --- NEW SIMPLIFIED LOGO HELPER (No regex parsing tricks, just direct extraction) ---
+    // --- NEW SIMPLIFIED LOGO HELPER ---
     function getSchoolLogo(sch) {
       if (!sch) return '';
       
@@ -344,14 +360,13 @@
       return '';
     }
 
-    // New Regex-based Drive Link Converter (Extracts ID perfectly regardless of URL format)
+    // UPDATED PROXY BYPASS: Uses lh3.googleusercontent.com which completely bypasses Drive's strict framing blocks!
     function convertDriveLink(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
-        // Find a string of 25+ alphanumeric/dash characters (The standard Drive ID format)
         const match = url.match(/[-\w]{25,}/);
         if (match && match[0]) {
-          return `https://drive.google.com/uc?export=view&id=${match[0]}`;
+          return `https://lh3.googleusercontent.com/d/${match[0]}`;
         }
       }
       return url;
@@ -741,10 +756,10 @@
         
         const logoUrl = getSchoolLogo(sch);
 
-        // SIMPLE LOGO HTML: Just a standard image tag, and if it errors out, replace itself with a colored square.
-        // The shields are completely removed.
+        // SIMPLE LOGO HTML: No 'onerror' replacement trickery. Just a standard image tag!
+        // If an image URL exists but fails, it will natively show a standard broken image icon so you know it tried.
         const logoHtml = logoUrl 
-          ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" onerror="this.onerror=null; this.outerHTML='<div class=\\'h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}\\'>${acronym}</div>';" />`
+          ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />`
           : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
 
         container.innerHTML += `
