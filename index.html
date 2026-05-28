@@ -639,28 +639,76 @@
       });
     }
 
+    // --- HELPER: COLOR GENERATOR FOR SHIELD BASE ---
+    function getSchoolColor(name) {
+      const colors = [
+        { bg: 'bg-blue-900 text-blue-100 border-blue-500', svg: '#1e3a8a' },
+        { bg: 'bg-emerald-900 text-emerald-100 border-emerald-500', svg: '#064e3b' },
+        { bg: 'bg-rose-900 text-rose-100 border-rose-500', svg: '#881337' },
+        { bg: 'bg-indigo-900 text-indigo-100 border-indigo-500', svg: '#312e81' },
+        { bg: 'bg-amber-900 text-amber-100 border-amber-500', svg: '#78350f' },
+        { bg: 'bg-violet-950 text-violet-100 border-violet-500', svg: '#2e1065' },
+        { bg: 'bg-cyan-950 text-cyan-100 border-cyan-500', svg: '#083344' }
+      ];
+      let hash = 0;
+      const cleanName = name || "";
+      for (let i = 0; i < cleanName.length; i++) {
+        hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
+      }
+      return colors[Math.abs(hash) % colors.length];
+    }
+
     // --- RENDER SCHOOL DIRECTORY ---
     function renderSchools() {
       const container = document.getElementById('schoolsContainer');
       container.innerHTML = '';
 
-      const schools = activeDatabase.Schools || [];
+      const rawSchools = activeDatabase.Schools || [];
 
-      if (schools.length === 0) {
+      if (rawSchools.length === 0) {
         container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400">Loading directory...</div>`;
         return;
       }
 
-      schools.forEach(sch => {
+      // Clone and sort schools alphabetically by Name
+      const sortedSchools = [...rawSchools];
+      sortedSchools.sort((a, b) => {
+        const nameA = a.Name || '';
+        const nameB = b.Name || '';
+        return nameA.localeCompare(nameB);
+      });
+
+      sortedSchools.forEach(sch => {
+        const schoolColor = getSchoolColor(sch.Name);
+        const acronym = sch.Acronym || (sch.Name ? sch.Name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase() : "SCH");
+        const yearJoined = sch["Year Joined"] || sch.YearJoined || sch.Year_Joined || "2024";
+        const logoUrl = sch.Logo || sch.LogoURL || sch.Image || '';
+
+        // Dynamic Logo Builder: Use logoUrl with fallback to vector Shield SVG if logo url is unresolvable or missing
+        const logoHtml = logoUrl 
+          ? '<div class="relative h-14 w-14 shrink-0">' +
+              '<img src="' + logoUrl + '" class="h-14 w-14 rounded-xl object-contain border border-slate-200 bg-white p-1" onerror="this.style.display=\'none\'; this.nextElementSibling.classList.remove(\'hidden\');" />' +
+              '<div class="hidden">' +
+                '<svg class="h-14 w-14 drop-shadow-sm" viewBox="0 0 100 100">' +
+                  '<path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="' + schoolColor.svg + '" stroke="#f59e0b" stroke-width="4"/>' +
+                  '<text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="\'Plus Jakarta Sans\', sans-serif" font-size="28" font-weight="900" fill="#ffffff">' + acronym + '</text>' +
+                '</svg>' +
+              '</div>' +
+            '</div>'
+          : '<div class="h-14 w-14 relative shrink-0">' +
+              '<svg class="h-14 w-14 drop-shadow-sm" viewBox="0 0 100 100">' +
+                '<path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="' + schoolColor.svg + '" stroke="#f59e0b" stroke-width="4"/>' +
+                '<text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="\'Plus Jakarta Sans\', sans-serif" font-size="28" font-weight="900" fill="#ffffff">' + acronym + '</text>' +
+              '</svg>' +
+            '</div>';
+
         container.innerHTML += `
           <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md transition-all">
             <div class="flex items-center space-x-3.5">
-              <div class="h-12 w-12 bg-slate-900 text-white rounded-lg flex items-center justify-center font-black text-base tracking-wide border-b-2 border-amber-500 shadow-sm">
-                ${sch.Acronym || "SCH"}
-              </div>
+              ${logoHtml}
               <div>
-                <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-200">${sch.Region}</span>
-                <h3 class="text-base font-extrabold text-slate-900 mt-0.5">${sch.Name}</h3>
+                <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-200">${sch.Region || 'Conference'}</span>
+                <h3 class="text-base font-extrabold text-slate-900 mt-0.5">${sch.Name || 'School Name'}</h3>
               </div>
             </div>
             
@@ -672,6 +720,10 @@
               <div class="flex justify-between">
                 <span class="text-slate-400">Member Classification:</span>
                 <span>Active Member</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-slate-400">Member Since:</span>
+                <span class="font-bold text-amber-600">${yearJoined}</span>
               </div>
             </div>
 
