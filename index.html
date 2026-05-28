@@ -301,6 +301,29 @@
       }
     }
 
+    // --- CASING AND KEY-SPACE ROBUST LOGO HELPER ---
+    function getSchoolLogo(sch) {
+      if (!sch) return '';
+      // Explicit priority lookup list
+      const keys = ['Website_Logo', 'Website_logo', 'website_logo', 'WebsiteLogo', 'Logo', 'LogoURL', 'Image'];
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        if (sch[key] && String(sch[key]).trim() !== '') {
+          return String(sch[key]).trim();
+        }
+      }
+      // Wildcard matcher to catch trailing/leading spaces or custom headers
+      for (const rawKey in sch) {
+        const cleanKey = rawKey.toLowerCase().replace(/[\s_-]/g, '');
+        if (cleanKey.includes('logo') || cleanKey.includes('image')) {
+          if (sch[rawKey] && String(sch[rawKey]).trim() !== '') {
+            return String(sch[rawKey]).trim();
+          }
+        }
+      }
+      return '';
+    }
+
     function updateStandingsDivisionOptions() {
       const sportSelect = document.getElementById('standingsSport');
       const divSelect = document.getElementById('standingsDivision');
@@ -683,15 +706,17 @@
         const acronym = sch.Acronym || (sch.Name ? sch.Name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase() : "SCH");
         const yearJoined = sch["Year Joined"] || sch.YearJoined || sch.Year_Joined || "2024";
         
-        // Priority check: Website_Logo (Column K) -> then standard fallbacks
-        const logoUrl = sch.Website_Logo || sch.Website_logo || sch.website_logo || sch.WebsiteLogo || sch.Logo || sch.LogoURL || sch.Image || '';
+        // Priority checks via robust helper
+        const logoUrl = getSchoolLogo(sch);
+        const isWebUrl = logoUrl && (logoUrl.startsWith('http://') || logoUrl.startsWith('https://'));
 
-        // Enlarged Dynamic Logo Builder (h-20 w-20, containing an image frame or vector shield SVG fallback)
-        const logoHtml = logoUrl 
-          ? '<div class="relative h-20 w-20 shrink-0">' +
-              '<img src="' + logoUrl + '" class="h-20 w-20 rounded-xl object-contain border border-slate-200 bg-white p-1.5 shadow-sm" onerror="this.style.display=\'none\'; this.nextElementSibling.classList.remove(\'hidden\');" />' +
-              '<div class="hidden">' +
-                '<svg class="h-20 w-20 drop-shadow-sm" viewBox="0 0 100 100">' +
+        // Enlarged Dynamic Logo Builder (h-20 w-20)
+        // Defaulting to the background vector shield, revealing image on successful loaded callbacks
+        const logoHtml = isWebUrl 
+          ? '<div class="relative h-20 w-20 shrink-0 flex items-center justify-center bg-white rounded-xl border border-slate-200 shadow-sm p-1.5">' +
+              '<img src="' + logoUrl + '" class="max-h-full max-w-full object-contain" onload="this.nextElementSibling.style.display=\'none\';" onerror="this.style.display=\'none\'; this.nextElementSibling.style.display=\'block\';" />' +
+              '<div class="w-full h-full" style="display: block;">' +
+                '<svg class="h-full w-full drop-shadow-sm" viewBox="0 0 100 100">' +
                   '<path d="M50,5 L90,20 L90,55 C90,75 50,95 50,95 C50,95 10,75 10,55 L10,20 Z" fill="' + schoolColor.svg + '" stroke="#f59e0b" stroke-width="4"/>' +
                   '<text x="50" y="58" dominant-baseline="middle" text-anchor="middle" font-family="\'Plus Jakarta Sans\', sans-serif" font-size="28" font-weight="900" fill="#ffffff">' + acronym + '</text>' +
                 '</svg>' +
