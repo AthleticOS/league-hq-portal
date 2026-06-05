@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>AthleticOS | Coach Portal</title>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;800&display=swap');
 
     :root {
       --primary: #012300;
@@ -421,7 +421,6 @@
       });
     }
 
-    // --- UPGRADED: ALPHABETICAL (SPORT) -> GENDER -> ASCENDING AGE LIMIT ENGINE ---
     function renderLeagueDivisions(divisions, sports) {
       const select = document.getElementById('new-team-division');
       select.innerHTML = '<option value="">Select Division...</option>';
@@ -444,7 +443,6 @@
         const optgroup = document.createElement('optgroup');
         optgroup.label = String(season).toUpperCase();
 
-        // Multi-tier sorting sequence inside the active term bounds
         groups[season].sort((a, b) => {
           const sportA = sports ? sports.find(s => s.SportID === a.SportID) : null;
           const sportB = sports ? sports.find(s => s.SportID === b.SportID) : null;
@@ -452,17 +450,14 @@
           const nameA = sportA && sportA.Name ? sportA.Name.toLowerCase() : String(a.SportID).toLowerCase();
           const nameB = sportB && sportB.Name ? sportB.Name.toLowerCase() : String(b.SportID).toLowerCase();
 
-          // Tier 1: Alphabetical by Sport Name
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
 
-          // Tier 2: Alphabetical by Gender (Boys vs Girls / Mixed)
           const genA = String(a.Gender || '').toLowerCase();
           const genB = String(b.Gender || '').toLowerCase();
           if (genA < genB) return -1;
           if (genA > genB) return 1;
 
-          // Tier 3: Numerical Ascending by Age Group Limit (U13 before U15)
           return (parseInt(a.Age_Limit) || 0) - (parseInt(b.Age_Limit) || 0);
         });
 
@@ -588,6 +583,7 @@
       } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
     }
 
+    // --- ENHANCED: DYNAMIC ACADEMIC SCHOOL YEAR AGE VALIDATOR ENGINE ---
     async function submitPlayer() {
       const btn = document.getElementById('btn-add-player');
       const originalText = btn.innerText;
@@ -606,13 +602,16 @@
       if (selectedTeam) {
         const division = globalDivisionsData.find(d => d.DivisionID === selectedTeam.DivisionID);
         if (division) {
-          const ageLimit = parseInt(division.Age_Limit) || 99;
+          // Extracts numbers out of strings cleanly ("Under 13" or "U13" -> 13)
+          const ageLimit = parseInt(division.Age_Limit.replace(/\D/g, '')) || 99;
           
-          const playerDob = new Date(dobInput);
-          const cutoffDate = new Date(leagueYear - ageLimit, cutoffMonth - 1, cutoffDay);
+          // Calculates the exact June 1st birth cutoff matching current competition year settings
+          const cutoffYear = leagueYear - ageLimit;
+          const cutoffDateString = `${cutoffYear}-06-01`;
 
-          if (playerDob < cutoffDate) {
-            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of U${ageLimit}.\nTo be eligible, the player must be born on or after ${cutoffDate.toISOString().split('T')[0]}.\n\nData was not transmitted to the spreadsheet.`);
+          // String comparison perfectly rules out any cloud or browser timezone conversion shifts
+          if (dobInput < cutoffDateString) {
+            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of ${division.Age_Limit}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.\n\nData was not transmitted to the spreadsheet.`);
             return;
           }
         }
