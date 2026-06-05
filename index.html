@@ -4,9 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>League HQ - Public Fan & Parent Portal</title>
-  <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Tailwind Custom Brand Configuration -->
   <script>
     tailwind.config = {
       theme: {
@@ -25,10 +23,9 @@
       }
     }
   </script>
-  <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -47,12 +44,10 @@
 </head>
 <body class="bg-athleticos-porcelain text-athleticos-carbon min-h-screen flex flex-col">
 
-  <!-- TOP BRAND BANNER -->
   <header class="bg-athleticos-evergreen text-white shadow-xl border-b-4 border-athleticos-green">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
         <div class="flex items-center space-x-3.5">
-          <!-- AthleticOS Logo Icon (Using your uploaded file) -->
           <div class="bg-athleticos-carbon/30 p-1.5 rounded-xl border border-athleticos-green/20 flex items-center justify-center h-12 w-12 shrink-0">
             <img src="Logo%20Icon.png" alt="AthleticOS" class="h-full w-full object-contain drop-shadow-md">
           </div>
@@ -61,7 +56,6 @@
             <h1 class="text-lg sm:text-2xl font-black tracking-tight leading-none">Athletic<span class="text-athleticos-yellow">OS</span> League HQ</h1>
           </div>
         </div>
-        <!-- STATUS INDICATOR -->
         <div id="connectionStatus" class="flex items-center space-x-2 bg-athleticos-carbon/55 px-4 py-2 rounded-full text-xs font-semibold border border-athleticos-green/10">
           <span class="h-2 w-2 rounded-full bg-athleticos-green animate-pulse"></span>
           <span id="connectionStatusText" class="text-slate-300">Syncing Live Schedule...</span>
@@ -70,7 +64,6 @@
     </div>
   </header>
 
-  <!-- NAVIGATION TABS -->
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex space-x-8 overflow-x-auto py-4 custom-scrollbar whitespace-nowrap">
@@ -98,28 +91,23 @@
     </div>
   </nav>
 
-  <!-- MAIN VIEW CONTAINER -->
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <!-- TAB: ANNOUNCEMENTS -->
     <section id="view-bulletins" class="tab-view space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Public Bulletins</h2>
         <p class="text-slate-500 text-sm">Real-time alerts, league-wide news, and operational details for parents and fans.</p>
       </div>
       <div id="bulletinsContainer" class="grid gap-6 md:grid-cols-2">
-        <!-- Rendered dynamically -->
-      </div>
+        </div>
     </section>
 
-    <!-- TAB: FIXTURES -->
     <section id="view-fixtures" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
           <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Schedules & Scores</h2>
           <p class="text-slate-500 text-sm">Review kickoff times, game locations, and official score summaries.</p>
         </div>
-        <!-- Filters Layout -->
         <div class="flex flex-wrap gap-2">
           <select id="filterSport" onchange="onSportFilterChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
             <option value="All">All Sports</option>
@@ -133,11 +121,9 @@
         </div>
       </div>
       <div id="fixturesContainer" class="grid gap-4">
-        <!-- Rendered dynamically -->
-      </div>
+        </div>
     </section>
 
-    <!-- TAB: STANDINGS -->
     <section id="view-standings" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
@@ -146,11 +132,9 @@
         </div>
         <div class="flex gap-2">
           <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            <!-- Dynamic options -->
-          </select>
+            </select>
           <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            <!-- Dynamic options -->
-          </select>
+            </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -169,25 +153,21 @@
               </tr>
             </thead>
             <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600">
-              <!-- Rendered dynamically -->
-            </tbody>
+              </tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- TAB: SCHOOLS -->
     <section id="view-schools" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">School Directory</h2>
         <p class="text-slate-500 text-sm">Directory of all league schools, primary contacts, and administrative notes.</p>
       </div>
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        <!-- Rendered dynamically -->
-      </div>
+        </div>
     </section>
 
-    <!-- TAB: ROSTERS -->
     <section id="view-rosters" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div>
@@ -196,11 +176,9 @@
         </div>
         <div class="flex gap-2">
           <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            <!-- Dynamic options -->
-          </select>
+            </select>
           <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            <!-- Dynamic options -->
-          </select>
+            </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -216,8 +194,7 @@
               </tr>
             </thead>
             <tbody id="rosterBody" class="divide-y divide-slate-200 text-slate-600">
-              <!-- Rendered dynamically -->
-            </tbody>
+              </tbody>
           </table>
         </div>
       </div>
@@ -227,16 +204,16 @@
 
   <footer class="bg-athleticos-evergreen border-t border-athleticos-green/20 text-slate-400 py-6 text-center text-xs">
     <div class="max-w-7xl mx-auto px-4 space-y-1">
-      <p>&copy; 2026 AthleticOS. Deployed via HQ Engine V12.</p>
+      <p>© 2026 AthleticOS. Deployed via HQ Engine V12.</p>
       <p>Secure administrative access remains exclusive to registered Athletic Directors and managers.</p>
     </div>
   </footer>
 
   <script>
-    // --- SECURE HARDCODED LIVE API LINK ---
-    const GOOGLE_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyF8wNn1PokuSCReOo0o6a1MflRQrKxS-rxklbDjZy7cFx5bCx6iebIDRRvkrDRIJUL/exec";
+    // --- SECURE HARDCODED LIVE API LINK (Consolidated Domain Endpoint Master) ---
+    const GOOGLE_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
 
-    // Initial Loading State Placeholder Data (Added your real Drive links to verify logos!)
+    // Initial Loading State Placeholder Data
     const LOADING_DATABASE = {
       Messages: [{ MessageID: "L-1", Timestamp: "2026-05-20", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Term 2 Kickoff & Protocols", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
       Sports: [
@@ -339,7 +316,7 @@
     function getSchoolLogo(sch) {
       if (!sch) return '';
       
-      // Step 1: Direct property check (Very fast and explicit)
+      // Step 1: Direct property check
       const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
       for (const key of directKeys) {
         if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) {
@@ -347,7 +324,7 @@
         }
       }
 
-      // Step 2: Loop through properties and find ANY column with "logo" or "image" in the name
+      // Step 2: Fallback scan matching keys containing string attributes
       for (const rawKey in sch) {
         const cleanKey = rawKey.toLowerCase().replace(/[^a-z]/g, '');
         if (cleanKey.includes('logo') || cleanKey.includes('image')) {
@@ -360,7 +337,6 @@
       return '';
     }
 
-    // UPDATED PROXY BYPASS: Uses lh3.googleusercontent.com which completely bypasses Drive's strict framing blocks!
     function convertDriveLink(url) {
       if (!url) return '';
       if (url.includes('drive.google.com')) {
@@ -424,7 +400,6 @@
       const sports = activeDatabase.Sports || [];
       const schools = activeDatabase.Schools || [];
 
-      // Filter and dynamically build human-readable Sport options with their Seasons
       sports.forEach(sport => {
         const hasApprovedTeams = activeSportIDs.includes(sport.SportID);
         if (hasApprovedTeams) {
@@ -434,7 +409,6 @@
         }
       });
 
-      // Populate Schools
       schools.forEach(sch => {
         schoolSelect.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
       });
@@ -443,7 +417,6 @@
       if (savedSchool) schoolSelect.value = savedSchool;
       if (savedStandSport) standingSport.value = savedStandSport;
 
-      // Cascade matching lists
       updateDivisionFilterOptions();
       updateStandingsDivisionOptions();
     }
@@ -671,7 +644,6 @@
 
       const statsList = Object.keys(teamStats).map(id => ({ id, ...teamStats[id] }));
 
-      // Sort criteria: Wins (desc), Point Spread Difference (desc), Gross Points For (desc)
       statsList.sort((a,b) => {
         if (b.won !== a.won) return b.won - a.won;
         const diffA = a.pointsFor - a.pointsAgainst;
@@ -741,7 +713,6 @@
         return;
       }
 
-      // Clone and sort schools alphabetically by Name
       const sortedSchools = [...rawSchools];
       sortedSchools.sort((a, b) => {
         const nameA = a.Name || '';
@@ -756,8 +727,6 @@
         
         const logoUrl = getSchoolLogo(sch);
 
-        // SIMPLE LOGO HTML: No 'onerror' replacement trickery. Just a standard image tag!
-        // If an image URL exists but fails, it will natively show a standard broken image icon so you know it tried.
         const logoHtml = logoUrl 
           ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />`
           : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
@@ -828,7 +797,6 @@
       schoolTeams.forEach(team => {
         const sport = activeDatabase.Sports.find(s => s.SportID === team.SportID);
         const div = activeDatabase.Divisions.find(d => d.DivisionID === team.DivisionID);
-        // Build readable label incorporating the season
         const sportLabel = sport ? (sport.Season ? (sport.Name + ' (' + sport.Season + ')') : sport.Name) : "Sport";
         const label = sportLabel + ' - ' + (div ? (div.Age_Limit + ' (' + div.Gender + ')') : "Bracket");
         teamSelector.innerHTML += `<option value="${team.TeamID}">${label}</option>`;
@@ -905,7 +873,6 @@
           <span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span>
           <span class="text-rose-400 font-bold">Data Connection Offline</span>
         `;
-        // Keep checking periodically if deployment is restarting or locked
         setTimeout(() => fetchLiveSheetData(apiUrl), 15000);
       }
     }
