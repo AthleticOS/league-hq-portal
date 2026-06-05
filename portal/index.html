@@ -503,7 +503,6 @@
       });
     }
 
-    // --- UPGRADED: CLEAN VERIFICATION ADAPTERS FOR ELIGIBILITY CONTROLS ---
     function renderRosterList(teamId) {
       const container = document.getElementById('roster-list');
       if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
@@ -517,7 +516,6 @@
         let statusClass = "prop-status-text approved";
         let statusText = "✔️ Eligible";
 
-        // Auto-pivot display states securely matching backend data parameters
         if (rawStatus.includes("TOO OLD") || rawStatus.includes("INELIGIBLE")) {
           statusClass = "prop-status-text too-old";
           statusText = "❌ TOO OLD";
@@ -627,8 +625,16 @@
           btn.innerText = "Added ✓"; btn.style.backgroundColor = "#52C920";
           document.getElementById('reg-nickname').value = ''; document.getElementById('reg-dob').value = ''; document.getElementById('reg-jersey').value = '';
           if(document.getElementById('manage-team').value === payload.teamId) initApp(); 
-        } else { alert("Error: " + result.message); btn.innerText = originalText; border-color: var(--primary); }
-      } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+        } else { 
+          alert("Error: " + result.message); 
+          btn.innerText = originalText; 
+          btn.style.backgroundColor = "var(--primary)"; 
+        }
+      } catch (err) { 
+        alert("Connection failed."); 
+        btn.innerText = originalText; 
+        btn.style.backgroundColor = "var(--primary)"; 
+      }
       setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 3000);
     }
 
