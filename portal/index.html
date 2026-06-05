@@ -503,6 +503,7 @@
       });
     }
 
+    // --- UPGRADED: CLEAN VERIFICATION ADAPTERS FOR ELIGIBILITY CONTROLS ---
     function renderRosterList(teamId) {
       const container = document.getElementById('roster-list');
       if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
@@ -512,13 +513,14 @@
 
       container.innerHTML = '';
       teamRoster.forEach(player => {
-        let statusClass = "prop-status-text waiting";
-        let statusText = player.EligibilityStatus || 'Pending Review';
+        const rawStatus = String(player.EligibilityStatus || '').trim().toUpperCase();
+        let statusClass = "prop-status-text approved";
+        let statusText = "✔️ Eligible";
 
-        if (String(statusText).includes("Eligible")) {
-          statusClass = "prop-status-text approved";
-        } else if (String(statusText).includes("TOO OLD")) {
+        // Auto-pivot display states securely matching backend data parameters
+        if (rawStatus.includes("TOO OLD") || rawStatus.includes("INELIGIBLE")) {
           statusClass = "prop-status-text too-old";
+          statusText = "❌ TOO OLD";
         }
 
         container.innerHTML += `
@@ -583,7 +585,6 @@
       } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
     }
 
-    // --- ENHANCED: DYNAMIC ACADEMIC SCHOOL YEAR AGE VALIDATOR ENGINE ---
     async function submitPlayer() {
       const btn = document.getElementById('btn-add-player');
       const originalText = btn.innerText;
@@ -602,15 +603,12 @@
       if (selectedTeam) {
         const division = globalDivisionsData.find(d => d.DivisionID === selectedTeam.DivisionID);
         if (division) {
-          // Robust string coercion safeguard ensures raw number types don't crash regex calculations
           const rawAge = division.Age_Limit || division.AgeLimit || '';
           const ageLimit = parseInt(String(rawAge).replace(/\D/g, '')) || 99;
           
-          // Calculates the strict June 1st birth cutoff matching global calendar settings
           const cutoffYear = leagueYear - ageLimit;
           const cutoffDateString = `${cutoffYear}-06-01`;
 
-          // Clean string evaluation perfectly flags players that are born before the school year threshold
           if (dobInput < cutoffDateString) {
             alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of ${division.Age_Limit || ('U' + ageLimit)}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.\n\nData was not transmitted to the spreadsheet.`);
             return;
@@ -629,7 +627,7 @@
           btn.innerText = "Added ✓"; btn.style.backgroundColor = "#52C920";
           document.getElementById('reg-nickname').value = ''; document.getElementById('reg-dob').value = ''; document.getElementById('reg-jersey').value = '';
           if(document.getElementById('manage-team').value === payload.teamId) initApp(); 
-        } else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+        } else { alert("Error: " + result.message); btn.innerText = originalText; border-color: var(--primary); }
       } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
       setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 3000);
     }
