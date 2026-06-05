@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>AthleticOS | Coach Portal</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+
+    :root {
+      --primary: #012300;
+      --accent: #52C920;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #1A1A1A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      padding-bottom: 70px;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 4px solid var(--accent);
+    }
+    header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
+    header p { margin: 5px 0 0 0; font-size: 0.85rem; color: var(--accent); }
+
+    /* STATE SCREENS */
+    #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
+    #loader { text-align: center; padding: 50px; font-weight: 600; color: var(--text-muted); display: none; }
+    
+    /* SECURITY PIN SCREEN */
+    #pin-screen { display: none; padding: 40px 20px; text-align: center; }
+    .pin-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 350px; margin: 0 auto; }
+    .pin-box h2 { margin-top: 0; font-size: 1.3rem; }
+    .pin-box p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
+    .pin-input { font-size: 1.5rem; text-align: center; letter-spacing: 5px; font-weight: 800; width: 100%; max-width: 200px; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 20px; outline: none; }
+    .pin-input:focus { border-color: var(--accent); }
+
+    /* APP CONTAINER */
+    .container { padding: 15px; display: none; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* CARDS & INPUTS */
+    .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .card-header { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .matchup { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; }
+    .score-input, .text-input, .status-select { border: 2px solid var(--border); border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; background-color: #fff; }
+    .score-input { width: 50px; padding: 8px; font-size: 1.1rem; text-align: center; font-weight: 800; }
+    .status-select { width: 100%; padding: 10px; margin-bottom: 15px; }
+    .text-input { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box; }
+    
+    .btn-submit { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
+    .btn-submit:active { background-color: var(--accent); color: var(--primary); }
+    .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
+
+    /* PROPOSAL INTERACTIVE OBJECTS */
+    .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
+    .proposal-title { font-size: 0.8rem; color: #C2410C; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .proposal-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
+    .proposal-row:last-child { margin-bottom: 0; }
+    .prop-actions { display: flex; gap: 5px; }
+    .btn-prop-accept { background: #166534; color: #fff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; }
+    .btn-prop-decline { background: #991B1B; color: #fff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; }
+    
+    .prop-status-text { font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
+    .prop-status-text.waiting { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
+    .prop-status-text.action-needed { background: #FCE7F3; color: #9D174D; border: 1px dashed #F472B6; }
+    .prop-status-text.approved { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
+    .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
+    .message-item { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
+    .message-item:last-child { border-bottom: none; }
+    .message-title { font-weight: 800; font-size: 1rem; }
+    .message-date { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
+    .message-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; }
+
+    .player-card, .team-card { border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #F8FAFC; }
+    .team-card { font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
+    .player-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
+    
+    .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7rem; }
+    .status-badge.pending { background: #FEF08A; color: #854D0E; }
+    .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
+
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; }
+    .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>AthleticOS Hub</h1>
+    <p id="school-title">Secure Login</p>
+  </header>
+
+  <div id="error-screen">
+    <h2 style="color: red;">Unauthorized Access</h2>
+    <p>This link is invalid. Please use the exact link provided to your Athletic Department.</p>
+  </div>
+
+  <div id="loader">Syncing Database...</div>
+
+  <div id="pin-screen">
+    <div class="pin-box">
+      <h2>School Verification</h2>
+      <p>Please enter the access PIN provided by your Athletic Director.</p>
+      <input type="password" id="auth-pin" class="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="••••••">
+      <button class="btn-submit" id="btn-unlock" onclick="verifyPin()">Unlock Portal</button>
+    </div>
+  </div>
+
+  <div class="container" id="app-container">
+    <div id="tab-games" class="tab-content active">
+      <div id="games-list"></div>
+    </div>
+
+    <div id="tab-teams" class="tab-content">
+      <div class="card">
+        <div class="card-header">Register for Division</div>
+        <select class="status-select" id="new-team-division"><option value="">Select Division...</option></select>
+        <button class="btn-submit btn-small" id="btn-register-team" onclick="registerTeam()">Register Team</button>
+      </div>
+      <div class="card">
+        <div class="card-header">Your Registered Teams</div>
+        <div id="current-teams-list"></div>
+      </div>
+    </div>
+
+    <div id="tab-registration" class="tab-content">
+      <div class="card">
+        <div class="card-header">Register New Player</div>
+        <select class="status-select" id="reg-team" style="margin-bottom: 10px;"><option value="">Select Team...</option></select>
+        <input type="text" class="text-input" id="reg-nickname" placeholder="Player Name / Nickname">
+        <input type="date" class="text-input" id="reg-dob">
+        <input type="number" class="text-input" id="reg-jersey" placeholder="Jersey Number">
+        <button class="btn-submit btn-small" id="btn-add-player" onclick="submitPlayer()">+ Add Player</button>
+      </div>
+      <div class="card">
+        <div class="card-header">Manage Existing Roster</div>
+        <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
+        <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
+      </div>
+    </div>
+
+    <div id="tab-messages" class="tab-content">
+      <div class="card" id="messages-list"></div>
+    </div>
+
+    <div id="tab-help" class="tab-content">
+      <div class="card">
+        <div class="card-header">Contact League Admin</div>
+        <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
+        <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: #25D366; color: white;">💬 WhatsApp Admin</a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Frequently Asked Questions</div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I report a final score?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Go to the 'Games' tab, enter the Home and Away scores, select 'Completed' from the status dropdown, and tap 'Update Match'.</p>
+        </div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I register a new team?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Navigate to the 'Teams' tab, select the division you wish to compete in, and tap 'Register Team'. The division will then activate in your Rosters tab dropdown list.</p>
+        </div>
+        <div style="margin-bottom: 0;">
+          <strong style="font-size: 0.9rem;">Why can't I edit a player's Date of Birth?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">To maintain league eligibility compliance, player birthdays are permanently locked upon submission. Contact your League Director to request an official change.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="bottom-nav" id="bottom-nav">
+    <div class="nav-item active" onclick="switchTab('games')">Games</div>
+    <div class="nav-item" onclick="switchTab('teams')">Teams</div>
+    <div class="nav-item" onclick="switchTab('registration')">Rosters</div>
+    <div class="nav-item" onclick="switchTab('messages')">Messages</div>
+    <div class="nav-item" onclick="switchTab('help')">Help</div>
+  </div>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetSchoolID = urlParams.get('school');
+    let targetSchoolName = targetSchoolID; 
+    let globalRosterData = []; 
+    let globalTeamsData = [];
+    let globalDivisionsData = [];
+    
+    let leagueYear = 2026;
+    let cutoffMonth = 1;
+    let cutoffDay = 1;
+
+    const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
+
+    document.addEventListener("DOMContentLoaded", () => {
+      if (!targetSchoolID) {
+        document.getElementById('error-screen').style.display = 'block';
+        return;
+      }
+
+      const isAuth = sessionStorage.getItem(`auth_${targetSchoolID}`);
+      if (isAuth === "true") {
+        initApp(); 
+      } else {
+        document.getElementById('pin-screen').style.display = 'block'; 
+      }
+    });
+
+    async function verifyPin() {
+      const pinInput = document.getElementById('auth-pin').value;
+      const btn = document.getElementById('btn-unlock');
+      if(!pinInput) return;
+
+      btn.innerText = "Verifying...";
+      btn.style.backgroundColor = "#64748B";
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "verifyPIN", schoolId: targetSchoolID, pin: pinInput })
+        });
+        const result = await response.json();
+
+        if (result.status === "success") {
+          sessionStorage.setItem(`auth_${targetSchoolID}`, "true");
+          document.getElementById('pin-screen').style.display = 'none';
+          initApp();
+        } else {
+          alert("Database Error: " + result.message);
+          btn.innerText = "Unlock Portal";
+          btn.style.backgroundColor = "var(--primary)";
+          document.getElementById('auth-pin').value = '';
+        }
+      } catch (err) {
+        alert("Network Connection failed to reach the database API.");
+        btn.innerText = "Unlock Portal";
+        btn.style.backgroundColor = "var(--primary)";
+      }
+    }
+
+    async function initApp() {
+      document.getElementById('loader').style.display = 'block';
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        if (data.Schools) {
+          const schoolData = data.Schools.find(s => s.SchoolID === targetSchoolID);
+          if (schoolData && schoolData.Name) targetSchoolName = schoolData.Name;
+        }
+
+        if (data.Settings && data.Settings.length > 0) {
+          leagueYear = parseInt(data.Settings[0].Season_Year) || 2026;
+          cutoffMonth = parseInt(data.Settings[0].Cutoff_Month) || 1;
+          cutoffDay = parseInt(data.Settings[0].Cutoff_Day) || 1;
+        }
+        
+        document.getElementById('school-title').innerText = targetSchoolName.toUpperCase();
+        globalRosterData = data.Roster || [];
+        globalTeamsData = data.Teams || [];
+        globalDivisionsData = data.Divisions || [];
+
+        renderGames(data.Fixtures, data.Schools, data.Sports, data.Divisions);
+        renderLeagueDivisions(data.Divisions, data.Sports);
+        renderTeamsData(data.Teams, data.Sports, data.Divisions);
+        renderMessages(data.Messages);
+
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('app-container').style.display = 'block';
+        document.getElementById('bottom-nav').style.display = 'flex';
+      } catch (error) {
+        document.getElementById('loader').innerText = "Error syncing data.";
+      }
+    }
+
+    function getSchoolName(id, schoolsData) {
+      if (!id) return 'TBA';
+      if (!schoolsData) return id;
+      const match = schoolsData.find(s => s.SchoolID === id);
+      return match && match.Name ? match.Name : id;
+    }
+
+    function getTeamDisplayName(sportId, divisionId, sportsData, divisionsData) {
+      const sport = sportsData ? sportsData.find(s => s.SportID === sportId) : null;
+      const sportName = sport && sport.Name ? sport.Name : (sportId || 'Unknown Sport');
+      const div = divisionsData ? divisionsData.find(d => d.DivisionID === divisionId) : null;
+      const gender = div && div.Gender ? div.Gender : '';
+      const ageLimit = div && div.Age_Limit ? div.Age_Limit : (divisionId || 'Unknown Div');
+      if (gender) return `${sportName} - ${gender} - ${ageLimit}`;
+      return `${sportName} - ${ageLimit}`;
+    }
+
+    function renderGames(fixtures, schoolsData, sportsData, divisionsData) {
+      const container = document.getElementById('games-list');
+      container.innerHTML = '';
+      const schoolGames = fixtures.filter(game => (game.HomeTeamID && game.HomeTeamID.includes(targetSchoolID)) || (game.AwayTeamID && game.AwayTeamID.includes(targetSchoolID)));
+
+      if (schoolGames.length === 0) {
+        container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`;
+        return;
+      }
+
+      schoolGames.forEach(game => {
+        const card = document.createElement('div');
+        card.className = 'card';
+        let optionsHtml = '';
+        statusOptions.forEach(status => {
+          let selected = (game.MatchStatus === status) ? 'selected' : '';
+          optionsHtml += `<option value="${status}" ${selected}>${status}</option>`;
+        });
+
+        const headerDetails = getTeamDisplayName(game.SportID, game.DivisionID, sportsData, divisionsData);
+        const homeName = getSchoolName(game.HomeTeamID, schoolsData);
+        const awayName = getSchoolName(game.AwayTeamID, schoolsData);
+
+        let currentSide = String(game.HomeTeamID).includes(targetSchoolID) ? "Home" : "Away";
+
+        let scoreSubmitter = game.Score_Submitter;
+        let isScoreLocked = false;
+        let scoreBadgeHtml = "";
+        let scoreActionButtonsHtml = `<button class="btn-submit" onclick="submitScore('${game.GameID}')">Update Match</button>`;
+
+        if (game.MatchStatus === "Pending Verification") {
+          isScoreLocked = true;
+          if (scoreSubmitter === currentSide) {
+            scoreBadgeHtml = `<div class="prop-status-text waiting" style="text-align:center; margin-bottom:12px;">Scores Logged. Waiting on opponent verification.</div>`;
+            scoreActionButtonsHtml = ""; 
+          } else {
+            scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px;">Opponent logged scores. Verify accuracy below.</div>`;
+            scoreActionButtonsHtml = `
+              <div style="display:flex; gap:10px;">
+                <button class="btn-submit" style="background-color:#166534;" onclick="submitScoreVerification('${game.GameID}', 'confirm')">✓ Confirm Score</button>
+                <button class="btn-submit" style="background-color:#991B1B;" onclick="submitScoreVerification('${game.GameID}', 'dispute')">❌ Dispute Score</button>
+              </div>`;
+          }
+        } else if (game.MatchStatus === "Disputed") {
+          isScoreLocked = true;
+          scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px; background-color:#FEE2E2; color:#991B1B; border-color:#FCA5A5;">⚠️ DISPUTED — Awaiting Admin Review</div>`;
+          scoreActionButtonsHtml = "";
+        } else if (game.MatchStatus === "Completed") {
+          isScoreLocked = true;
+          scoreBadgeHtml = `<div class="prop-status-text approved" style="text-align:center; margin-bottom:12px;">✓ Match Completed & Verified</div>`;
+          scoreActionButtonsHtml = "";
+        }
+
+        let proposalsHtml = "";
+        if (game.MatchStatus === "Postponed" && (game.ProposedDate1 || game.ProposedDate2 || game.ProposedDate3)) {
+          proposalsHtml += `<div class="proposal-box"><div class="proposal-title">⏱ Mutual Rescheduling Requested</div>`;
+          
+          for (let pNum = 1; pNum <= 3; pNum++) {
+            let pDate = game[`ProposedDate${pNum}`];
+            let pTime = game[`ProposedTime${pNum}`];
+            let pStatus = game[`Prop${pNum}_Status`];
+
+            if (pDate && pDate !== "") {
+              proposalsHtml += `<div class="proposal-row"><span>Option ${pNum}: <b>${pDate}</b> @ ${pTime}</span>`;
+              
+              if (!pStatus || pStatus === "" || pStatus === "null") {
+                proposalsHtml += `
+                  <div class="prop-actions">
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'accept')">Accept</button>
+                    <button class="btn-prop-decline" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'decline')">Decline</button>
+                  </div>`;
+              } else if (pStatus === currentSide) {
+                proposalsHtml += `<span class="prop-status-text waiting">Waiting on Opponent</span>`;
+              } else {
+                proposalsHtml += `
+                  <div class="prop-actions">
+                    <span class="prop-status-text action-needed" style="margin-right:5px;">Opponent Agreed!</span>
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'accept')">Agree & Finalize</button>
+                  </div>`;
+              }
+              proposalsHtml += `</div>`;
+            }
+          }
+          proposalsHtml += `</div>`;
+        }
+
+        card.innerHTML = `
+          <div class="card-header">${game.Date || 'TBD'} | ${headerDetails}</div>
+          ${scoreBadgeHtml}
+          <div class="matchup">
+            <div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${homeName}</div>
+            <div style="color: #E2E8F0; padding: 0 10px;">VS</div>
+            <div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${awayName}</div>
+          </div>
+          <select class="status-select" id="status-${game.GameID}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select>
+          <div class="matchup">
+             <input type="number" class="score-input" id="homeScore-${game.GameID}" value="${game.HomeScore !== undefined ? game.HomeScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
+             <input type="number" class="score-input" id="awayScore-${game.GameID}" value="${game.AwayScore !== undefined ? game.AwayScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
+          </div>
+          ${scoreActionButtonsHtml}
+          ${proposalsHtml}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // --- UPGRADED: ALPHABETICAL (SPORT) -> GENDER -> ASCENDING AGE LIMIT ENGINE ---
+    function renderLeagueDivisions(divisions, sports) {
+      const select = document.getElementById('new-team-division');
+      select.innerHTML = '<option value="">Select Division...</option>';
+      if(!divisions) return;
+
+      const groups = {};
+      divisions.forEach(div => {
+        const associatedSport = sports ? sports.find(s => s.SportID === div.SportID) : null;
+        const seasonName = associatedSport && associatedSport.Season ? associatedSport.Season : "General Calendar";
+
+        if (!groups[seasonName]) {
+          groups[seasonName] = [];
+        }
+        groups[seasonName].push(div);
+      });
+
+      const sortedSeasons = Object.keys(groups).sort();
+
+      sortedSeasons.forEach(season => {
+        const optgroup = document.createElement('optgroup');
+        optgroup.label = String(season).toUpperCase();
+
+        // Multi-tier sorting sequence inside the active term bounds
+        groups[season].sort((a, b) => {
+          const sportA = sports ? sports.find(s => s.SportID === a.SportID) : null;
+          const sportB = sports ? sports.find(s => s.SportID === b.SportID) : null;
+          
+          const nameA = sportA && sportA.Name ? sportA.Name.toLowerCase() : String(a.SportID).toLowerCase();
+          const nameB = sportB && sportB.Name ? sportB.Name.toLowerCase() : String(b.SportID).toLowerCase();
+
+          // Tier 1: Alphabetical by Sport Name
+          if (nameA < nameB) return -1;
+          if (nameA > nameB) return 1;
+
+          // Tier 2: Alphabetical by Gender (Boys vs Girls / Mixed)
+          const genA = String(a.Gender || '').toLowerCase();
+          const genB = String(b.Gender || '').toLowerCase();
+          if (genA < genB) return -1;
+          if (genA > genB) return 1;
+
+          // Tier 3: Numerical Ascending by Age Group Limit (U13 before U15)
+          return (parseInt(a.Age_Limit) || 0) - (parseInt(b.Age_Limit) || 0);
+        });
+
+        groups[season].forEach(div => {
+          const displayName = getTeamDisplayName(div.SportID, div.DivisionID, sports, divisions);
+          const option = document.createElement('option');
+          option.value = div.DivisionID;
+          option.setAttribute('data-sport', div.SportID);
+          option.textContent = displayName;
+          optgroup.appendChild(option);
+        });
+
+        select.appendChild(optgroup);
+      });
+    }
+
+    function renderTeamsData(teams, sportsData, divisionsData) {
+      const addSelect = document.getElementById('reg-team');
+      const manageSelect = document.getElementById('manage-team');
+      const currentTeamsList = document.getElementById('current-teams-list');
+      
+      addSelect.innerHTML = '<option value="">Select Team...</option>';
+      manageSelect.innerHTML = '<option value="">Select Team to View Roster...</option>';
+      currentTeamsList.innerHTML = '';
+      
+      const schoolTeams = teams.filter(t => t.SchoolID === targetSchoolID);
+      if (schoolTeams.length === 0) {
+        currentTeamsList.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No teams registered yet.</p>';
+        return;
+      }
+
+      schoolTeams.forEach(team => {
+        const displayName = getTeamDisplayName(team.SportID, team.DivisionID, sportsData, divisionsData);
+        addSelect.innerHTML += `<option value="${team.TeamID}">${displayName}</option>`;
+        manageSelect.innerHTML += `<option value="${team.TeamID}">${displayName}</option>`;
+
+        let statusClass = "status-badge";
+        let statusText = team.RegistrationStatus || "Unknown";
+        if(statusText.toLowerCase() === "pending") statusClass += " pending";
+        if(statusText.toLowerCase() === "active" || statusText.toLowerCase() === "approved") statusClass += " active";
+
+        currentTeamsList.innerHTML += `<div class="team-card"><span>${displayName}</span><span class="${statusClass}">${statusText}</span></div>`;
+      });
+    }
+
+    function renderRosterList(teamId) {
+      const container = document.getElementById('roster-list');
+      if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
+
+      const teamRoster = globalRosterData.filter(p => p.TeamID === teamId);
+      if (teamRoster.length === 0) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center;">No players found on this roster.</p>'; return; }
+
+      container.innerHTML = '';
+      teamRoster.forEach(player => {
+        let statusClass = "prop-status-text waiting";
+        let statusText = player.EligibilityStatus || 'Pending Review';
+
+        if (String(statusText).includes("Eligible")) {
+          statusClass = "prop-status-text approved";
+        } else if (String(statusText).includes("TOO OLD")) {
+          statusClass = "prop-status-text too-old";
+        }
+
+        container.innerHTML += `
+          <div class="player-card">
+            <div class="player-meta">
+              <span>DOB: <b>${player.DateOfBirth || 'N/A'}</b></span>
+              <span class="${statusClass}">${statusText}</span>
+            </div>
+            <input type="text" class="text-input" id="nick-${player.RosterID}" value="${player.Nickname || ''}" placeholder="Player Name">
+            <input type="number" class="text-input" id="jersey-${player.RosterID}" value="${player.JerseyNumber || ''}" placeholder="Jersey Number">
+            <button class="btn-submit btn-small" style="background-color: var(--text-muted);" id="btn-update-${player.RosterID}" onclick="updatePlayer('${player.RosterID}')">Save Changes</button>
+          </div>
+        `;
+      });
+    }
+
+    function renderMessages(messages) {
+      const container = document.getElementById('messages-list');
+      if (!messages || messages.length === 0) {
+        container.innerHTML = '<p style="font-size: 0.9rem; text-align:center; color: var(--text-muted);">No new messages.</p>';
+        return;
+      }
+      container.innerHTML = '<div class="card-header">League Announcements</div>';
+      messages.forEach(msg => {
+        container.innerHTML += `<div class="message-item"><div class="message-title">${msg.TopicSubject || 'Announcement'}</div><div class="message-date">${msg.Timestamp || 'Recent'}</div><div class="message-body">${msg.Content || ''}</div></div>`;
+      });
+    }
+
+    async function submitScoreVerification(gameId, voteType) {
+      try {
+        const payload = { action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType };
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if (result.status === "success") { alert(result.message); initApp(); } 
+        else { alert("Error: " + result.message); }
+      } catch (err) { alert("Network communication failed to transmit score verification payload."); }
+    }
+
+    async function submitProposalVote(gameId, proposalNum, voteType) {
+      if (voteType === 'decline' && !confirm("Are you sure you want to decline this proposal? It will be permanently removed for both schools.")) return;
+      try {
+        const payload = { action: "voteProposal", schoolId: targetSchoolID, gameId: gameId, proposalNum: proposalNum, vote: voteType };
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if (result.status === "success") { alert(result.message); initApp(); } 
+        else { alert("Error: " + result.message); }
+      } catch (err) { alert("Network connection failed to transmit vote transaction payload."); }
+    }
+
+    async function submitScore(gameId) {
+      const btn = event.target;
+      const originalText = btn.innerText;
+      btn.innerText = "Syncing...";
+      btn.style.backgroundColor = "#64748B";
+
+      const payload = { action: "updateScore", schoolId: targetSchoolID, gameId: gameId, homeScore: document.getElementById(`homeScore-${gameId}`).value, awayScore: document.getElementById(`awayScore-${gameId}`).value, status: document.getElementById(`status-${gameId}`).value };
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if(result.status === "success") { btn.innerText = "Logged ✓"; btn.style.backgroundColor = "#52C920"; setTimeout(() => { initApp(); }, 1000); } 
+        else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+      } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+    }
+
+    async function submitPlayer() {
+      const btn = document.getElementById('btn-add-player');
+      const originalText = btn.innerText;
+
+      const teamId = document.getElementById('reg-team').value;
+      const nickname = document.getElementById('reg-nickname').value;
+      const dobInput = document.getElementById('reg-dob').value;
+      const jerseyNumber = document.getElementById('reg-jersey').value;
+
+      if(!teamId || !nickname || !dobInput) { 
+        alert("Please select a team, enter a player name, and provide a valid Date of Birth."); 
+        return; 
+      }
+
+      const selectedTeam = globalTeamsData.find(t => t.TeamID === teamId);
+      if (selectedTeam) {
+        const division = globalDivisionsData.find(d => d.DivisionID === selectedTeam.DivisionID);
+        if (division) {
+          const ageLimit = parseInt(division.Age_Limit) || 99;
+          
+          const playerDob = new Date(dobInput);
+          const cutoffDate = new Date(leagueYear - ageLimit, cutoffMonth - 1, cutoffDay);
+
+          if (playerDob < cutoffDate) {
+            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of U${ageLimit}.\nTo be eligible, the player must be born on or after ${cutoffDate.toISOString().split('T')[0]}.\n\nData was not transmitted to the spreadsheet.`);
+            return;
+          }
+        }
+      }
+
+      btn.innerText = "Adding...";
+      btn.style.backgroundColor = "#64748B";
+
+      const payload = { action: "addPlayer", teamId: teamId, nickname: nickname, dob: dobInput, jerseyNumber: jerseyNumber };
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if(result.status === "success") {
+          btn.innerText = "Added ✓"; btn.style.backgroundColor = "#52C920";
+          document.getElementById('reg-nickname').value = ''; document.getElementById('reg-dob').value = ''; document.getElementById('reg-jersey').value = '';
+          if(document.getElementById('manage-team').value === payload.teamId) initApp(); 
+        } else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+      } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+      setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 3000);
+    }
+
+    async function updatePlayer(rosterId) {
+      const btn = document.getElementById(`btn-update-${rosterId}`);
+      const originalText = btn.innerText;
+      btn.innerText = "Saving...";
+      btn.style.backgroundColor = "#1A1A1A";
+
+      const payload = { action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value };
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if(result.status === "success") { btn.innerText = "Saved ✓"; btn.style.backgroundColor = "#52C920"; } 
+        else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--text-muted)"; }
+      } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--text-muted)"; }
+      setTimeout(() => { var textMuted = getComputedStyle(document.documentElement).getPropertyValue('--text-muted').trim(); btn.innerText = originalText; btn.style.backgroundColor = textMuted; }, 3000);
+    }
+
+    async function registerTeam() {
+      const btn = document.getElementById('btn-register-team');
+      const select = document.getElementById('new-team-division');
+      if(select.selectedIndex <= 0) { alert("Please select a division first."); return; }
+
+      const originalText = btn.innerText;
+      btn.innerText = "Registering...";
+      btn.style.backgroundColor = "#64748B";
+
+      const payload = { action: "registerTeam", schoolId: targetSchoolID, divisionId: select.options[select.selectedIndex].value, sportId: select.options[select.selectedIndex].getAttribute('data-sport') };
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if(result.status === "success") { btn.innerText = "Registered ✓"; btn.style.backgroundColor = "#52C920"; setTimeout(() => { initApp(); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 1500); } 
+        else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+      } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+    }
+
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+      document.getElementById(`tab-${tabId}`).classList.add('active');
+      event.currentTarget.classList.add('active');
+    }
+  </script>
+</body>
+</html>
