@@ -602,16 +602,17 @@
       if (selectedTeam) {
         const division = globalDivisionsData.find(d => d.DivisionID === selectedTeam.DivisionID);
         if (division) {
-          // Extracts numbers out of strings cleanly ("Under 13" or "U13" -> 13)
-          const ageLimit = parseInt(division.Age_Limit.replace(/\D/g, '')) || 99;
+          // Robust string coercion safeguard ensures raw number types don't crash regex calculations
+          const rawAge = division.Age_Limit || division.AgeLimit || '';
+          const ageLimit = parseInt(String(rawAge).replace(/\D/g, '')) || 99;
           
-          // Calculates the exact June 1st birth cutoff matching current competition year settings
+          // Calculates the strict June 1st birth cutoff matching global calendar settings
           const cutoffYear = leagueYear - ageLimit;
           const cutoffDateString = `${cutoffYear}-06-01`;
 
-          // String comparison perfectly rules out any cloud or browser timezone conversion shifts
+          // Clean string evaluation perfectly flags players that are born before the school year threshold
           if (dobInput < cutoffDateString) {
-            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of ${division.Age_Limit}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.\n\nData was not transmitted to the spreadsheet.`);
+            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of ${division.Age_Limit || ('U' + ageLimit)}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.\n\nData was not transmitted to the spreadsheet.`);
             return;
           }
         }
