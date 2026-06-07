@@ -84,7 +84,7 @@
     .prop-status-text.approved { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
     .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
 
-    /* CALENDAR GRID LAYOUT */
+    /* CALENDAR COMPONENT CSS LAYOUT */
     .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
     .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
     .cal-day-node { background: #F1F5F9; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; }
@@ -143,10 +143,12 @@
 
   <div class="container" id="app-container">
     
+    <!-- TAB: GAMES -->
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
 
+    <!-- TAB: TEAMS -->
     <div id="tab-teams" class="tab-content">
       <div class="card">
         <div class="card-header">Register for Division</div>
@@ -159,6 +161,7 @@
       </div>
     </div>
 
+    <!-- TAB: ROSTERS -->
     <div id="tab-registration" class="tab-content">
       <div class="card">
         <div class="card-header">Register New Player</div>
@@ -175,17 +178,23 @@
       </div>
     </div>
 
+    <!-- TAB: VENUE AVAILABILITY MANAGEMENT MODULE -->
     <div id="tab-availability" class="tab-content">
       
+      <!-- BLOCK 0: ADD NEW FACILITY DIRECTLY WITH QUANTITY & MULTI-SPORT CHECKBOX CARRIERS -->
       <div class="card">
-        <div class="card-header">🛠️ Add New Facility / Court</div>
+        <div class="card-header">🛠️ Add New Parent Facility Asset</div>
         
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FACILITY IDENTIFIER</label>
-        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g., Main Gymnasium, Arena Field 1">
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">PARENT COMPLEX IDENTIFIER NAME</label>
+        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g., Main Gymnasium, Sports Pavilion, Field Lot">
         
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">NUMBER OF AVAILABLE SUB-COURTS / FIELDS</label>
+        <input type="number" class="text-input" id="new-venue-unit-count" value="1" min="1" placeholder="Quantity Count (e.g. 3 courts)">
+
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
-          </div>
+          <!-- Rendered dynamically -->
+        </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
@@ -211,6 +220,7 @@
         <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
       </div>
 
+      <!-- BLOCK A: STANDARD VENUE OPERATING ENVELOPE MODIFIER -->
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
@@ -242,6 +252,7 @@
         </div>
       </div>
 
+      <!-- BLOCK B: INTERACTIVE CALENDAR MESH CONTAINER -->
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
         
@@ -262,6 +273,7 @@
         </div>
       </div>
 
+      <!-- BLOCK C: SINGLE DATE BLOCKOUT CALENDAR EXEMPTIONS -->
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
         
@@ -299,16 +311,19 @@
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
+      <!-- BLOCK D: AUDIT TRAIL LOG LIST -->
       <div class="card">
         <div class="card-header">📋 Logged Exceptions Status</div>
         <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
+    <!-- TAB: MESSAGES -->
     <div id="tab-messages" class="tab-content">
       <div class="card" id="messages-list"></div>
     </div>
 
+    <!-- TAB: HELP -->
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
@@ -328,7 +343,10 @@
   </div>
 
   <script>
+    // --- IMPORTANT STEP --- 
+    // IF YOU GENERATE A NEW DEPLOYMENT VERSION, PASTE THAT NEW LINK KEY REPLACEMENT HERE:
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
+    
     const urlParams = new URLSearchParams(window.location.search);
     const targetSchoolID = urlParams.get('school') || '';
     let targetSchoolName = targetSchoolID; 
@@ -347,48 +365,12 @@
 
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
 
-    document.addEventListener("DOMContentLoaded", () => {
-      if (!targetSchoolID) {
-        document.getElementById('error-screen').style.display = 'block';
-        return;
-      }
-      if (sessionStorage.getItem(`auth_${targetSchoolID}`) === "true") {
-        initApp(); 
-      } else {
-        document.getElementById('pin-screen').style.display = 'block'; 
-      }
-    });
-
-    async function verifyPin() {
-      const pinInput = document.getElementById('auth-pin').value;
-      const btn = document.getElementById('btn-unlock');
-      if(!pinInput) return;
-
-      btn.innerText = "Verifying...";
-      btn.style.backgroundColor = "#64748B";
-
-      try {
-        const response = await fetch(API_URL, {
-          method: "POST",
-          body: JSON.stringify({ action: "verifyPIN", schoolId: targetSchoolID, pin: pinInput })
-        });
-        const result = await response.json();
-
-        if (result.status === "success") {
-          sessionStorage.setItem(`auth_${targetSchoolID}`, "true");
-          document.getElementById('pin-screen').style.display = 'none';
-          initApp();
-        } else {
-          alert("Database Error: " + result.message);
-          btn.innerText = "Unlock Portal";
-          btn.style.backgroundColor = "var(--primary)";
-          document.getElementById('auth-pin').value = '';
-        }
-      } catch (err) {
-        alert("Network Connection failed to reach the database API.");
-        btn.innerText = "Unlock Portal";
-        btn.style.backgroundColor = "var(--primary)";
-      }
+    // UTILITY LAYER: Adaptive key helper scans properties regardless of space mutations or case shifts
+    function readFlexibleObjectValue(obj, targetKeyString) {
+      if (!obj) return '';
+      const matchKey = String(targetKeyString).toLowerCase().replace(/[^a-z0-9]/g, '');
+      const accurateKey = Object.keys(obj).find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === matchKey);
+      return accurateKey ? obj[accurateKey] : '';
     }
 
     async function initApp() {
@@ -398,12 +380,11 @@
 
       try {
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("HTTP connection failed against Web App URL");
+        if (!response.ok) throw new Error("HTTP connection check failed against Web App URL");
         
         const data = await response.json();
         if (data && data.status === "error") throw new Error(data.message);
 
-        // --- PRESERVE ABSOLUTE ORIGINAL CASE STRUCTURES ---
         globalRosterData = data.Roster || [];
         globalTeamsData = data.Teams || [];
         globalDivisionsData = data.Divisions || [];
@@ -411,15 +392,18 @@
         globalAvailabilityData = data.School_Availability || [];
         globalSportsData = data.Sports || [];
 
-        if (data.Schools) {
-          const schoolData = data.Schools.find(s => String(s.SchoolID).trim() === String(targetSchoolID).trim());
-          if (schoolData && schoolData.Name) targetSchoolName = schoolData.Name;
+        if (data.Schools && data.Schools.length > 0) {
+          const schoolData = data.Schools.find(s => {
+            const val = readFlexibleObjectValue(s, "SchoolID");
+            return String(val).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+          });
+          if (schoolData) targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
         }
 
         if (data.Settings && data.Settings.length > 0) {
-          leagueYear = parseInt(data.Settings[0].Season_Year) || 2026;
-          cutoffMonth = parseInt(data.Settings[0].Cutoff_Month) || 1;
-          cutoffDay = parseInt(data.Settings[0].Cutoff_Day) || 1;
+          leagueYear = parseInt(readFlexibleObjectValue(data.Settings[0], "Season_Year")) || 2026;
+          cutoffMonth = parseInt(readFlexibleObjectValue(data.Settings[0], "Cutoff_Month")) || 1;
+          cutoffDay = parseInt(readFlexibleObjectValue(data.Settings[0], "Cutoff_Day")) || 1;
         }
         
         document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
@@ -448,16 +432,17 @@
 
     function getSchoolName(id, schoolsData) {
       if (!id) return 'TBA';
-      const match = schoolsData.find(s => String(s.SchoolID).trim() === String(id).trim());
-      return match && match.Name ? match.Name : id;
+      const match = schoolsData.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(id).trim().toLowerCase());
+      return match ? readFlexibleObjectValue(match, "Name") : id;
     }
 
     function getTeamDisplayName(sportId, divisionId, sportsData, divisionsData) {
-      const sport = sportsData.find(s => String(s.SportID).trim() === String(sportId).trim());
-      const sportName = sport && sport.Name ? sport.Name : (sportId || 'Unknown Sport');
-      const div = divisionsData.find(d => String(d.DivisionID).trim() === String(divisionId).trim());
-      const gender = div && div.Gender ? div.Gender : '';
-      const ageLimit = div && div.Age_Limit ? div.Age_Limit : (divisionId || 'Unknown Div');
+      const sport = sportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
+      const sportName = sport ? readFlexibleObjectValue(sport, "Name") : (sportId || 'Unknown Sport');
+      const div = divisionsData.find(d => String(readFlexibleObjectValue(d, "DivisionID")).trim().toLowerCase() === String(divisionId).trim().toLowerCase());
+      
+      const gender = div ? readFlexibleObjectValue(div, "Gender") : '';
+      const ageLimit = div ? readFlexibleObjectValue(div, "Age_Limit") : (divisionId || 'Unknown Div');
       if (gender) return `${sportName} - ${gender} - ${ageLimit}`;
       return `${sportName} - ${ageLimit}`;
     }
@@ -465,7 +450,12 @@
     function renderGames(fixtures, schoolsData, sportsData, divisionsData) {
       const container = document.getElementById('games-list');
       container.innerHTML = '';
-      const schoolGames = fixtures.filter(game => (game.HomeTeamID && game.HomeTeamID.includes(targetSchoolID)) || (game.AwayTeamID && game.AwayTeamID.includes(targetSchoolID)));
+      
+      const schoolGames = fixtures.filter(game => {
+        const h = readFlexibleObjectValue(game, "HomeTeamID");
+        const a = readFlexibleObjectValue(game, "AwayTeamID");
+        return String(h).includes(targetSchoolID) || String(a).includes(targetSchoolID);
+      });
 
       if (schoolGames.length === 0) {
         container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`;
@@ -476,22 +466,30 @@
         const card = document.createElement('div');
         card.className = 'card';
         let optionsHtml = '';
+        
+        const mStatus = readFlexibleObjectValue(game, "MatchStatus");
+        const gId = readFlexibleObjectValue(game, "GameID");
+        const sId = readFlexibleObjectValue(game, "SportID");
+        const dId = readFlexibleObjectValue(game, "DivisionID");
+        const hTeam = readFlexibleObjectValue(game, "HomeTeamID");
+        const aTeam = readFlexibleObjectValue(game, "AwayTeamID");
+
         statusOptions.forEach(status => {
-          let selected = (game.MatchStatus === status) ? 'selected' : '';
+          let selected = (mStatus === status) ? 'selected' : '';
           optionsHtml += `<option value="${status}" ${selected}>${status}</option>`;
         });
 
-        const headerDetails = getTeamDisplayName(game.SportID, game.DivisionID, sportsData, divisionsData);
-        const homeName = getSchoolName(game.HomeTeamID, schoolsData);
-        const awayName = getSchoolName(game.AwayTeamID, schoolsData);
+        const headerDetails = getTeamDisplayName(sId, dId, sportsData, divisionsData);
+        const homeName = getSchoolName(hTeam, schoolsData);
+        const awayName = getSchoolName(aTeam, schoolsData);
 
-        let currentSide = String(game.HomeTeamID || '').includes(targetSchoolID) ? "Home" : "Away";
-        let scoreSubmitter = game.Score_Submitter;
+        let currentSide = String(hTeam || '').includes(targetSchoolID) ? "Home" : "Away";
+        let scoreSubmitter = readFlexibleObjectValue(game, "Score_Submitter");
         let isScoreLocked = false;
         let scoreBadgeHtml = "";
-        let scoreActionButtonsHtml = `<button class="btn-submit" onclick="submitScore('${game.GameID}')">Update Match</button>`;
+        let scoreActionButtonsHtml = `<button class="btn-submit" onclick="submitScore('${gId}')">Update Match</button>`;
 
-        if (game.MatchStatus === "Pending Verification") {
+        if (mStatus === "Pending Verification") {
           isScoreLocked = true;
           if (scoreSubmitter === currentSide) {
             scoreBadgeHtml = `<div class="prop-status-text waiting" style="text-align:center; margin-bottom:12px;">Scores Logged. Waiting on opponent verification.</div>`;
@@ -500,37 +498,39 @@
             scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px;">Opponent logged scores. Verify accuracy below.</div>`;
             scoreActionButtonsHtml = `
               <div style="display:flex; gap:10px;">
-                <button class="btn-submit" style="background-color:#166534;" onclick="submitScoreVerification('${game.GameID}', 'confirm')">✓ Confirm Score</button>
-                <button class="btn-submit" style="background-color:#991B1B;" onclick="submitScoreVerification('${game.GameID}', 'dispute')">❌ Dispute Score</button>
+                <button class="btn-submit" style="background-color:#166534;" onclick="submitScoreVerification('${gId}', 'confirm')">✓ Confirm Score</button>
+                <button class="btn-submit" style="background-color:#991B1B;" onclick="submitScoreVerification('${gId}', 'dispute')">❌ Dispute Score</button>
               </div>`;
           }
-        } else if (game.MatchStatus === "Disputed") {
+        } else if (mStatus === "Disputed") {
           isScoreLocked = true;
           scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px; background-color:#FEE2E2; color:#991B1B; border-color:#FCA5A5;">⚠️ DISPUTED — Awaiting Admin Review</div>`;
           scoreActionButtonsHtml = "";
-        } else if (game.MatchStatus === "Completed") {
+        } else if (mStatus === "Completed") {
           isScoreLocked = true;
           scoreBadgeHtml = `<div class="prop-status-text approved" style="text-align:center; margin-bottom:12px;">✓ Match Completed & Verified</div>`;
           scoreActionButtonsHtml = "";
         }
 
         let proposalsHtml = "";
-        if (game.MatchStatus === "Postponed" && (game.ProposedDate1 || game.ProposedDate2 || game.ProposedDate3)) {
+        const prop1 = readFlexibleObjectValue(game, "ProposedDate1");
+        const prop2 = readFlexibleObjectValue(game, "ProposedDate2");
+        const prop3 = readFlexibleObjectValue(game, "ProposedDate3");
+
+        if (mStatus === "Postponed" && (prop1 || prop2 || prop3)) {
           proposalsHtml += `<div class="proposal-box"><div class="proposal-title">⏱ Mutual Rescheduling Requested</div>`;
-          
           for (let pNum = 1; pNum <= 3; pNum++) {
-            let pDate = game[`ProposedDate${pNum}`];
-            let pTime = game[`ProposedTime${pNum}`];
-            let pStatus = game[`Prop${pNum}_Status`];
+            let pDate = readFlexibleObjectValue(game, `ProposedDate${pNum}`);
+            let pTime = readFlexibleObjectValue(game, `ProposedTime${pNum}`);
+            let pStatus = readFlexibleObjectValue(game, `Prop${pNum}_Status`);
 
             if (pDate && pDate !== "") {
               proposalsHtml += `<div class="proposal-row"><span>Option ${pNum}: <b>${pDate}</b> @ ${pTime}</span>`;
-              
               if (!pStatus || pStatus === "" || pStatus === "null") {
                 proposalsHtml += `
                   <div class="prop-actions">
-                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'accept')">Accept</button>
-                    <button class="btn-prop-decline" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'decline')">Decline</button>
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${gId}', ${pNum}, 'accept')">Accept</button>
+                    <button class="btn-prop-decline" onclick="submitProposalVote('${gId}', ${pNum}, 'decline')">Decline</button>
                   </div>`;
               } else if (pStatus === currentSide) {
                 proposalsHtml += `<span class="prop-status-text waiting">Waiting on Opponent</span>`;
@@ -538,7 +538,7 @@
                 proposalsHtml += `
                   <div class="prop-actions">
                     <span class="prop-status-text action-needed" style="margin-right:5px;">Opponent Agreed!</span>
-                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'accept')">Agree & Finalize</button>
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${gId}', ${pNum}, 'accept')">Agree & Finalize</button>
                   </div>`;
               }
               proposalsHtml += `</div>`;
@@ -547,18 +547,21 @@
           proposalsHtml += `</div>`;
         }
 
+        const hScore = readFlexibleObjectValue(game, "HomeScore");
+        const aScore = readFlexibleObjectValue(game, "AwayScore");
+
         card.innerHTML = `
-          <div class="card-header">${game.Date || 'TBD'} | ${headerDetails}</div>
+          <div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${headerDetails}</div>
           ${scoreBadgeHtml}
           <div class="matchup">
             <div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${homeName}</div>
             <div style="color: #E2E8F0; padding: 0 10px;">VS</div>
             <div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${awayName}</div>
           </div>
-          <select class="status-select" id="status-${game.GameID}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select>
+          <select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select>
           <div class="matchup">
-             <input type="number" class="score-input" id="homeScore-${game.GameID}" value="${game.HomeScore !== undefined ? game.HomeScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
-             <input type="number" class="score-input" id="awayScore-${game.GameID}" value="${game.AwayScore !== undefined ? game.AwayScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
+             <input type="number" class="score-input" id="homeScore-${gId}" value="${hScore !== undefined ? hScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
+             <input type="number" class="score-input" id="awayScore-${gId}" value="${aScore !== undefined ? aScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
           </div>
           ${scoreActionButtonsHtml}
           ${proposalsHtml}
@@ -574,8 +577,9 @@
 
       const groups = {};
       divisions.forEach(div => {
-        const associatedSport = sports.find(s => String(s.SportID).trim() === String(div.SportID).trim());
-        const seasonName = associatedSport && associatedSport.Season ? associatedSport.Season : "General Calendar";
+        const divSportId = readFlexibleObjectValue(div, "SportID");
+        const associatedSport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(divSportId).trim().toLowerCase());
+        const seasonName = associatedSport ? readFlexibleObjectValue(associatedSport, "Season") : "General Calendar";
 
         if (!groups[seasonName]) { groups[seasonName] = []; }
         groups[seasonName].push(div);
@@ -588,21 +592,26 @@
         optgroup.label = String(season).toUpperCase();
 
         groups[season].sort((a, b) => {
-          const sportA = sports.find(s => String(s.SportID).trim() === String(a.SportID).trim());
-          const sportB = sports.find(s => String(s.SportID).trim() === String(b.SportID).trim());
-          const nameA = sportA && sportA.Name ? sportA.Name.toLowerCase() : String(a.SportID).toLowerCase();
-          const nameB = sportB && sportB.Name ? sportB.Name.toLowerCase() : String(b.SportID).toLowerCase();
+          const sIdA = readFlexibleObjectValue(a, "SportID");
+          const sIdB = readFlexibleObjectValue(b, "SportID");
+          const sportA = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sIdA).trim().toLowerCase());
+          const sportB = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sIdB).trim().toLowerCase());
+          
+          const nameA = sportA ? String(readFlexibleObjectValue(sportA, "Name")).toLowerCase() : String(sIdA).toLowerCase();
+          const nameB = sportB ? String(readFlexibleObjectValue(sportB, "Name")).toLowerCase() : String(sIdB).toLowerCase();
 
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
-          return (parseInt(String(a.Age_Limit).replace(/\D/g, '')) || 0) - (parseInt(String(b.Age_Limit).replace(/\D/g, '')) || 0);
+          return (parseInt(String(readFlexibleObjectValue(a, "Age_Limit")).replace(/\D/g, '')) || 0) - (parseInt(String(readFlexibleObjectValue(b, "Age_Limit")).replace(/\D/g, '')) || 0);
         });
 
         groups[season].forEach(div => {
-          const displayName = getTeamDisplayName(div.SportID, div.DivisionID, sports, divisions);
+          const dId = readFlexibleObjectValue(div, "DivisionID");
+          const sId = readFlexibleObjectValue(div, "SportID");
+          const displayName = getTeamDisplayName(sId, dId, sports, divisions);
           const option = document.createElement('option');
-          option.value = div.DivisionID;
-          option.setAttribute('data-sport', div.SportID);
+          option.value = dId;
+          option.setAttribute('data-sport', sId);
           option.textContent = displayName;
           optgroup.appendChild(option);
         });
@@ -619,23 +628,28 @@
       manageSelect.innerHTML = '<option value="">Select Team to View Roster...</option>';
       currentTeamsList.innerHTML = '';
       
-      const schoolTeams = teams.filter(t => String(t.SchoolID).trim() === String(targetSchoolID).trim());
+      const schoolTeams = teams.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       if (schoolTeams.length === 0) {
         currentTeamsList.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No teams registered yet.</p>';
         return;
       }
 
       schoolTeams.forEach(team => {
-        const displayName = getTeamDisplayName(team.SportID, team.DivisionID, sportsData, divisionsData);
-        addSelect.innerHTML += `<option value="${team.TeamID}">${displayName}</option>`;
-        manageSelect.innerHTML += `<option value="${team.TeamID}">${displayName}</option>`;
+        const sId = readFlexibleObjectValue(team, "SportID");
+        const dId = readFlexibleObjectValue(team, "DivisionID");
+        const tId = readFlexibleObjectValue(team, "TeamID");
+        const rStatus = readFlexibleObjectValue(team, "RegistrationStatus");
+
+        const displayName = getTeamDisplayName(sId, dId, sportsData, divisionsData);
+        addSelect.innerHTML += `<option value="${tId}">${displayName}</option>}`;
+        manageSelect.innerHTML += `<option value="${tId}">${displayName}</option>}`;
 
         let statusClass = "status-badge";
-        let statusText = String(team.RegistrationStatus || "Unknown").toLowerCase();
+        let statusText = String(rStatus || "Unknown").toLowerCase();
         if(statusText === "pending") statusClass += " pending";
         if(statusText === "active" || statusText === "approved") statusClass += " active";
 
-        currentTeamsList.innerHTML += `<div class="team-card"><span>${displayName}</span><span class="${statusClass}">${team.RegistrationStatus || 'Unknown'}</span></div>`;
+        currentTeamsList.innerHTML += `<div class="team-card"><span>${displayName}</span><span class="${statusClass}">${rStatus || 'Unknown'}</span></div>`;
       });
     }
 
@@ -643,12 +657,13 @@
       const container = document.getElementById('roster-list');
       if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
 
-      const teamRoster = globalRosterData.filter(p => String(p.TeamID).trim() === String(teamId).trim());
+      const teamRoster = globalRosterData.filter(p => String(readFlexibleObjectValue(p, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
       if (teamRoster.length === 0) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center;">No players found on this roster.</p>'; return; }
 
       container.innerHTML = '';
       teamRoster.forEach(player => {
-        const rawStatus = String(player.EligibilityStatus || '').trim().toUpperCase();
+        const rawStatus = String(readFlexibleObjectValue(player, "EligibilityStatus") || '').trim().toUpperCase();
+        const rId = readFlexibleObjectValue(player, "RosterID");
         let statusClass = "prop-status-text approved";
         let statusText = "✔️ Eligible";
 
@@ -660,12 +675,12 @@
         container.innerHTML += `
           <div class="player-card">
             <div class="player-meta">
-              <span>DOB: <b>${player.DateOfBirth || 'N/A'}</b></span>
+              <span>DOB: <b>${readFlexibleObjectValue(player, "DateOfBirth") || 'N/A'}</b></span>
               <span class="${statusClass}">${statusText}</span>
             </div>
-            <input type="text" class="text-input" id="nick-${player.RosterID}" value="${player.Nickname || ''}" placeholder="Player Name">
-            <input type="number" class="text-input" id="jersey-${player.RosterID}" value="${player.JerseyNumber || ''}" placeholder="Jersey Number">
-            <button class="btn-submit btn-small" style="background-color: var(--text-muted);" id="btn-update-${player.RosterID}" onclick="updatePlayer('${player.RosterID}')">Save Changes</button>
+            <input type="text" class="text-input" id="nick-${rId}" value="${readFlexibleObjectValue(player, "Nickname") || ''}" placeholder="Player Name">
+            <input type="number" class="text-input" id="jersey-${rId}" value="${readFlexibleObjectValue(player, "JerseyNumber") || ''}" placeholder="Jersey Number">
+            <button class="btn-submit btn-small" style="background-color: var(--text-muted);" id="btn-update-${rId}" onclick="updatePlayer('${rId}')">Save Changes</button>
           </div>
         `;
       });
@@ -678,7 +693,8 @@
 
       const baseNames = [];
       sports.forEach(sport => {
-        const baseName = String(sport.Name || '').split('(')[0].trim();
+        const sName = readFlexibleObjectValue(sport, "Name");
+        const baseName = String(sName || '').split('(')[0].trim();
         if (baseName && !baseNames.includes(baseName)) baseNames.push(baseName);
       });
 
@@ -692,6 +708,7 @@
       });
     }
 
+    // ADAPTIVE RENDERING LOG: Uses loose searching properties to populate menus without checking hardcoded keys
     function populateAvailabilityMenus(venues, sports) {
       const vSelect = document.getElementById('avail-venue-select');
       const exVSelect = document.getElementById('ex-venue-id');
@@ -699,14 +716,19 @@
       vSelect.innerHTML = '<option value="">Select Mapped Facility...</option>';
       exVSelect.innerHTML = '';
 
-      const schoolVenues = venues.filter(v => String(v.SchoolID).trim() === String(targetSchoolID).trim());
+      const schoolVenues = venues.filter(v => {
+        const val = readFlexibleObjectValue(v, "SchoolID");
+        return String(val).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+      });
       
       schoolVenues.forEach(v => {
-        const sport = sports.find(s => String(s.SportID).trim() === String(v.SportID).trim());
-        const textLabel = `${String(v.VenueID).toUpperCase()} - ${sport ? sport.Name : 'Facility Court'}`;
+        const vId = readFlexibleObjectValue(v, "VenueID");
+        const sId = readFlexibleObjectValue(v, "SportID");
+        const sport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
+        const textLabel = `${String(vId).toUpperCase()} - ${sport ? readFlexibleObjectValue(sport, "Name") : 'Field court'}`;
         
-        vSelect.innerHTML += `<option value="${v.VenueID}">${textLabel}</option>`;
-        exVSelect.innerHTML += `<option value="${v.VenueID}">${textLabel}</option>`;
+        vSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
+        exVSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
       });
 
       renderAvailabilityExceptionLogs();
@@ -716,12 +738,12 @@
       const form = document.getElementById('venue-hours-form');
       if(!venueId) { form.style.display = 'none'; return; }
 
-      const venue = globalVenuesData.find(v => String(v.VenueID).trim() === String(venueId).trim());
+      const venue = globalVenuesData.find(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase() === String(venueId).trim().toLowerCase());
       if(venue) {
-        document.getElementById('hours-v-wkd-start').value = venue.Weekday_Start_Time || '';
-        document.getElementById('hours-v-wkd-end').value = venue.Weekday_End_Time || '';
-        document.getElementById('hours-v-wnd-start').value = venue.Weekend_Start_Time || '';
-        document.getElementById('hours-v-wnd-end').value = venue.Weekend_End_Time || '';
+        document.getElementById('hours-v-wkd-start').value = readFlexibleObjectValue(venue, "Weekday_Start_Time") || '';
+        document.getElementById('hours-v-wkd-end').value = readFlexibleObjectValue(venue, "Weekday_End_Time") || '';
+        document.getElementById('hours-v-wnd-start').value = readFlexibleObjectValue(venue, "Weekend_Start_Time") || '';
+        document.getElementById('hours-v-wnd-end').value = readFlexibleObjectValue(venue, "Weekend_End_Time") || '';
         form.style.display = 'block';
       }
     }
@@ -754,7 +776,9 @@
         mesh.innerHTML += `<div class="cal-day-node empty-spacer"></div>`;
       }
 
-      const schoolVenues = globalVenuesData.filter(v => String(v.SchoolID).trim() === String(targetSchoolID).trim()).map(v => String(v.VenueID).trim());
+      const schoolVenues = globalVenuesData.filter(v => {
+        return String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+      }).map(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase());
 
       for (let day = 1; day <= totalDays; day++) {
         const loopDate = new Date(year, month, day);
@@ -763,14 +787,16 @@
         let dayClass = "cal-day-node";
         
         const activeBlocks = globalAvailabilityData.filter(a => {
-          if (!schoolVenues.includes(String(a.VenueID).trim())) return false;
-          const s = new Date(a.StartDate);
-          const e = new Date(a.EndDate);
+          const vId = readFlexibleObjectValue(a, "VenueID");
+          if (!schoolVenues.includes(String(vId).trim().toLowerCase())) return false;
+          
+          const s = new Date(readFlexibleObjectValue(a, "StartDate"));
+          const e = new Date(readFlexibleObjectValue(a, "EndDate"));
           return loopDate >= s && loopDate <= e;
         });
 
         if (activeBlocks.length > 0) {
-          const rawConstraints = activeBlocks.map(b => String(b.ConstraintType || '').toUpperCase());
+          const rawConstraints = activeBlocks.map(b => String(readFlexibleObjectValue(b, "ConstraintType") || '').toUpperCase());
           if (rawConstraints.some(c => c.includes("HOLIDAY") || c.includes("NOT AVAILABLE"))) {
             dayClass += " has-blackout";
           } else if (rawConstraints.some(c => c.includes("TRAVEL"))) {
@@ -805,6 +831,7 @@
     async function submitCreateNewVenue() {
       const btn = document.getElementById('btn-add-court');
       const vName = document.getElementById('new-venue-name').value;
+      const units = document.getElementById('new-venue-unit-count').value;
       const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
 
       if (!vName) { alert("Please provide a facility name."); return; }
@@ -814,9 +841,9 @@
       const associatedSportIds = [];
 
       globalSportsData.forEach(sport => {
-        const baseName = String(sport.Name || '').split('(')[0].trim();
+        const baseName = String(readFlexibleObjectValue(sport, "Name")).split('(')[0].trim();
         if (selectedBaseNames.includes(baseName)) {
-          associatedSportIds.push(sport.SportID);
+          associatedSportIds.push(readFlexibleObjectValue(sport, "SportID"));
         }
       });
 
@@ -824,6 +851,7 @@
         action: "addVenue", 
         schoolId: targetSchoolID, 
         venueName: vName, 
+        unitCount: units,
         sportIds: associatedSportIds,
         weekdayStart: "16:00:00",
         weekdayEnd: "19:30:00",
@@ -839,6 +867,7 @@
           btn.innerText = "Facility Saved ✓";
           btn.style.backgroundColor = "#52C920";
           document.getElementById('new-venue-name').value = '';
+          document.getElementById('new-venue-unit-count').value = '1';
           checkedBoxes.forEach(cb => cb.checked = false);
           setTimeout(() => { initApp(); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
         } else { alert("Error: " + result.message); }
@@ -907,26 +936,37 @@
       const container = document.getElementById('active-exceptions-list');
       container.innerHTML = '';
 
-      const schoolVenues = globalVenuesData.filter(v => String(v.SchoolID).trim() === String(targetSchoolID).trim()).map(v => String(v.VenueID).trim());
-      const elements = globalAvailabilityData.filter(a => schoolVenues.includes(String(a.VenueID).trim()));
+      const schoolVenues = globalVenuesData.filter(v => {
+        return String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+      }).map(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase());
+      
+      const elements = globalAvailabilityData.filter(a => {
+        const vId = readFlexibleObjectValue(a, "VenueID");
+        return schoolVenues.includes(String(vId).trim().toLowerCase());
+      });
 
       if(elements.length === 0) {
         container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0;">No calendar blackouts filed for this school term.</p>';
         return;
       }
 
-      elements.sort((a,b) => new Date(b.StartDate) - new Date(a.StartDate));
+      elements.sort((a,b) => new Date(readFlexibleObjectValue(b, "StartDate")) - new Date(readFlexibleObjectValue(a, "StartDate")));
 
       elements.forEach(item => {
-        const isBlocked = item.IsAvailable === false || String(item.IsAvailable).toLowerCase() === "false";
+        const avail = readFlexibleObjectValue(item, "IsAvailable");
+        const vId = readFlexibleObjectValue(item, "VenueID");
+        const sDate = readFlexibleObjectValue(item, "StartDate");
+        const eDate = readFlexibleObjectValue(item, "EndDate");
+
+        const isBlocked = avail === false || String(avail).toLowerCase() === "false";
         const badgeClass = isBlocked ? "prop-status-text too-old" : "prop-status-text approved";
         const badgeLabel = isBlocked ? "🚫 Blackout" : "✔️ Hosting Allowed";
 
         container.innerHTML += `
           <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
             <div>
-              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${String(item.VenueID).toUpperCase()}</span>
-              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${item.StartDate} to ${item.EndDate}</div>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${String(vId).toUpperCase()}</span>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${sDate} to ${eDate}</div>
             </div>
             <span class="${badgeClass}" style="font-size:0.65rem;">${badgeLabel}</span>
           </div>
@@ -942,7 +982,11 @@
       }
       container.innerHTML = '<div class="card-header">League Announcements</div>';
       messages.forEach(msg => {
-        container.innerHTML += `<div class="message-item"><div class="message-title">${msg.TopicSubject || 'Announcement'}</div><div class="message-date">${msg.Timestamp || 'Recent'}</div><div class="message-body">${msg.Content || ''}</div></div>`;
+        const topic = readFlexibleObjectValue(msg, "TopicSubject") || readFlexibleObjectValue(msg, "Topic_Subject") || 'Announcement';
+        const stamp = readFlexibleObjectValue(msg, "Timestamp") || 'Recent';
+        const body = readFlexibleObjectValue(msg, "Content") || '';
+
+        container.innerHTML += `<div class="message-item"><div class="message-title">${topic}</div><div class="message-date">${stamp}</div><div class="message-body">${body}</div></div>`;
       });
     }
 
@@ -996,18 +1040,19 @@
         return; 
       }
 
-      const selectedTeam = globalTeamsData.find(t => String(t.TeamID).trim() === String(teamId).trim());
+      const selectedTeam = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
       if (selectedTeam) {
-        const division = globalDivisionsData.find(d => String(d.DivisionID).trim() === String(selectedTeam.DivisionID).trim());
+        const tDivId = readFlexibleObjectValue(selectedTeam, "DivisionID");
+        const division = globalDivisionsData.find(d => String(readFlexibleObjectValue(d, "DivisionID")).trim().toLowerCase() === String(tDivId).trim().toLowerCase());
         if (division) {
-          const rawAge = division.Age_Limit || '';
+          const rawAge = readFlexibleObjectValue(division, "Age_Limit") || '';
           const ageLimit = parseInt(String(rawAge).replace(/\D/g, '')) || 99;
           
           const cutoffYear = leagueYear - ageLimit;
           const cutoffDateString = `${cutoffYear}-06-01`;
 
           if (dobInput < cutoffDateString) {
-            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of ${division.Age_Limit || ('U' + ageLimit)}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.\n\nData was not transmitted to the spreadsheet.`);
+            alert(`⚠️ SUBMISSION BLOCKED:\n\nThis division has an age limit of ${readFlexibleObjectValue(division, "Age_Limit") || ('U' + ageLimit)}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.`);
             return;
           }
         }
@@ -1024,16 +1069,8 @@
           btn.innerText = "Added ✓"; btn.style.backgroundColor = "#52C920";
           document.getElementById('reg-nickname').value = ''; document.getElementById('reg-dob').value = ''; document.getElementById('reg-jersey').value = '';
           if(document.getElementById('manage-team').value === payload.teamId) initApp(); 
-        } else { 
-          alert("Error: " + result.message); 
-          btn.innerText = originalText; 
-          btn.style.backgroundColor = "var(--primary)"; 
-        }
-      } catch (err) { 
-        alert("Connection failed."); 
-        btn.innerText = originalText; 
-        btn.style.backgroundColor = "var(--primary)"; 
-      }
+        } else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+      } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
       setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 3000);
     }
 
@@ -1075,9 +1112,7 @@
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
       document.getElementById(`tab-${tabId}`).classList.add('active');
-      if (event && event.currentTarget) {
-        event.currentTarget.classList.add('active');
-      }
+      if (event && event.currentTarget) { event.currentTarget.classList.add('active'); }
     }
   </script>
 </body>
