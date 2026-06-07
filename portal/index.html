@@ -143,10 +143,12 @@
 
   <div class="container" id="app-container">
     
+    <!-- TAB: GAMES -->
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
 
+    <!-- TAB: TEAMS -->
     <div id="tab-teams" class="tab-content">
       <div class="card">
         <div class="card-header">Register for Division</div>
@@ -159,6 +161,7 @@
       </div>
     </div>
 
+    <!-- TAB: ROSTERS -->
     <div id="tab-registration" class="tab-content">
       <div class="card">
         <div class="card-header">Register New Player</div>
@@ -175,8 +178,10 @@
       </div>
     </div>
 
+    <!-- TAB: VENUE AVAILABILITY MODULE -->
     <div id="tab-availability" class="tab-content">
       
+      <!-- BLOCK 0: ADD NEW FACILITY DIRECTLY -->
       <div class="card">
         <div class="card-header">🛠️ Add New Facility / Court</div>
         
@@ -185,7 +190,8 @@
         
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
-          </div>
+          <!-- Dynamically Generated -->
+        </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
@@ -211,6 +217,7 @@
         <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
       </div>
 
+      <!-- BLOCK A: STANDARD VENUE OPERATING ENVELOPE MODIFIER -->
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
@@ -242,6 +249,7 @@
         </div>
       </div>
 
+      <!-- BLOCK B: INTERACTIVE CALENDAR MESH CONTAINER -->
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
         
@@ -262,6 +270,7 @@
         </div>
       </div>
 
+      <!-- BLOCK C: SINGLE DATE BLOCKOUT CALENDAR EXEMPTIONS -->
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
         
@@ -299,16 +308,19 @@
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
+      <!-- BLOCK D: AUDIT TRAIL LOG LIST -->
       <div class="card">
         <div class="card-header">📋 Logged Exceptions Status</div>
         <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
+    <!-- TAB: MESSAGES -->
     <div id="tab-messages" class="tab-content">
       <div class="card" id="messages-list"></div>
     </div>
 
+    <!-- TAB: HELP -->
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
@@ -426,33 +438,51 @@
           throw new Error("Apps Script API Exception: " + data.message);
         }
 
-        globalRosterData = data.Roster || [];
-        globalTeamsData = data.Teams || [];
-        globalDivisionsData = data.Divisions || [];
-        globalVenuesData = data.Venues || [];
-        globalAvailabilityData = data.School_Availability || [];
-        globalSportsData = data.Sports || [];
+        // --- HIGH-COMPATIBILITY CLIENT-SIDE TABLE KEY NORMALIZATION INTERCEPTOR ---
+        const mapToNormalizedObjectKeys = (rowsArray) => {
+          if (!rowsArray || !Array.isArray(rowsArray)) return [];
+          return rowsArray.map(row => {
+            const normalizedRow = { ...row };
+            Object.keys(row).forEach(originalKey => {
+              const cleanedKey = originalKey.toLowerCase().replace(/[^a-z0-9]/g, '');
+              normalizedRow[cleanedKey] = row[originalKey];
+            });
+            return normalizedRow;
+          });
+        };
 
-        if (data.Schools) {
-          const schoolData = (data.Schools || []).find(s => clientNormalize(s.schoolid) === clientNormalize(targetSchoolID));
-          if (schoolData && schoolData.name) targetSchoolName = schoolData.name;
+        globalRosterData = mapToNormalizedObjectKeys(data.Roster || data.roster);
+        globalTeamsData = mapToNormalizedObjectKeys(data.Teams || data.teams);
+        globalDivisionsData = mapToNormalizedObjectKeys(data.Divisions || data.divisions);
+        globalVenuesData = mapToNormalizedObjectKeys(data.Venues || data.venues);
+        globalAvailabilityData = mapToNormalizedObjectKeys(data.School_Availability || data.schoolavailability || data.SchoolAvailability);
+        globalSportsData = mapToNormalizedObjectKeys(data.Sports || data.sports);
+        
+        const normalizedSchools = mapToNormalizedObjectKeys(data.Schools || data.schools);
+        const normalizedFixtures = mapToNormalizedObjectKeys(data.Fixtures || data.fixtures);
+        const normalizedMessages = mapToNormalizedObjectKeys(data.Messages || data.messages);
+
+        if (normalizedSchools.length > 0) {
+          const schoolData = normalizedSchools.find(s => clientNormalize(s.schoolid) === clientNormalize(targetSchoolID));
+          if (schoolData && (schoolData.name || schoolData.Name)) targetSchoolName = schoolData.name || schoolData.Name;
         }
 
         if (data.Settings && data.Settings.length > 0) {
-          leagueYear = parseInt(data.Settings[0].seasonyear) || 2026;
-          cutoffMonth = parseInt(data.Settings[0].cutoffmonth) || 1;
-          cutoffDay = parseInt(data.Settings[0].cutoffday) || 1;
+          const settingsObj = mapToNormalizedObjectKeys(data.Settings)[0];
+          leagueYear = parseInt(settingsObj.seasonyear) || 2026;
+          cutoffMonth = parseInt(settingsObj.cutoffmonth) || 1;
+          cutoffDay = parseInt(settingsObj.cutoffday) || 1;
         }
         
         document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
 
-        renderGames(data.Fixtures || [], data.Schools || [], data.Sports || [], data.Divisions || []);
-        renderLeagueDivisions(data.Divisions || [], data.Sports || []);
-        renderTeamsData(data.Teams || [], data.Sports || [], data.Divisions || []);
-        renderMessages(data.Messages || []);
+        renderGames(normalizedFixtures, normalizedSchools, globalSportsData, globalDivisionsData);
+        renderLeagueDivisions(globalDivisionsData, globalSportsData);
+        renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
+        renderMessages(normalizedMessages);
         
-        populateAvailabilityMenus(data.Venues || [], data.Sports || []);
-        populateSportsMenu(data.Sports || []);
+        populateAvailabilityMenus(globalVenuesData, globalSportsData);
+        populateSportsMenu(globalSportsData);
         buildInteractiveCalendarMesh();
 
         loaderElement.style.display = 'none';
@@ -462,7 +492,7 @@
         console.error("Master Sync Failure:", error);
         loaderElement.style.color = "red";
         loaderElement.innerHTML = `<div style="padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px;">
-          <h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Matrix Warning)</h4>
+          <h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4>
           <p style="font-size:0.8rem; text-align:left; font-family:monospace; margin:0;">${error.message}</p>
         </div>`;
       }
@@ -793,7 +823,7 @@
         });
 
         if (activeBlocks.length > 0) {
-          const rawConstraints = activeBlocks.map(b => String(b.constrainttype || '').toUpperCase());
+          const rawConstraints = activeBlocks.map(b => String(b.constrainttype || b.constraint_type || '').toUpperCase());
           if (rawConstraints.some(c => c.includes("HOLIDAY") || c.includes("NOT AVAILABLE"))) {
             dayClass += " has-blackout";
           } else if (rawConstraints.some(c => c.includes("TRAVEL"))) {
@@ -966,7 +996,7 @@
       }
       container.innerHTML = '<div class="card-header">League Announcements</div>';
       (messages || []).forEach(msg => {
-        container.innerHTML += `<div class="message-item"><div class="message-title">${msg.topicsubject || 'Announcement'}</div><div class="message-date">${msg.timestamp || 'Recent'}</div><div class="message-body">${msg.content || ''}</div></div>`;
+        container.innerHTML += `<div class="message-item"><div class="message-title">${msg.topicsubject || msg.topic_subject || 'Announcement'}</div><div class="message-date">${msg.timestamp || 'Recent'}</div><div class="message-body">${msg.content || ''}</div></div>`;
       });
     }
 
@@ -1067,7 +1097,7 @@
       btn.innerText = "Saving...";
       btn.style.backgroundColor = "#1A1A1A";
 
-      const payload = { action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterid}`).value };
+      const payload = { action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value };
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
         const result = await res.json();
