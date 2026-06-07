@@ -85,8 +85,8 @@
     .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
 
     /* CALENDAR COMPONENT CSS LAYOUT */
-    .cal-header-row { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; }
-    .cal-grid-mesh { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+    .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
+    .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
     .cal-day-node { background: #F1F5F9; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; }
     .cal-day-node.active-selected { border-color: var(--primary); background: #E2E8F0; }
     .cal-day-node.has-blackout { background: #FEE2E2; color: #991B1B; }
@@ -113,7 +113,7 @@
     .status-badge.pending { background: #FEF08A; color: #854D0E; }
     .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
 
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; }
     .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
   </style>
@@ -143,10 +143,12 @@
 
   <div class="container" id="app-container">
     
+    <!-- TAB: GAMES -->
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
 
+    <!-- TAB: TEAMS -->
     <div id="tab-teams" class="tab-content">
       <div class="card">
         <div class="card-header">Register for Division</div>
@@ -159,6 +161,7 @@
       </div>
     </div>
 
+    <!-- TAB: ROSTERS -->
     <div id="tab-registration" class="tab-content">
       <div class="card">
         <div class="card-header">Register New Player</div>
@@ -175,19 +178,48 @@
       </div>
     </div>
 
+    <!-- TAB: VENUE AVAILABILITY MANAGEMENT MODULE -->
     <div id="tab-availability" class="tab-content">
       
+      <!-- BLOCK 0: ADD NEW FACILITY DIRECTLY WITH CRITICAL TIMES & MULTI-SPORT CHECKBOXES -->
       <div class="card">
         <div class="card-header">🛠️ Add New Facility / Court</div>
-        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g., Main Gym Court A, Field 1">
-        <select class="status-select" id="new-venue-sport-id" style="margin-bottom:12px;">
-          <option value="">Link Facility to Sport Category...</option>
-        </select>
-        <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Add Facility</button>
+        
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FACILITY IDENTIFIER</label>
+        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g., Main Gymnasium, Arena Field 1">
+        
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
+        <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
+          <!-- Dynamically generated clean deduplicated checkboxes -->
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
+            <input type="text" class="text-input" id="new-v-wkd-start" value="16:00:00" placeholder="16:00:00">
+          </div>
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
+            <input type="text" class="text-input" id="new-v-wkd-end" value="19:30:00" placeholder="19:30:00">
+          </div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
+            <input type="text" class="text-input" id="new-v-wnd-start" value="08:00:00" placeholder="08:00:00">
+          </div>
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
+            <input type="text" class="text-input" id="new-v-wnd-end" value="17:00:00" placeholder="17:00:00">
+          </div>
+        </div>
+
+        <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
       </div>
 
+      <!-- BLOCK A: STANDARD VENUE OPERATING ENVELOPE MODIFIER -->
       <div class="card">
-        <div class="card-header">⏰ Standard Operating Windows</div>
+        <div class="card-header">⏰ Modify Existing Facility Windows</div>
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
           <option value="">Select Mapped Facility...</option>
         </select>
@@ -213,14 +245,15 @@
               <input type="text" class="text-input" id="hours-v-wnd-end" placeholder="17:00:00">
             </div>
           </div>
-          <button class="btn-submit btn-small" id="btn-save-hours" onclick="submitVenueHoursUpdate()">Save Facility Hours</button>
+          <button class="btn-submit btn-small" id="btn-save-hours" onclick="submitVenueHoursUpdate()">Update Operational Bounds</button>
         </div>
       </div>
 
+      <!-- BLOCK B: INTERACTIVE CALENDAR MESH CONTAINER -->
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
         
-        <div class="flex justify-between items-center" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <button onclick="navigateCalendarMonth(-1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">◀</button>
           <span id="cal-month-title" style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">June 2026</span>
           <button onclick="navigateCalendarMonth(1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">▶</button>
@@ -232,11 +265,12 @@
         <div class="cal-grid-mesh" id="calendar-days-mesh"></div>
         
         <div style="margin-top:12px; display:flex; gap:12px; font-size:0.65rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">
-          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; h:10px; width:10px; width:10px; height:10px; background:#FEE2E2; border-radius:3px;"></span>Blackout / Holiday</div>
-          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; h:10px; width:10px; width:10px; height:10px; background:#FFEDD5; border-radius:3px;"></span>Travel Only</div>
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FEE2E2; border-radius:3px;"></span>Blackout / Holiday</div>
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FFEDD5; border-radius:3px;"></span>Travel Only</div>
         </div>
       </div>
 
+      <!-- BLOCK C: SINGLE DATE BLOCKOUT CALENDAR EXEMPTIONS -->
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
         
@@ -274,16 +308,19 @@
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
+      <!-- BLOCK D: AUDIT TRAIL LOG LIST -->
       <div class="card">
         <div class="card-header">📋 Logged Exceptions Status</div>
         <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
+    <!-- TAB: MESSAGES -->
     <div id="tab-messages" class="tab-content">
       <div class="card" id="messages-list"></div>
     </div>
 
+    <!-- TAB: HELP -->
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
@@ -328,12 +365,13 @@
     let globalDivisionsData = [];
     let globalVenuesData = [];
     let globalAvailabilityData = [];
+    let globalSportsData = [];
     
     let leagueYear = 2026;
     let cutoffMonth = 1;
     let cutoffDay = 1;
 
-    let calFocusDate = new Date(); // Focus context for calendar mesh calculations
+    let calFocusDate = new Date(); 
 
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
 
@@ -415,13 +453,13 @@
         globalDivisionsData = data.Divisions || [];
         globalVenuesData = data.Venues || [];
         globalAvailabilityData = data.School_Availability || [];
+        globalSportsData = data.Sports || [];
 
         renderGames(data.Fixtures || [], data.Schools || [], data.Sports || [], data.Divisions || []);
         renderLeagueDivisions(data.Divisions || [], data.Sports || []);
         renderTeamsData(data.Teams || [], data.Sports || [], data.Divisions || []);
         renderMessages(data.Messages || []);
         
-        // Build and sync menus
         populateAvailabilityMenus(data.Venues || [], data.Sports || []);
         populateSportsMenu(data.Sports || []);
         buildInteractiveCalendarMesh();
@@ -665,11 +703,28 @@
       });
     }
 
+    // --- ENHANCED: DEDUPLICATED BASE SPORT FILTER MAPPER ---
     function populateSportsMenu(sports) {
-      const select = document.getElementById('new-venue-sport-id');
-      select.innerHTML = '<option value="">Link Facility to Sport Category...</option>';
-      (sports || []).forEach(sport => {
-        select.innerHTML += `<option value="${sport.SportID}">${sport.Name}</option>`;
+      const container = document.getElementById('new-venue-sports-checkboxes');
+      container.innerHTML = '';
+      if (!sports || sports.length === 0) return;
+
+      const baseNames = [];
+      sports.forEach(sport => {
+        // Strip term suffixes to isolate core tracking tags ("Basketball (Term 1)" -> "Basketball")
+        const baseName = sport.Name.split('(')[0].trim();
+        if (!baseNames.includes(baseName)) {
+          baseNames.push(baseName);
+        }
+      });
+
+      baseNames.sort().forEach(name => {
+        container.innerHTML += `
+          <label style="display:flex; align-items:center; gap:6px; margin: 2px 0; font-size:0.85rem; font-weight:600; cursor:pointer;">
+            <input type="checkbox" class="sport-venue-checkbox" value="${name}">
+            <span>${name}</span>
+          </label>
+        `;
       });
     }
 
@@ -712,7 +767,6 @@
       container.style.display = (scopeValue === 'venue') ? 'block' : 'none';
     }
 
-    // --- VISUAL INTERACTIVE MONTHLY GRID ENGINE ---
     function navigateCalendarMonth(direction) {
       calFocusDate.setMonth(calFocusDate.getMonth() + direction);
       buildInteractiveCalendarMesh();
@@ -732,21 +786,18 @@
       const firstDayIdx = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
 
-      // Draw blank pads
       for (let i = 0; i < firstDayIdx; i++) {
         mesh.innerHTML += `<div class="cal-day-node empty-spacer"></div>`;
       }
 
       const schoolVenues = (globalVenuesData || []).filter(v => String(v.SchoolID).trim().toUpperCase() === String(targetSchoolID).trim().toUpperCase()).map(v => v.VenueID);
 
-      // Loop days
       for (let day = 1; day <= totalDays; day++) {
         const loopDate = new Date(year, month, day);
         const loopDateStr = Utilities_formatDateString(loopDate);
 
         let dayClass = "cal-day-node";
         
-        // Scan constraints matching this day slot
         const activeBlocks = (globalAvailabilityData || []).filter(a => {
           if (!schoolVenues.includes(a.VenueID)) return false;
           const s = new Date(a.StartDate);
@@ -781,33 +832,55 @@
       document.getElementById('ex-start-date').value = dateString;
       document.getElementById('ex-end-date').value = dateString;
 
-      // Animate focus anchor down seamlessly
       const formCard = document.getElementById('exemption-form-card');
       formCard.style.borderColor = 'var(--accent)';
       document.getElementById('exemption-form-title').innerText = `🚫 Log Exemption for [${dateString}]`;
       formCard.scrollIntoView({ behavior: 'smooth' });
     }
 
+    // --- UPGRADED: HIGH-ACCURACY VENUE PERMUTATION COMPILER ---
     async function submitCreateNewVenue() {
       const btn = document.getElementById('btn-add-court');
       const vName = document.getElementById('new-venue-name').value;
-      const sportId = document.getElementById('new-venue-sport-id').value;
+      const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
 
-      if(!vName || !sportId) { alert("Please provide a court name and pick an associated sport."); return; }
+      if (!vName) { alert("Please provide a definitive facility name."); return; }
+      if (checkedBoxes.length === 0) { alert("Please toggle at least one tracking sport checkbox block."); return; }
 
-      const payload = { action: "addVenue", schoolId: targetSchoolID, venueName: vName, sportId: sportId };
-      btn.innerText = "Writing Row...";
-      
+      const selectedBaseNames = Array.from(checkedBoxes).map(cb => cb.value);
+      const associatedSportIds = [];
+
+      // Scan and gather every term identifier mapping to checked base sports
+      globalSportsData.forEach(sport => {
+        const baseName = sport.Name.split('(')[0].trim();
+        if (selectedBaseNames.includes(baseName)) {
+          associatedSportIds.push(sport.SportID);
+        }
+      });
+
+      const payload = { 
+        action: "addVenue", 
+        schoolId: targetSchoolID, 
+        venueName: vName, 
+        sportIds: associatedSportIds,
+        weekdayStart: document.getElementById('new-v-wkd-start').value,
+        weekdayEnd: document.getElementById('new-v-wkd-end').value,
+        weekendStart: document.getElementById('new-v-wnd-start').value,
+        weekendEnd: document.getElementById('new-v-wnd-end').value
+      };
+
+      btn.innerText = "Syncing Matrix Rows...";
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
         const result = await res.json();
         if(result.status === "success") {
-          btn.innerText = "Court Added ✓";
+          btn.innerText = "Facility Saved ✓";
           btn.style.backgroundColor = "#52C920";
           document.getElementById('new-venue-name').value = '';
-          setTimeout(() => { initApp(); btn.innerText = "➕ Add Facility"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
+          checkedBoxes.forEach(cb => cb.checked = false);
+          setTimeout(() => { initApp(); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
         } else { alert("Error: " + result.message); }
-      } catch(e) { alert("Network exception occurred mapping venue pack."); }
+      } catch(e) { alert("Network exception occurred mapping venue loops."); }
     }
 
     async function submitVenueHoursUpdate() {
@@ -830,7 +903,7 @@
         if(result.status === "success") {
           btn.innerText = "Hours Locked ✓";
           btn.style.backgroundColor = "#52C920";
-          setTimeout(() => { initApp(); btn.innerText = "Save Facility Hours"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
+          setTimeout(() => { initApp(); btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
         } else { alert("Error: " + result.message); }
       } catch(e) { alert("Network drop during save transaction loop."); }
     }
