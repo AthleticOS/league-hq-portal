@@ -143,12 +143,10 @@
 
   <div class="container" id="app-container">
     
-    <!-- TAB: GAMES -->
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
 
-    <!-- TAB: TEAMS -->
     <div id="tab-teams" class="tab-content">
       <div class="card">
         <div class="card-header">Register for Division</div>
@@ -161,7 +159,6 @@
       </div>
     </div>
 
-    <!-- TAB: ROSTERS -->
     <div id="tab-registration" class="tab-content">
       <div class="card">
         <div class="card-header">Register New Player</div>
@@ -178,10 +175,8 @@
       </div>
     </div>
 
-    <!-- TAB: VENUE AVAILABILITY MANAGEMENT MODULE -->
     <div id="tab-availability" class="tab-content">
       
-      <!-- BLOCK 0: ADD NEW FACILITY DIRECTLY WITH QUANTITY & MULTI-SPORT CHECKBOX CARRIERS -->
       <div class="card">
         <div class="card-header">🛠️ Add New Parent Facility Asset</div>
         
@@ -193,8 +188,7 @@
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
-          <!-- Rendered dynamically -->
-        </div>
+          </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
@@ -220,7 +214,6 @@
         <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
       </div>
 
-      <!-- BLOCK A: STANDARD VENUE OPERATING ENVELOPE MODIFIER -->
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
@@ -252,7 +245,6 @@
         </div>
       </div>
 
-      <!-- BLOCK B: INTERACTIVE CALENDAR MESH CONTAINER -->
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
         
@@ -273,7 +265,6 @@
         </div>
       </div>
 
-      <!-- BLOCK C: SINGLE DATE BLOCKOUT CALENDAR EXEMPTIONS -->
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
         
@@ -311,19 +302,16 @@
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
-      <!-- BLOCK D: AUDIT TRAIL LOG LIST -->
       <div class="card">
         <div class="card-header">📋 Logged Exceptions Status</div>
         <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
-    <!-- TAB: MESSAGES -->
     <div id="tab-messages" class="tab-content">
       <div class="card" id="messages-list"></div>
     </div>
 
-    <!-- TAB: HELP -->
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
@@ -343,8 +331,7 @@
   </div>
 
   <script>
-    // --- IMPORTANT STEP --- 
-    // IF YOU GENERATE A NEW DEPLOYMENT VERSION, PASTE THAT NEW LINK KEY REPLACEMENT HERE:
+    // --- CONSOLIDATED HARDCODED ENDPOINT MASTER LINK --- 
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -641,8 +628,8 @@
         const rStatus = readFlexibleObjectValue(team, "RegistrationStatus");
 
         const displayName = getTeamDisplayName(sId, dId, sportsData, divisionsData);
-        addSelect.innerHTML += `<option value="${tId}">${displayName}</option>}`;
-        manageSelect.innerHTML += `<option value="${tId}">${displayName}</option>}`;
+        addSelect.innerHTML += `<option value="${tId}">${displayName}</option>`;
+        manageSelect.innerHTML += `<option value="${tId}">${displayName}</option>`;
 
         let statusClass = "status-badge";
         let statusText = String(rStatus || "Unknown").toLowerCase();
@@ -693,8 +680,7 @@
 
       const baseNames = [];
       sports.forEach(sport => {
-        const sName = readFlexibleObjectValue(sport, "Name");
-        const baseName = String(sName || '').split('(')[0].trim();
+        const baseName = String(readFlexibleObjectValue(sport, "Name")).split('(')[0].trim();
         if (baseName && !baseNames.includes(baseName)) baseNames.push(baseName);
       });
 
@@ -708,7 +694,6 @@
       });
     }
 
-    // ADAPTIVE RENDERING LOG: Uses loose searching properties to populate menus without checking hardcoded keys
     function populateAvailabilityMenus(venues, sports) {
       const vSelect = document.getElementById('avail-venue-select');
       const exVSelect = document.getElementById('ex-venue-id');
@@ -725,7 +710,7 @@
         const vId = readFlexibleObjectValue(v, "VenueID");
         const sId = readFlexibleObjectValue(v, "SportID");
         const sport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
-        const textLabel = `${String(vId).toUpperCase()} - ${sport ? readFlexibleObjectValue(sport, "Name") : 'Field court'}`;
+        const textLabel = `${String(vId).toUpperCase()} - ${sport ? readFlexibleObjectValue(sport, "Name") : 'Field Court'}`;
         
         vSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
         exVSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
@@ -853,10 +838,10 @@
         venueName: vName, 
         unitCount: units,
         sportIds: associatedSportIds,
-        weekdayStart: "16:00:00",
-        weekdayEnd: "19:30:00",
-        weekendStart: "08:00:00",
-        weekendEnd: "17:00:00"
+        weekdayStart: document.getElementById('new-v-wkd-start').value || "16:00:00",
+        weekdayEnd: document.getElementById('new-v-wkd-end').value || "19:30:00",
+        weekendStart: document.getElementById('new-v-wnd-start').value || "08:00:00",
+        weekendEnd: document.getElementById('new-v-wnd-end').value || "17:00:00"
       };
 
       btn.innerText = "Syncing Matrix Rows...";
