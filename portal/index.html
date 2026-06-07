@@ -143,10 +143,12 @@
 
   <div class="container" id="app-container">
     
+    <!-- TAB: GAMES -->
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
 
+    <!-- TAB: TEAMS -->
     <div id="tab-teams" class="tab-content">
       <div class="card">
         <div class="card-header">Register for Division</div>
@@ -159,6 +161,7 @@
       </div>
     </div>
 
+    <!-- TAB: ROSTERS -->
     <div id="tab-registration" class="tab-content">
       <div class="card">
         <div class="card-header">Register New Player</div>
@@ -175,8 +178,10 @@
       </div>
     </div>
 
+    <!-- TAB: VENUE AVAILABILITY MODULE -->
     <div id="tab-availability" class="tab-content">
       
+      <!-- BLOCK 0: ADD NEW FACILITY DIRECTLY -->
       <div class="card">
         <div class="card-header">🛠️ Add New Parent Facility Asset</div>
         
@@ -188,7 +193,8 @@
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
-          </div>
+          <!-- Generated Dynamically -->
+        </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
@@ -214,6 +220,7 @@
         <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
       </div>
 
+      <!-- BLOCK A: STANDARD VENUE OPERATING ENVELOPE MODIFIER -->
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
@@ -245,6 +252,7 @@
         </div>
       </div>
 
+      <!-- BLOCK B: INTERACTIVE CALENDAR MESH CONTAINER -->
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
         
@@ -265,6 +273,7 @@
         </div>
       </div>
 
+      <!-- BLOCK C: SINGLE DATE BLOCKOUT CALENDAR EXEMPTIONS -->
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
         
@@ -302,21 +311,40 @@
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
+      <!-- BLOCK D: AUDIT TRAIL LOG LIST -->
       <div class="card">
         <div class="card-header">📋 Logged Exceptions Status</div>
         <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
+    <!-- TAB: MESSAGES -->
     <div id="tab-messages" class="tab-content">
       <div class="card" id="messages-list"></div>
     </div>
 
+    <!-- TAB: HELP (RESTORED MASTER INTERFACE CARD) -->
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
         <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
         <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: #25D366; color: white;">💬 WhatsApp Admin</a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Frequently Asked Questions</div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I report a final score?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Go to the 'Games' tab, enter the Home and Away scores, select 'Completed' from the status dropdown, and tap 'Update Match'.</p>
+        </div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I register a new team?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Navigate to the 'Teams' tab, select the division you wish to compete in, and tap 'Register Team'. The division will then activate in your Rosters tab dropdown list.</p>
+        </div>
+        <div style="margin-bottom: 0;">
+          <strong style="font-size: 0.9rem;">Why can't I edit a player's Date of Birth?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">To maintain league eligibility compliance, player birthdays are permanently locked upon submission. Contact your League Director to request an official change.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -331,7 +359,6 @@
   </div>
 
   <script>
-    // --- MASTER RE-ROUTED DIRECT API WEBHOOK LINK --- 
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -359,7 +386,6 @@
       return accurateKey ? obj[accurateKey] : '';
     }
 
-    // --- RESTORED HANDSHAKE FUNCTION CORE ---
     async function verifyPin() {
       const pinInput = document.getElementById('auth-pin').value;
       const btn = document.getElementById('btn-unlock');
@@ -386,7 +412,7 @@
           document.getElementById('auth-pin').value = '';
         }
       } catch (err) {
-        alert("Network Connection dropped when attempting to process password package stream.");
+        alert("Network Connection failed to clear authentication block.");
         btn.innerText = "Unlock Portal";
         btn.style.backgroundColor = "var(--primary)";
       }
@@ -414,7 +440,8 @@
         if (data.Schools && data.Schools.length > 0) {
           const schoolData = data.Schools.find(s => {
             const val = readFlexibleObjectValue(s, "SchoolID");
-            return String(val).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+            return String(val).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() ||
+                   String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase();
           });
           if (schoolData) targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
         }
@@ -598,7 +625,7 @@
       divisions.forEach(div => {
         const divSportId = readFlexibleObjectValue(div, "SportID");
         const associatedSport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(divSportId).trim().toLowerCase());
-        const seasonName = associatedSport && associatedSport.Season ? associatedSport.Season : "General Calendar";
+        const seasonName = associatedSport ? readFlexibleObjectValue(associatedSport, "Season") : "General Calendar";
 
         if (!groups[seasonName]) { groups[seasonName] = []; }
         groups[seasonName].push(div);
@@ -712,8 +739,7 @@
 
       const baseNames = [];
       sports.forEach(sport => {
-        const sName = readFlexibleObjectValue(sport, "Name");
-        const baseName = String(sName || '').split('(')[0].trim();
+        const baseName = String(readFlexibleObjectValue(sport, "Name")).split('(')[0].trim();
         if (baseName && !baseNames.includes(baseName)) baseNames.push(baseName);
       });
 
@@ -727,16 +753,18 @@
       });
     }
 
+    // --- ENHANCED DUAL-REFERENCE ASSIGNMENT FILTERS ---
     function populateAvailabilityMenus(venues, sports) {
       const vSelect = document.getElementById('avail-venue-select');
       const exVSelect = document.getElementById('ex-venue-id');
       
       vSelect.innerHTML = '<option value="">Select Mapped Facility...</option>';
-      exVSelect.innerHTML = '';
+      exVSelect.innerHTML = '<option value="">Select Target Facility...</option>';
 
       const schoolVenues = venues.filter(v => {
-        const val = readFlexibleObjectValue(v, "SchoolID");
-        return String(val).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+        const schoolFieldVal = String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase();
+        return schoolFieldVal === String(targetSchoolID).trim().toLowerCase() || 
+               schoolFieldVal === String(targetSchoolName).trim().toLowerCase();
       });
       
       schoolVenues.forEach(v => {
@@ -795,7 +823,8 @@
       }
 
       const schoolVenues = globalVenuesData.filter(v => {
-        return String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+        const val = String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase();
+        return val === String(targetSchoolID).trim().toLowerCase() || val === String(targetSchoolName).trim().toLowerCase();
       }).map(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase());
 
       for (let day = 1; day <= totalDays; day++) {
@@ -955,7 +984,8 @@
       container.innerHTML = '';
 
       const schoolVenues = globalVenuesData.filter(v => {
-        return String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+        const val = String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase();
+        return val === String(targetSchoolID).trim().toLowerCase() || val === String(targetSchoolName).trim().toLowerCase();
       }).map(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase());
       
       const elements = globalAvailabilityData.filter(a => {
@@ -1126,24 +1156,7 @@
       } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
     }
 
-    document.addEventListener("DOMContentLoaded", () => {
-      if (!targetSchoolID) {
-        document.getElementById('error-screen').style.display = 'block';
-        return;
-      }
-      if (sessionStorage.getItem(`auth_${targetSchoolID}`) === "true") {
-        initApp(); 
-      } else {
-        document.getElementById('pin-screen').style.display = 'block'; 
-      }
-    });
-
-    function switchTab(tabId) {
-      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      if (event && event.currentTarget) { event.currentTarget.classList.add('active'); }
-    }
+    switchTab('games');
   </script>
 </body>
 </html>
