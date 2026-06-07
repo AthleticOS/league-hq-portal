@@ -84,7 +84,7 @@
     .prop-status-text.approved { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
     .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
 
-    /* CALENDAR COMPONENT CSS LAYOUT */
+    /* CALENDAR GRID LAYOUT */
     .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
     .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
     .cal-day-node { background: #F1F5F9; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; }
@@ -143,12 +143,10 @@
 
   <div class="container" id="app-container">
     
-    <!-- TAB: GAMES -->
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
 
-    <!-- TAB: TEAMS -->
     <div id="tab-teams" class="tab-content">
       <div class="card">
         <div class="card-header">Register for Division</div>
@@ -161,7 +159,6 @@
       </div>
     </div>
 
-    <!-- TAB: ROSTERS -->
     <div id="tab-registration" class="tab-content">
       <div class="card">
         <div class="card-header">Register New Player</div>
@@ -178,10 +175,8 @@
       </div>
     </div>
 
-    <!-- TAB: VENUE AVAILABILITY MODULE -->
     <div id="tab-availability" class="tab-content">
       
-      <!-- BLOCK 0: ADD NEW FACILITY DIRECTLY -->
       <div class="card">
         <div class="card-header">🛠️ Add New Facility / Court</div>
         
@@ -190,8 +185,7 @@
         
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
-          <!-- Dynamically Generated -->
-        </div>
+          </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
@@ -217,7 +211,6 @@
         <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
       </div>
 
-      <!-- BLOCK A: STANDARD VENUE OPERATING ENVELOPE MODIFIER -->
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
@@ -249,7 +242,6 @@
         </div>
       </div>
 
-      <!-- BLOCK B: INTERACTIVE CALENDAR MESH CONTAINER -->
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
         
@@ -270,7 +262,6 @@
         </div>
       </div>
 
-      <!-- BLOCK C: SINGLE DATE BLOCKOUT CALENDAR EXEMPTIONS -->
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
         
@@ -308,40 +299,21 @@
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
-      <!-- BLOCK D: AUDIT TRAIL LOG LIST -->
       <div class="card">
         <div class="card-header">📋 Logged Exceptions Status</div>
         <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
-    <!-- TAB: MESSAGES -->
     <div id="tab-messages" class="tab-content">
       <div class="card" id="messages-list"></div>
     </div>
 
-    <!-- TAB: HELP -->
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
         <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
         <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: #25D366; color: white;">💬 WhatsApp Admin</a>
-      </div>
-
-      <div class="card">
-        <div class="card-header">Frequently Asked Questions</div>
-        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-          <strong style="font-size: 0.9rem;">How do I report a final score?</strong>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Go to the 'Games' tab, enter the Home and Away scores, select 'Completed' from the status dropdown, and tap 'Update Match'.</p>
-        </div>
-        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
-          <strong style="font-size: 0.9rem;">How do I register a new team?</strong>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Navigate to the 'Teams' tab, select the division you wish to compete in, and tap 'Register Team'. The division will then activate in your Rosters tab dropdown list.</p>
-        </div>
-        <div style="margin-bottom: 0;">
-          <strong style="font-size: 0.9rem;">Why can't I edit a player's Date of Birth?</strong>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">To maintain league eligibility compliance, player birthdays are permanently locked upon submission. Contact your League Director to request an official change.</p>
-        </div>
       </div>
     </div>
   </div>
@@ -374,10 +346,6 @@
     let calFocusDate = new Date(); 
 
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
-
-    function clientNormalize(str) {
-      return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
-    }
 
     document.addEventListener("DOMContentLoaded", () => {
       if (!targetSchoolID) {
@@ -430,56 +398,36 @@
 
       try {
         const response = await fetch(API_URL);
-        if (!response.ok) throw new Error("HTTP connection check failed against Web App URL");
+        if (!response.ok) throw new Error("HTTP connection failed against Web App URL");
         
         const data = await response.json();
-        
-        if (data && data.status === "error") {
-          throw new Error("Apps Script API Exception: " + data.message);
-        }
+        if (data && data.status === "error") throw new Error(data.message);
 
-        // --- HIGH-COMPATIBILITY CLIENT-SIDE TABLE KEY NORMALIZATION INTERCEPTOR ---
-        const mapToNormalizedObjectKeys = (rowsArray) => {
-          if (!rowsArray || !Array.isArray(rowsArray)) return [];
-          return rowsArray.map(row => {
-            const normalizedRow = { ...row };
-            Object.keys(row).forEach(originalKey => {
-              const cleanedKey = originalKey.toLowerCase().replace(/[^a-z0-9]/g, '');
-              normalizedRow[cleanedKey] = row[originalKey];
-            });
-            return normalizedRow;
-          });
-        };
+        // --- PRESERVE ABSOLUTE ORIGINAL CASE STRUCTURES ---
+        globalRosterData = data.Roster || [];
+        globalTeamsData = data.Teams || [];
+        globalDivisionsData = data.Divisions || [];
+        globalVenuesData = data.Venues || [];
+        globalAvailabilityData = data.School_Availability || [];
+        globalSportsData = data.Sports || [];
 
-        globalRosterData = mapToNormalizedObjectKeys(data.Roster || data.roster);
-        globalTeamsData = mapToNormalizedObjectKeys(data.Teams || data.teams);
-        globalDivisionsData = mapToNormalizedObjectKeys(data.Divisions || data.divisions);
-        globalVenuesData = mapToNormalizedObjectKeys(data.Venues || data.venues);
-        globalAvailabilityData = mapToNormalizedObjectKeys(data.School_Availability || data.schoolavailability || data.SchoolAvailability);
-        globalSportsData = mapToNormalizedObjectKeys(data.Sports || data.sports);
-        
-        const normalizedSchools = mapToNormalizedObjectKeys(data.Schools || data.schools);
-        const normalizedFixtures = mapToNormalizedObjectKeys(data.Fixtures || data.fixtures);
-        const normalizedMessages = mapToNormalizedObjectKeys(data.Messages || data.messages);
-
-        if (normalizedSchools.length > 0) {
-          const schoolData = normalizedSchools.find(s => clientNormalize(s.schoolid) === clientNormalize(targetSchoolID));
-          if (schoolData && (schoolData.name || schoolData.Name)) targetSchoolName = schoolData.name || schoolData.Name;
+        if (data.Schools) {
+          const schoolData = data.Schools.find(s => String(s.SchoolID).trim() === String(targetSchoolID).trim());
+          if (schoolData && schoolData.Name) targetSchoolName = schoolData.Name;
         }
 
         if (data.Settings && data.Settings.length > 0) {
-          const settingsObj = mapToNormalizedObjectKeys(data.Settings)[0];
-          leagueYear = parseInt(settingsObj.seasonyear) || 2026;
-          cutoffMonth = parseInt(settingsObj.cutoffmonth) || 1;
-          cutoffDay = parseInt(settingsObj.cutoffday) || 1;
+          leagueYear = parseInt(data.Settings[0].Season_Year) || 2026;
+          cutoffMonth = parseInt(data.Settings[0].Cutoff_Month) || 1;
+          cutoffDay = parseInt(data.Settings[0].Cutoff_Day) || 1;
         }
         
         document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
 
-        renderGames(normalizedFixtures, normalizedSchools, globalSportsData, globalDivisionsData);
+        renderGames(data.Fixtures || [], data.Schools || [], globalSportsData, globalDivisionsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
-        renderMessages(normalizedMessages);
+        renderMessages(data.Messages || []);
         
         populateAvailabilityMenus(globalVenuesData, globalSportsData);
         populateSportsMenu(globalSportsData);
@@ -489,7 +437,7 @@
         document.getElementById('app-container').style.display = 'block';
         document.getElementById('bottom-nav').style.display = 'flex';
       } catch (error) {
-        console.error("Master Sync Failure:", error);
+        console.error("Master Sync Failure Detailed Report:", error);
         loaderElement.style.color = "red";
         loaderElement.innerHTML = `<div style="padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px;">
           <h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4>
@@ -500,16 +448,16 @@
 
     function getSchoolName(id, schoolsData) {
       if (!id) return 'TBA';
-      const match = (schoolsData || []).find(s => clientNormalize(s.schoolid) === clientNormalize(id));
-      return match && match.name ? match.name : id;
+      const match = schoolsData.find(s => String(s.SchoolID).trim() === String(id).trim());
+      return match && match.Name ? match.Name : id;
     }
 
     function getTeamDisplayName(sportId, divisionId, sportsData, divisionsData) {
-      const sport = sportsData ? sportsData.find(s => clientNormalize(s.sportid) === clientNormalize(sportId)) : null;
-      const sportName = sport && sport.name ? sport.name : (sportId || 'Unknown Sport');
-      const div = divisionsData ? divisionsData.find(d => clientNormalize(d.divisionid) === clientNormalize(divisionId)) : null;
-      const gender = div && div.gender ? div.gender : '';
-      const ageLimit = div && div.agelimit ? div.agelimit : (divisionId || 'Unknown Div');
+      const sport = sportsData.find(s => String(s.SportID).trim() === String(sportId).trim());
+      const sportName = sport && sport.Name ? sport.Name : (sportId || 'Unknown Sport');
+      const div = divisionsData.find(d => String(d.DivisionID).trim() === String(divisionId).trim());
+      const gender = div && div.Gender ? div.Gender : '';
+      const ageLimit = div && div.Age_Limit ? div.Age_Limit : (divisionId || 'Unknown Div');
       if (gender) return `${sportName} - ${gender} - ${ageLimit}`;
       return `${sportName} - ${ageLimit}`;
     }
@@ -517,7 +465,7 @@
     function renderGames(fixtures, schoolsData, sportsData, divisionsData) {
       const container = document.getElementById('games-list');
       container.innerHTML = '';
-      const schoolGames = (fixtures || []).filter(game => (game.hometeamid && game.hometeamid.includes(targetSchoolID)) || (game.awayteamid && game.awayteamid.includes(targetSchoolID)));
+      const schoolGames = fixtures.filter(game => (game.HomeTeamID && game.HomeTeamID.includes(targetSchoolID)) || (game.AwayTeamID && game.AwayTeamID.includes(targetSchoolID)));
 
       if (schoolGames.length === 0) {
         container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`;
@@ -529,21 +477,21 @@
         card.className = 'card';
         let optionsHtml = '';
         statusOptions.forEach(status => {
-          let selected = (game.matchstatus === status) ? 'selected' : '';
+          let selected = (game.MatchStatus === status) ? 'selected' : '';
           optionsHtml += `<option value="${status}" ${selected}>${status}</option>`;
         });
 
-        const headerDetails = getTeamDisplayName(game.sportid, game.divisionid, sportsData, divisionsData);
-        const homeName = getSchoolName(game.hometeamid, schoolsData);
-        const awayName = getSchoolName(game.awayteamid, schoolsData);
+        const headerDetails = getTeamDisplayName(game.SportID, game.DivisionID, sportsData, divisionsData);
+        const homeName = getSchoolName(game.HomeTeamID, schoolsData);
+        const awayName = getSchoolName(game.AwayTeamID, schoolsData);
 
-        let currentSide = String(game.hometeamid || '').includes(targetSchoolID) ? "Home" : "Away";
-        let scoreSubmitter = game.scoresubmitter;
+        let currentSide = String(game.HomeTeamID || '').includes(targetSchoolID) ? "Home" : "Away";
+        let scoreSubmitter = game.Score_Submitter;
         let isScoreLocked = false;
         let scoreBadgeHtml = "";
-        let scoreActionButtonsHtml = `<button class="btn-submit" onclick="submitScore('${game.gameid}')">Update Match</button>`;
+        let scoreActionButtonsHtml = `<button class="btn-submit" onclick="submitScore('${game.GameID}')">Update Match</button>`;
 
-        if (game.matchstatus === "Pending Verification") {
+        if (game.MatchStatus === "Pending Verification") {
           isScoreLocked = true;
           if (scoreSubmitter === currentSide) {
             scoreBadgeHtml = `<div class="prop-status-text waiting" style="text-align:center; margin-bottom:12px;">Scores Logged. Waiting on opponent verification.</div>`;
@@ -552,28 +500,28 @@
             scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px;">Opponent logged scores. Verify accuracy below.</div>`;
             scoreActionButtonsHtml = `
               <div style="display:flex; gap:10px;">
-                <button class="btn-submit" style="background-color:#166534;" onclick="submitScoreVerification('${game.gameid}', 'confirm')">✓ Confirm Score</button>
-                <button class="btn-submit" style="background-color:#991B1B;" onclick="submitScoreVerification('${game.gameid}', 'dispute')">❌ Dispute Score</button>
+                <button class="btn-submit" style="background-color:#166534;" onclick="submitScoreVerification('${game.GameID}', 'confirm')">✓ Confirm Score</button>
+                <button class="btn-submit" style="background-color:#991B1B;" onclick="submitScoreVerification('${game.GameID}', 'dispute')">❌ Dispute Score</button>
               </div>`;
           }
-        } else if (game.matchstatus === "Disputed") {
+        } else if (game.MatchStatus === "Disputed") {
           isScoreLocked = true;
           scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px; background-color:#FEE2E2; color:#991B1B; border-color:#FCA5A5;">⚠️ DISPUTED — Awaiting Admin Review</div>`;
           scoreActionButtonsHtml = "";
-        } else if (game.matchstatus === "Completed") {
+        } else if (game.MatchStatus === "Completed") {
           isScoreLocked = true;
           scoreBadgeHtml = `<div class="prop-status-text approved" style="text-align:center; margin-bottom:12px;">✓ Match Completed & Verified</div>`;
           scoreActionButtonsHtml = "";
         }
 
         let proposalsHtml = "";
-        if (game.matchstatus === "Postponed" && (game.proposeddate1 || game.proposeddate2 || game.proposeddate3)) {
+        if (game.MatchStatus === "Postponed" && (game.ProposedDate1 || game.ProposedDate2 || game.ProposedDate3)) {
           proposalsHtml += `<div class="proposal-box"><div class="proposal-title">⏱ Mutual Rescheduling Requested</div>`;
           
           for (let pNum = 1; pNum <= 3; pNum++) {
-            let pDate = game[`proposeddate${pNum}`];
-            let pTime = game[`proposedtime${pNum}`];
-            let pStatus = game[`prop${pNum}status`];
+            let pDate = game[`ProposedDate${pNum}`];
+            let pTime = game[`ProposedTime${pNum}`];
+            let pStatus = game[`Prop${pNum}_Status`];
 
             if (pDate && pDate !== "") {
               proposalsHtml += `<div class="proposal-row"><span>Option ${pNum}: <b>${pDate}</b> @ ${pTime}</span>`;
@@ -581,8 +529,8 @@
               if (!pStatus || pStatus === "" || pStatus === "null") {
                 proposalsHtml += `
                   <div class="prop-actions">
-                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.gameid}', ${pNum}, 'accept')">Accept</button>
-                    <button class="btn-prop-decline" onclick="submitProposalVote('${game.gameid}', ${pNum}, 'decline')">Decline</button>
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'accept')">Accept</button>
+                    <button class="btn-prop-decline" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'decline')">Decline</button>
                   </div>`;
               } else if (pStatus === currentSide) {
                 proposalsHtml += `<span class="prop-status-text waiting">Waiting on Opponent</span>`;
@@ -590,7 +538,7 @@
                 proposalsHtml += `
                   <div class="prop-actions">
                     <span class="prop-status-text action-needed" style="margin-right:5px;">Opponent Agreed!</span>
-                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.gameid}', ${pNum}, 'accept')">Agree & Finalize</button>
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${game.GameID}', ${pNum}, 'accept')">Agree & Finalize</button>
                   </div>`;
               }
               proposalsHtml += `</div>`;
@@ -600,17 +548,17 @@
         }
 
         card.innerHTML = `
-          <div class="card-header">${game.date || 'TBD'} | ${headerDetails}</div>
+          <div class="card-header">${game.Date || 'TBD'} | ${headerDetails}</div>
           ${scoreBadgeHtml}
           <div class="matchup">
             <div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${homeName}</div>
             <div style="color: #E2E8F0; padding: 0 10px;">VS</div>
             <div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${awayName}</div>
           </div>
-          <select class="status-select" id="status-${game.gameid}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select>
+          <select class="status-select" id="status-${game.GameID}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select>
           <div class="matchup">
-             <input type="number" class="score-input" id="homeScore-${game.gameid}" value="${game.homescore !== undefined ? game.homescore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
-             <input type="number" class="score-input" id="awayScore-${game.gameid}" value="${game.awayscore !== undefined ? game.awayscore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
+             <input type="number" class="score-input" id="homeScore-${game.GameID}" value="${game.HomeScore !== undefined ? game.HomeScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
+             <input type="number" class="score-input" id="awayScore-${game.GameID}" value="${game.AwayScore !== undefined ? game.AwayScore : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}>
           </div>
           ${scoreActionButtonsHtml}
           ${proposalsHtml}
@@ -625,9 +573,9 @@
       if(!divisions) return;
 
       const groups = {};
-      (divisions || []).forEach(div => {
-        const associatedSport = sports ? sports.find(s => clientNormalize(s.sportid) === clientNormalize(div.sportid)) : null;
-        const seasonName = associatedSport && associatedSport.season ? associatedSport.season : "General Calendar";
+      divisions.forEach(div => {
+        const associatedSport = sports.find(s => String(s.SportID).trim() === String(div.SportID).trim());
+        const seasonName = associatedSport && associatedSport.Season ? associatedSport.Season : "General Calendar";
 
         if (!groups[seasonName]) { groups[seasonName] = []; }
         groups[seasonName].push(div);
@@ -640,21 +588,21 @@
         optgroup.label = String(season).toUpperCase();
 
         groups[season].sort((a, b) => {
-          const sportA = sports ? sports.find(s => clientNormalize(s.sportid) === clientNormalize(a.sportid)) : null;
-          const sportB = sports ? sports.find(s => clientNormalize(s.sportid) === clientNormalize(b.sportid)) : null;
-          const nameA = sportA && sportA.name ? sportA.name.toLowerCase() : String(a.sportid).toLowerCase();
-          const nameB = sportB && sportB.name ? sportB.name.toLowerCase() : String(b.sportid).toLowerCase();
+          const sportA = sports.find(s => String(s.SportID).trim() === String(a.SportID).trim());
+          const sportB = sports.find(s => String(s.SportID).trim() === String(b.SportID).trim());
+          const nameA = sportA && sportA.Name ? sportA.Name.toLowerCase() : String(a.SportID).toLowerCase();
+          const nameB = sportB && sportB.Name ? sportB.Name.toLowerCase() : String(b.SportID).toLowerCase();
 
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
-          return (parseInt(String(a.agelimit).replace(/\D/g, '')) || 0) - (parseInt(String(b.agelimit).replace(/\D/g, '')) || 0);
+          return (parseInt(String(a.Age_Limit).replace(/\D/g, '')) || 0) - (parseInt(String(b.Age_Limit).replace(/\D/g, '')) || 0);
         });
 
         groups[season].forEach(div => {
-          const displayName = getTeamDisplayName(div.sportid, div.divisionid, sports, divisions);
+          const displayName = getTeamDisplayName(div.SportID, div.DivisionID, sports, divisions);
           const option = document.createElement('option');
-          option.value = div.divisionid;
-          option.setAttribute('data-sport', div.sportid);
+          option.value = div.DivisionID;
+          option.setAttribute('data-sport', div.SportID);
           option.textContent = displayName;
           optgroup.appendChild(option);
         });
@@ -671,23 +619,23 @@
       manageSelect.innerHTML = '<option value="">Select Team to View Roster...</option>';
       currentTeamsList.innerHTML = '';
       
-      const schoolTeams = (teams || []).filter(t => clientNormalize(t.schoolid) === clientNormalize(targetSchoolID));
+      const schoolTeams = teams.filter(t => String(t.SchoolID).trim() === String(targetSchoolID).trim());
       if (schoolTeams.length === 0) {
         currentTeamsList.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No teams registered yet.</p>';
         return;
       }
 
       schoolTeams.forEach(team => {
-        const displayName = getTeamDisplayName(team.sportid, team.divisionid, sportsData, divisionsData);
-        addSelect.innerHTML += `<option value="${team.teamid}">${displayName}</option>`;
-        manageSelect.innerHTML += `<option value="${team.teamid}">${displayName}</option>`;
+        const displayName = getTeamDisplayName(team.SportID, team.DivisionID, sportsData, divisionsData);
+        addSelect.innerHTML += `<option value="${team.TeamID}">${displayName}</option>`;
+        manageSelect.innerHTML += `<option value="${team.TeamID}">${displayName}</option>`;
 
         let statusClass = "status-badge";
-        let statusText = String(team.registrationstatus || "Unknown").toLowerCase();
+        let statusText = String(team.RegistrationStatus || "Unknown").toLowerCase();
         if(statusText === "pending") statusClass += " pending";
         if(statusText === "active" || statusText === "approved") statusClass += " active";
 
-        currentTeamsList.innerHTML += `<div class="team-card"><span>${displayName}</span><span class="${statusClass}">${team.registrationstatus || 'Unknown'}</span></div>`;
+        currentTeamsList.innerHTML += `<div class="team-card"><span>${displayName}</span><span class="${statusClass}">${team.RegistrationStatus || 'Unknown'}</span></div>`;
       });
     }
 
@@ -695,12 +643,12 @@
       const container = document.getElementById('roster-list');
       if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
 
-      const teamRoster = (globalRosterData || []).filter(p => clientNormalize(p.teamid) === clientNormalize(teamId));
+      const teamRoster = globalRosterData.filter(p => String(p.TeamID).trim() === String(teamId).trim());
       if (teamRoster.length === 0) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center;">No players found on this roster.</p>'; return; }
 
       container.innerHTML = '';
       teamRoster.forEach(player => {
-        const rawStatus = String(player.eligibilitystatus || '').trim().toUpperCase();
+        const rawStatus = String(player.EligibilityStatus || '').trim().toUpperCase();
         let statusClass = "prop-status-text approved";
         let statusText = "✔️ Eligible";
 
@@ -712,12 +660,12 @@
         container.innerHTML += `
           <div class="player-card">
             <div class="player-meta">
-              <span>DOB: <b>${player.dateofbirth || 'N/A'}</b></span>
+              <span>DOB: <b>${player.DateOfBirth || 'N/A'}</b></span>
               <span class="${statusClass}">${statusText}</span>
             </div>
-            <input type="text" class="text-input" id="nick-${player.rosterid}" value="${player.nickname || ''}" placeholder="Player Name">
-            <input type="number" class="text-input" id="jersey-${player.rosterid}" value="${player.jerseynumber || ''}" placeholder="Jersey Number">
-            <button class="btn-submit btn-small" style="background-color: var(--text-muted);" id="btn-update-${player.rosterid}" onclick="updatePlayer('${player.rosterid}')">Save Changes</button>
+            <input type="text" class="text-input" id="nick-${player.RosterID}" value="${player.Nickname || ''}" placeholder="Player Name">
+            <input type="number" class="text-input" id="jersey-${player.RosterID}" value="${player.JerseyNumber || ''}" placeholder="Jersey Number">
+            <button class="btn-submit btn-small" style="background-color: var(--text-muted);" id="btn-update-${player.RosterID}" onclick="updatePlayer('${player.RosterID}')">Save Changes</button>
           </div>
         `;
       });
@@ -730,8 +678,7 @@
 
       const baseNames = [];
       sports.forEach(sport => {
-        const sportNameString = String(sport.name || '');
-        const baseName = sportNameString.split('(')[0].trim();
+        const baseName = String(sport.Name || '').split('(')[0].trim();
         if (baseName && !baseNames.includes(baseName)) baseNames.push(baseName);
       });
 
@@ -752,14 +699,14 @@
       vSelect.innerHTML = '<option value="">Select Mapped Facility...</option>';
       exVSelect.innerHTML = '';
 
-      const schoolVenues = (venues || []).filter(v => clientNormalize(v.schoolid) === clientNormalize(targetSchoolID));
+      const schoolVenues = venues.filter(v => String(v.SchoolID).trim() === String(targetSchoolID).trim());
       
       schoolVenues.forEach(v => {
-        const sport = (sports || []).find(s => clientNormalize(s.sportid) === clientNormalize(v.sportid));
-        const textLabel = `${String(v.venueid).toUpperCase()} - ${sport ? sport.name : 'Facility Court'}`;
+        const sport = sports.find(s => String(s.SportID).trim() === String(v.SportID).trim());
+        const textLabel = `${String(v.VenueID).toUpperCase()} - ${sport ? sport.Name : 'Facility Court'}`;
         
-        vSelect.innerHTML += `<option value="${v.venueid}">${textLabel}</option>`;
-        exVSelect.innerHTML += `<option value="${v.venueid}">${textLabel}</option>`;
+        vSelect.innerHTML += `<option value="${v.VenueID}">${textLabel}</option>`;
+        exVSelect.innerHTML += `<option value="${v.VenueID}">${textLabel}</option>`;
       });
 
       renderAvailabilityExceptionLogs();
@@ -769,12 +716,12 @@
       const form = document.getElementById('venue-hours-form');
       if(!venueId) { form.style.display = 'none'; return; }
 
-      const venue = (globalVenuesData || []).find(v => clientNormalize(v.venueid) === clientNormalize(venueId));
+      const venue = globalVenuesData.find(v => String(v.VenueID).trim() === String(venueId).trim());
       if(venue) {
-        document.getElementById('hours-v-wkd-start').value = venue.weekday_start_time || venue.weekdaystarttime || '';
-        document.getElementById('hours-v-wkd-end').value = venue.weekday_end_time || venue.weekdayendtime || '';
-        document.getElementById('hours-v-wnd-start').value = venue.weekend_start_time || venue.weekendstarttime || '';
-        document.getElementById('hours-v-wnd-end').value = venue.weekend_end_time || venue.weekendendtime || '';
+        document.getElementById('hours-v-wkd-start').value = venue.Weekday_Start_Time || '';
+        document.getElementById('hours-v-wkd-end').value = venue.Weekday_End_Time || '';
+        document.getElementById('hours-v-wnd-start').value = venue.Weekend_Start_Time || '';
+        document.getElementById('hours-v-wnd-end').value = venue.Weekend_End_Time || '';
         form.style.display = 'block';
       }
     }
@@ -807,7 +754,7 @@
         mesh.innerHTML += `<div class="cal-day-node empty-spacer"></div>`;
       }
 
-      const schoolVenues = (globalVenuesData || []).filter(v => clientNormalize(v.schoolid) === clientNormalize(targetSchoolID)).map(v => clientNormalize(v.venueid));
+      const schoolVenues = globalVenuesData.filter(v => String(v.SchoolID).trim() === String(targetSchoolID).trim()).map(v => String(v.VenueID).trim());
 
       for (let day = 1; day <= totalDays; day++) {
         const loopDate = new Date(year, month, day);
@@ -815,15 +762,15 @@
 
         let dayClass = "cal-day-node";
         
-        const activeBlocks = (globalAvailabilityData || []).filter(a => {
-          if (!schoolVenues.includes(clientNormalize(a.venueid))) return false;
-          const s = new Date(a.startdate);
-          const e = new Date(a.enddate);
+        const activeBlocks = globalAvailabilityData.filter(a => {
+          if (!schoolVenues.includes(String(a.VenueID).trim())) return false;
+          const s = new Date(a.StartDate);
+          const e = new Date(a.EndDate);
           return loopDate >= s && loopDate <= e;
         });
 
         if (activeBlocks.length > 0) {
-          const rawConstraints = activeBlocks.map(b => String(b.constrainttype || b.constraint_type || '').toUpperCase());
+          const rawConstraints = activeBlocks.map(b => String(b.ConstraintType || '').toUpperCase());
           if (rawConstraints.some(c => c.includes("HOLIDAY") || c.includes("NOT AVAILABLE"))) {
             dayClass += " has-blackout";
           } else if (rawConstraints.some(c => c.includes("TRAVEL"))) {
@@ -860,17 +807,16 @@
       const vName = document.getElementById('new-venue-name').value;
       const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
 
-      if (!vName) { alert("Please provide a definitive facility name."); return; }
-      if (checkedBoxes.length === 0) { alert("Please toggle at least one tracking sport checkbox block."); return; }
+      if (!vName) { alert("Please provide a facility name."); return; }
+      if (checkedBoxes.length === 0) { alert("Please toggle at least one sport checkbox block."); return; }
 
       const selectedBaseNames = Array.from(checkedBoxes).map(cb => cb.value);
       const associatedSportIds = [];
 
       globalSportsData.forEach(sport => {
-        const sportNameString = String(sport.name || '');
-        const baseName = sportNameString.split('(')[0].trim();
+        const baseName = String(sport.Name || '').split('(')[0].trim();
         if (selectedBaseNames.includes(baseName)) {
-          associatedSportIds.push(sport.sportid);
+          associatedSportIds.push(sport.SportID);
         }
       });
 
@@ -879,10 +825,10 @@
         schoolId: targetSchoolID, 
         venueName: vName, 
         sportIds: associatedSportIds,
-        weekdayStart: document.getElementById('new-v-wkd-start').value,
-        weekdayEnd: document.getElementById('new-v-wkd-end').value,
-        weekendStart: document.getElementById('new-v-wnd-start').value,
-        weekendEnd: document.getElementById('new-v-wnd-end').value
+        weekdayStart: "16:00:00",
+        weekdayEnd: "19:30:00",
+        weekendStart: "08:00:00",
+        weekendEnd: "17:00:00"
       };
 
       btn.innerText = "Syncing Matrix Rows...";
@@ -929,7 +875,7 @@
       const start = document.getElementById('ex-start-date').value;
       const end = document.getElementById('ex-end-date').value;
 
-      if(!start || !end) { alert("Please provide valid Start and End exception date bounds."); return; }
+      if(!start || !end) { alert("Please provide valid Start and End date parameters."); return; }
 
       const payload = {
         action: "addAvailability",
@@ -961,26 +907,26 @@
       const container = document.getElementById('active-exceptions-list');
       container.innerHTML = '';
 
-      const schoolVenues = (globalVenuesData || []).filter(v => clientNormalize(v.schoolid) === clientNormalize(targetSchoolID)).map(v => clientNormalize(v.venueid));
-      const elements = (globalAvailabilityData || []).filter(a => schoolVenues.includes(clientNormalize(a.venueid)));
+      const schoolVenues = globalVenuesData.filter(v => String(v.SchoolID).trim() === String(targetSchoolID).trim()).map(v => String(v.VenueID).trim());
+      const elements = globalAvailabilityData.filter(a => schoolVenues.includes(String(a.VenueID).trim()));
 
       if(elements.length === 0) {
         container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0;">No calendar blackouts filed for this school term.</p>';
         return;
       }
 
-      elements.sort((a,b) => new Date(b.startdate) - new Date(a.startdate));
+      elements.sort((a,b) => new Date(b.StartDate) - new Date(a.StartDate));
 
       elements.forEach(item => {
-        const isBlocked = item.isavailable === false || String(item.isavailable).toLowerCase() === "false";
+        const isBlocked = item.IsAvailable === false || String(item.IsAvailable).toLowerCase() === "false";
         const badgeClass = isBlocked ? "prop-status-text too-old" : "prop-status-text approved";
         const badgeLabel = isBlocked ? "🚫 Blackout" : "✔️ Hosting Allowed";
 
         container.innerHTML += `
           <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
             <div>
-              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${String(item.venueid).toUpperCase()}</span>
-              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${item.startdate} to ${item.enddate}</div>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${String(item.VenueID).toUpperCase()}</span>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${item.StartDate} to ${item.EndDate}</div>
             </div>
             <span class="${badgeClass}" style="font-size:0.65rem;">${badgeLabel}</span>
           </div>
@@ -995,8 +941,8 @@
         return;
       }
       container.innerHTML = '<div class="card-header">League Announcements</div>';
-      (messages || []).forEach(msg => {
-        container.innerHTML += `<div class="message-item"><div class="message-title">${msg.topicsubject || msg.topic_subject || 'Announcement'}</div><div class="message-date">${msg.timestamp || 'Recent'}</div><div class="message-body">${msg.content || ''}</div></div>`;
+      messages.forEach(msg => {
+        container.innerHTML += `<div class="message-item"><div class="message-title">${msg.TopicSubject || 'Announcement'}</div><div class="message-date">${msg.Timestamp || 'Recent'}</div><div class="message-body">${msg.Content || ''}</div></div>`;
       });
     }
 
@@ -1050,18 +996,18 @@
         return; 
       }
 
-      const selectedTeam = (globalTeamsData || []).find(t => clientNormalize(t.teamid) === clientNormalize(teamId));
+      const selectedTeam = globalTeamsData.find(t => String(t.TeamID).trim() === String(teamId).trim());
       if (selectedTeam) {
-        const division = (globalDivisionsData || []).find(d => clientNormalize(d.divisionid) === clientNormalize(selectedTeam.divisionid));
+        const division = globalDivisionsData.find(d => String(d.DivisionID).trim() === String(selectedTeam.DivisionID).trim());
         if (division) {
-          const rawAge = division.agelimit || '';
+          const rawAge = division.Age_Limit || '';
           const ageLimit = parseInt(String(rawAge).replace(/\D/g, '')) || 99;
           
           const cutoffYear = leagueYear - ageLimit;
           const cutoffDateString = `${cutoffYear}-06-01`;
 
           if (dobInput < cutoffDateString) {
-            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of ${division.agelimit || ('U' + ageLimit)}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.\n\nData was not transmitted to the spreadsheet.`);
+            alert(`⚠️ SUBMISSION BLOCKED (Age Restriction Compliance Violation):\n\nThis division has a strict age limit of ${division.Age_Limit || ('U' + ageLimit)}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.\n\nData was not transmitted to the spreadsheet.`);
             return;
           }
         }
