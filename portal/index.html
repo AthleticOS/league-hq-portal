@@ -41,7 +41,7 @@
 
     /* STATE SCREENS */
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
-    #loader { text-align: center; padding: 50px; font-weight: 600; color: var(--text-muted); display: none; }
+    #loader { text-align: center; padding: 50px; font-weight: 600; color: var(--text-muted); display: none; word-break: break-word; }
     
     /* SECURITY PIN SCREEN */
     #pin-screen { display: none; padding: 40px 20px; text-align: center; }
@@ -100,7 +100,7 @@
     .team-card { font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .player-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
     
-    .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7 glamorous; font-size: 0.7rem; }
+    .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7rem; }
     .status-badge.pending { background: #FEF08A; color: #854D0E; }
     .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
 
@@ -343,13 +343,23 @@
     }
 
     async function initApp() {
-      document.getElementById('loader').style.display = 'block';
+      const loaderElement = document.getElementById('loader');
+      loaderElement.style.display = 'block';
+      loaderElement.innerText = "Syncing Database Core Matrices...";
+
       try {
         const response = await fetch(API_URL);
+        if (!response.ok) throw new Error("HTTP connection check failed against Web App URL");
+        
         const data = await response.json();
         
+        // INTERCEPT API CRASH LOGS FROM SPREADSHEET TIER
+        if (data && data.status === "error") {
+          throw new Error("Apps Script API Exception: " + data.message);
+        }
+
         if (data.Schools) {
-          const schoolData = data.Schools.find(s => s.SchoolID === targetSchoolID);
+          const schoolData = (data.Schools || []).find(s => s.SchoolID === targetSchoolID);
           if (schoolData && schoolData.Name) targetSchoolName = schoolData.Name;
         }
 
@@ -359,33 +369,37 @@
           cutoffDay = parseInt(data.Settings[0].Cutoff_Day) || 1;
         }
         
-        document.getElementById('school-title').innerText = targetSchoolName.toUpperCase();
+        document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
         globalRosterData = data.Roster || [];
         globalTeamsData = data.Teams || [];
         globalDivisionsData = data.Divisions || [];
         globalVenuesData = data.Venues || [];
         globalAvailabilityData = data.School_Availability || [];
 
-        renderGames(data.Fixtures, data.Schools, data.Sports, data.Divisions);
-        renderLeagueDivisions(data.Divisions, data.Sports);
-        renderTeamsData(data.Teams, data.Sports, data.Divisions);
-        renderMessages(data.Messages);
+        renderGames(data.Fixtures || [], data.Schools || [], data.Sports || [], data.Divisions || []);
+        renderLeagueDivisions(data.Divisions || [], data.Sports || []);
+        renderTeamsData(data.Teams || [], data.Sports || [], data.Divisions || []);
+        renderMessages(data.Messages || []);
         
-        // Build Availability Selection Grids
-        populateAvailabilityMenus(data.Venues, data.Sports);
+        populateAvailabilityMenus(data.Venues || [], data.Sports || []);
 
-        document.getElementById('loader').style.display = 'none';
+        loaderElement.style.display = 'none';
         document.getElementById('app-container').style.display = 'block';
         document.getElementById('bottom-nav').style.display = 'flex';
       } catch (error) {
-        document.getElementById('loader').innerText = "Error syncing data.";
+        console.error("Master Sync Failure Detailed Report:", error);
+        loaderElement.style.color = "red";
+        loaderElement.innerHTML = `<div style="padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px;">
+          <h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Matrix Warning)</h4>
+          <p style="font-size:0.8rem; text-align:left; font-family:monospace; margin:0;">${error.message}</p>
+          <small style="display:block; margin-top:10px; color:gray; text-align:left;">Check your browser developer console (F12) for the complete raw thread footprint.</small>
+        </div>`;
       }
     }
 
     function getSchoolName(id, schoolsData) {
       if (!id) return 'TBA';
-      if (!schoolsData) return id;
-      const match = schoolsData.find(s => s.SchoolID === id);
+      const match = (schoolsData || []).find(s => s.SchoolID === id);
       return match && match.Name ? match.Name : id;
     }
 
@@ -402,7 +416,7 @@
     function renderGames(fixtures, schoolsData, sportsData, divisionsData) {
       const container = document.getElementById('games-list');
       container.innerHTML = '';
-      const schoolGames = fixtures.filter(game => (game.HomeTeamID && game.HomeTeamID.includes(targetSchoolID)) || (game.AwayTeamID && game.AwayTeamID.includes(targetSchoolID)));
+      const schoolGames = (fixtures || []).filter(game => (game.HomeTeamID && game.HomeTeamID.includes(targetSchoolID)) || (game.AwayTeamID && game.AwayTeamID.includes(targetSchoolID)));
 
       if (schoolGames.length === 0) {
         container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`;
@@ -422,8 +436,7 @@
         const homeName = getSchoolName(game.HomeTeamID, schoolsData);
         const awayName = getSchoolName(game.AwayTeamID, schoolsData);
 
-        let currentSide = String(game.HomeTeamID).includes(targetSchoolID) ? "Home" : "Away";
-
+        let currentSide = String(game.HomeTeamID || '').includes(targetSchoolID) ? "Home" : "Away";
         let scoreSubmitter = game.Score_Submitter;
         let isScoreLocked = false;
         let scoreBadgeHtml = "";
@@ -511,7 +524,7 @@
       if(!divisions) return;
 
       const groups = {};
-      divisions.forEach(div => {
+      (divisions || []).forEach(div => {
         const associatedSport = sports ? sports.find(s => s.SportID === div.SportID) : null;
         const seasonName = associatedSport && associatedSport.Season ? associatedSport.Season : "General Calendar";
 
@@ -533,7 +546,7 @@
 
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
-          return (parseInt(a.Age_Limit) || 0) - (parseInt(b.Age_Limit) || 0);
+          return (parseInt(String(a.Age_Limit).replace(/\D/g, '')) || 0) - (parseInt(String(b.Age_Limit).replace(/\D/g, '')) || 0);
         });
 
         groups[season].forEach(div => {
@@ -557,7 +570,7 @@
       manageSelect.innerHTML = '<option value="">Select Team to View Roster...</option>';
       currentTeamsList.innerHTML = '';
       
-      const schoolTeams = teams.filter(t => t.SchoolID === targetSchoolID);
+      const schoolTeams = (teams || []).filter(t => t.SchoolID === targetSchoolID);
       if (schoolTeams.length === 0) {
         currentTeamsList.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No teams registered yet.</p>';
         return;
@@ -569,11 +582,11 @@
         manageSelect.innerHTML += `<option value="${team.TeamID}">${displayName}</option>`;
 
         let statusClass = "status-badge";
-        let statusText = team.RegistrationStatus || "Unknown";
-        if(statusText.toLowerCase() === "pending") statusClass += " pending";
-        if(statusText.toLowerCase() === "active" || statusText.toLowerCase() === "approved") statusClass += " active";
+        let statusText = String(team.RegistrationStatus || "Unknown").toLowerCase();
+        if(statusText === "pending") statusClass += " pending";
+        if(statusText === "active" || statusText === "approved") statusClass += " active";
 
-        currentTeamsList.innerHTML += `<div class="team-card"><span>${displayName}</span><span class="${statusClass}">${statusText}</span></div>`;
+        currentTeamsList.innerHTML += `<div class="team-card"><span>${displayName}</span><span class="${statusClass}">${team.RegistrationStatus || 'Unknown'}</span></div>`;
       });
     }
 
@@ -581,7 +594,7 @@
       const container = document.getElementById('roster-list');
       if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
 
-      const teamRoster = globalRosterData.filter(p => p.TeamID === teamId);
+      const teamRoster = (globalRosterData || []).filter(p => p.TeamID === teamId);
       if (teamRoster.length === 0) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center;">No players found on this roster.</p>'; return; }
 
       container.innerHTML = '';
@@ -609,7 +622,6 @@
       });
     }
 
-    // --- AVAILABILITY SELECTION MATRIX COMPILERS ---
     function populateAvailabilityMenus(venues, sports) {
       const vSelect = document.getElementById('avail-venue-select');
       const exVSelect = document.getElementById('ex-venue-id');
@@ -617,10 +629,10 @@
       vSelect.innerHTML = '<option value="">Select Mapped Facility...</option>';
       exVSelect.innerHTML = '';
 
-      const schoolVenues = venues.filter(v => v.SchoolID === targetSchoolID);
+      const schoolVenues = (venues || []).filter(v => v.SchoolID === targetSchoolID);
       
       schoolVenues.forEach(v => {
-        const sport = sports.find(s => s.SportID === v.SportID);
+        const sport = (sports || []).find(s => s.SportID === v.SportID);
         const textLabel = `${v.VenueID} - ${sport ? sport.Name : 'Facility Court'}`;
         
         vSelect.innerHTML += `<option value="${v.VenueID}">${textLabel}</option>`;
@@ -634,7 +646,7 @@
       const form = document.getElementById('venue-hours-form');
       if(!venueId) { form.style.display = 'none'; return; }
 
-      const venue = globalVenuesData.find(v => v.VenueID === venueId);
+      const venue = (globalVenuesData || []).find(v => v.VenueID === venueId);
       if(venue) {
         document.getElementById('hours-v-wkd-start').value = venue.Weekday_Start_Time || '';
         document.getElementById('hours-v-wkd-end').value = venue.Weekday_End_Time || '';
@@ -709,8 +721,8 @@
       const container = document.getElementById('active-exceptions-list');
       container.innerHTML = '';
 
-      const schoolVenues = globalVenuesData.filter(v => v.SchoolID === targetSchoolID).map(v => v.VenueID);
-      const elements = globalAvailabilityData.filter(a => schoolVenues.includes(a.VenueID));
+      const schoolVenues = (globalVenuesData || []).filter(v => v.SchoolID === targetSchoolID).map(v => v.VenueID);
+      const elements = (globalAvailabilityData || []).filter(a => schoolVenues.includes(a.VenueID));
 
       if(elements.length === 0) {
         container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0;">No calendar blackouts filed for this school term.</p>';
@@ -720,8 +732,9 @@
       elements.sort((a,b) => new Date(b.StartDate) - new Date(a.StartDate));
 
       elements.forEach(item => {
-        const badgeClass = item.IsAvailable === false || item.IsAvailable === "false" ? "prop-status-text too-old" : "prop-status-text approved";
-        const badgeLabel = item.IsAvailable === false || item.IsAvailable === "false" ? "🚫 Blackout" : "✔️ Hosting Allowed";
+        const isBlocked = item.IsAvailable === false || String(item.IsAvailable).toLowerCase() === "false";
+        const badgeClass = isBlocked ? "prop-status-text too-old" : "prop-status-text approved";
+        const badgeLabel = isBlocked ? "🚫 Blackout" : "✔️ Hosting Allowed";
 
         container.innerHTML += `
           <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
@@ -742,7 +755,7 @@
         return;
       }
       container.innerHTML = '<div class="card-header">League Announcements</div>';
-      messages.forEach(msg => {
+      (messages || []).forEach(msg => {
         container.innerHTML += `<div class="message-item"><div class="message-title">${msg.TopicSubject || 'Announcement'}</div><div class="message-date">${msg.Timestamp || 'Recent'}</div><div class="message-body">${msg.Content || ''}</div></div>`;
       });
     }
@@ -797,9 +810,9 @@
         return; 
       }
 
-      const selectedTeam = globalTeamsData.find(t => t.TeamID === teamId);
+      const selectedTeam = (globalTeamsData || []).find(t => t.TeamID === teamId);
       if (selectedTeam) {
-        const division = globalDivisionsData.find(d => d.DivisionID === selectedTeam.DivisionID);
+        const division = (globalDivisionsData || []).find(d => d.DivisionID === selectedTeam.DivisionID);
         if (division) {
           const rawAge = division.Age_Limit || division.AgeLimit || '';
           const ageLimit = parseInt(String(rawAge).replace(/\D/g, '')) || 99;
