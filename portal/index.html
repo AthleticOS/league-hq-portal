@@ -363,7 +363,6 @@
 
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
 
-    // SYSTEM UTILITY: Lowercase string comparison filter wrapper
     function clientNormalize(str) {
       return String(str || '').toLowerCase().replace(/[^a-z0-9]/g, '');
     }
@@ -476,9 +475,9 @@
     }
 
     function getTeamDisplayName(sportId, divisionId, sportsData, divisionsData) {
-      const sport = sportsData ? sportsData.find(s => s.sportid === sportId) : null;
+      const sport = sportsData ? sportsData.find(s => clientNormalize(s.sportid) === clientNormalize(sportId)) : null;
       const sportName = sport && sport.name ? sport.name : (sportId || 'Unknown Sport');
-      const div = divisionsData ? divisionsData.find(d => d.divisionid === divisionId) : null;
+      const div = divisionsData ? divisionsData.find(d => clientNormalize(d.divisionid) === clientNormalize(divisionId)) : null;
       const gender = div && div.gender ? div.gender : '';
       const ageLimit = div && div.agelimit ? div.agelimit : (divisionId || 'Unknown Div');
       if (gender) return `${sportName} - ${gender} - ${ageLimit}`;
@@ -597,7 +596,7 @@
 
       const groups = {};
       (divisions || []).forEach(div => {
-        const associatedSport = sports ? sports.find(s => s.sportid === div.sportid) : null;
+        const associatedSport = sports ? sports.find(s => clientNormalize(s.sportid) === clientNormalize(div.sportid)) : null;
         const seasonName = associatedSport && associatedSport.season ? associatedSport.season : "General Calendar";
 
         if (!groups[seasonName]) { groups[seasonName] = []; }
@@ -611,8 +610,8 @@
         optgroup.label = String(season).toUpperCase();
 
         groups[season].sort((a, b) => {
-          const sportA = sports ? sports.find(s => s.sportid === a.sportid) : null;
-          const sportB = sports ? sports.find(s => s.sportid === b.sportid) : null;
+          const sportA = sports ? sports.find(s => clientNormalize(s.sportid) === clientNormalize(a.sportid)) : null;
+          const sportB = sports ? sports.find(s => clientNormalize(s.sportid) === clientNormalize(b.sportid)) : null;
           const nameA = sportA && sportA.name ? sportA.name.toLowerCase() : String(a.sportid).toLowerCase();
           const nameB = sportB && sportB.name ? sportB.name.toLowerCase() : String(b.sportid).toLowerCase();
 
@@ -666,7 +665,7 @@
       const container = document.getElementById('roster-list');
       if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
 
-      const teamRoster = (globalRosterData || []).filter(p => p.teamid === teamId);
+      const teamRoster = (globalRosterData || []).filter(p => clientNormalize(p.teamid) === clientNormalize(teamId));
       if (teamRoster.length === 0) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center;">No players found on this roster.</p>'; return; }
 
       container.innerHTML = '';
@@ -701,8 +700,9 @@
 
       const baseNames = [];
       sports.forEach(sport => {
-        const baseName = sport.name.split('(')[0].trim();
-        if (!baseNames.includes(baseName)) baseNames.push(baseName);
+        const sportNameString = String(sport.name || '');
+        const baseName = sportNameString.split('(')[0].trim();
+        if (baseName && !baseNames.includes(baseName)) baseNames.push(baseName);
       });
 
       baseNames.sort().forEach(name => {
@@ -725,8 +725,8 @@
       const schoolVenues = (venues || []).filter(v => clientNormalize(v.schoolid) === clientNormalize(targetSchoolID));
       
       schoolVenues.forEach(v => {
-        const sport = (sports || []).find(s => s.sportid === v.sportid);
-        const textLabel = `${v.venueid} - ${sport ? sport.name : 'Facility Court'}`;
+        const sport = (sports || []).find(s => clientNormalize(s.sportid) === clientNormalize(v.sportid));
+        const textLabel = `${String(v.venueid).toUpperCase()} - ${sport ? sport.name : 'Facility Court'}`;
         
         vSelect.innerHTML += `<option value="${v.venueid}">${textLabel}</option>`;
         exVSelect.innerHTML += `<option value="${v.venueid}">${textLabel}</option>`;
@@ -837,7 +837,8 @@
       const associatedSportIds = [];
 
       globalSportsData.forEach(sport => {
-        const baseName = sport.name.split('(')[0].trim();
+        const sportNameString = String(sport.name || '');
+        const baseName = sportNameString.split('(')[0].trim();
         if (selectedBaseNames.includes(baseName)) {
           associatedSportIds.push(sport.sportid);
         }
@@ -948,7 +949,7 @@
         container.innerHTML += `
           <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
             <div>
-              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${item.venueid}</span>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${String(item.venueid).toUpperCase()}</span>
               <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${item.startdate} to ${item.enddate}</div>
             </div>
             <span class="${badgeClass}" style="font-size:0.65rem;">${badgeLabel}</span>
@@ -1019,9 +1020,9 @@
         return; 
       }
 
-      const selectedTeam = (globalTeamsData || []).find(t => t.teamid === teamId);
+      const selectedTeam = (globalTeamsData || []).find(t => clientNormalize(t.teamid) === clientNormalize(teamId));
       if (selectedTeam) {
-        const division = (globalDivisionsData || []).find(d => d.divisionid === selectedTeam.divisionid);
+        const division = (globalDivisionsData || []).find(d => clientNormalize(d.divisionid) === clientNormalize(selectedTeam.divisionid));
         if (division) {
           const rawAge = division.agelimit || '';
           const ageLimit = parseInt(String(rawAge).replace(/\D/g, '')) || 99;
@@ -1066,7 +1067,7 @@
       btn.innerText = "Saving...";
       btn.style.backgroundColor = "#1A1A1A";
 
-      const payload = { action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value };
+      const payload = { action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterid}`).value };
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
         const result = await res.json();
