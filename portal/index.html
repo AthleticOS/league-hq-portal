@@ -23,7 +23,7 @@
       color: var(--text-main);
       margin: 0;
       padding: 0;
-      padding-bottom: 70px;
+      padding-bottom: 75px;
     }
 
     header {
@@ -100,12 +100,12 @@
     .team-card { font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .player-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
     
-    .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7rem; }
+    .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7 glamorous; font-size: 0.7rem; }
     .status-badge.pending { background: #FEF08A; color: #854D0E; }
     .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
 
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); display: flex; border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; }
-    .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
   </style>
 </head>
@@ -133,6 +133,7 @@
   </div>
 
   <div class="container" id="app-container">
+    
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
@@ -162,6 +163,81 @@
         <div class="card-header">Manage Existing Roster</div>
         <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
         <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
+      </div>
+    </div>
+
+    <div id="tab-availability" class="tab-content">
+      <div class="card">
+        <div class="card-header">⏰ Standard Operating Windows</div>
+        <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
+          <option value="">Select Mapped Facility...</option>
+        </select>
+        
+        <div id="venue-hours-form" style="display:none;" class="space-y-2">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
+              <input type="text" class="text-input" id="hours-v-wkd-start" placeholder="16:00:00">
+            </div>
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
+              <input type="text" class="text-input" id="hours-v-wkd-end" placeholder="19:30:00">
+            </div>
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
+              <input type="text" class="text-input" id="hours-v-wnd-start" placeholder="08:00:00">
+            </div>
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
+              <input type="text" class="text-input" id="hours-v-wnd-end" placeholder="17:00:00">
+            </div>
+          </div>
+          <button class="btn-submit btn-small" id="btn-save-hours" onclick="submitVenueHoursUpdate()">Save Facility Hours</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">🚫 Log Calendar Blackout / Exemption</div>
+        
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">1. EXEMPTION SCOPE</label>
+        <select class="status-select" id="ex-scope" onchange="toggleExemptionScope(this.value)" style="margin-bottom:10px;">
+          <option value="school">Global School Blackout (Applies to all fields)</option>
+          <option value="venue">Specific Mapped Venue Only</option>
+        </select>
+
+        <div id="ex-venue-container" style="display:none; margin-bottom:10px;">
+          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET VENUE</label>
+          <select class="status-select" id="ex-venue-id" style="margin-bottom:0;"></select>
+        </div>
+
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">2. AVAILABILITY CONSTRAINT</label>
+        <select class="status-select" id="ex-constraint" style="margin-bottom:10px;">
+          <option value="Not Available">Not Available (Total Blackout)</option>
+          <option value="School Holiday">School Holiday (Total Blackout)</option>
+          <option value="Available to Travel Only">Available to Travel Only (No Hosting Allowed)</option>
+          <option value="Available to Host Only">Available to Host Only</option>
+        </select>
+
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">3. DATE WINDOW (SINGLE DAY OR DATE RANGE)</label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+          <div>
+            <span style="font-size:0.65rem; color:var(--text-muted);">START DATE</span>
+            <input type="date" class="text-input" id="ex-start-date" style="margin-bottom:0;">
+          </div>
+          <div>
+            <span style="font-size:0.65rem; color:var(--text-muted);">END DATE</span>
+            <input type="date" class="text-input" id="ex-end-date" style="margin-bottom:0;">
+          </div>
+        </div>
+
+        <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
+      </div>
+
+      <div class="card">
+        <div class="card-header">📋 Logged Exceptions Status</div>
+        <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
@@ -198,6 +274,7 @@
     <div class="nav-item active" onclick="switchTab('games')">Games</div>
     <div class="nav-item" onclick="switchTab('teams')">Teams</div>
     <div class="nav-item" onclick="switchTab('registration')">Rosters</div>
+    <div class="nav-item" onclick="switchTab('availability')">Availability</div>
     <div class="nav-item" onclick="switchTab('messages')">Messages</div>
     <div class="nav-item" onclick="switchTab('help')">Help</div>
   </div>
@@ -210,6 +287,8 @@
     let globalRosterData = []; 
     let globalTeamsData = [];
     let globalDivisionsData = [];
+    let globalVenuesData = [];
+    let globalAvailabilityData = [];
     
     let leagueYear = 2026;
     let cutoffMonth = 1;
@@ -284,11 +363,16 @@
         globalRosterData = data.Roster || [];
         globalTeamsData = data.Teams || [];
         globalDivisionsData = data.Divisions || [];
+        globalVenuesData = data.Venues || [];
+        globalAvailabilityData = data.School_Availability || [];
 
         renderGames(data.Fixtures, data.Schools, data.Sports, data.Divisions);
         renderLeagueDivisions(data.Divisions, data.Sports);
         renderTeamsData(data.Teams, data.Sports, data.Divisions);
         renderMessages(data.Messages);
+        
+        // Build Availability Selection Grids
+        populateAvailabilityMenus(data.Venues, data.Sports);
 
         document.getElementById('loader').style.display = 'none';
         document.getElementById('app-container').style.display = 'block';
@@ -431,9 +515,7 @@
         const associatedSport = sports ? sports.find(s => s.SportID === div.SportID) : null;
         const seasonName = associatedSport && associatedSport.Season ? associatedSport.Season : "General Calendar";
 
-        if (!groups[seasonName]) {
-          groups[seasonName] = [];
-        }
+        if (!groups[seasonName]) { groups[seasonName] = []; }
         groups[seasonName].push(div);
       });
 
@@ -446,18 +528,11 @@
         groups[season].sort((a, b) => {
           const sportA = sports ? sports.find(s => s.SportID === a.SportID) : null;
           const sportB = sports ? sports.find(s => s.SportID === b.SportID) : null;
-          
           const nameA = sportA && sportA.Name ? sportA.Name.toLowerCase() : String(a.SportID).toLowerCase();
           const nameB = sportB && sportB.Name ? sportB.Name.toLowerCase() : String(b.SportID).toLowerCase();
 
           if (nameA < nameB) return -1;
           if (nameA > nameB) return 1;
-
-          const genA = String(a.Gender || '').toLowerCase();
-          const genB = String(b.Gender || '').toLowerCase();
-          if (genA < genB) return -1;
-          if (genA > genB) return 1;
-
           return (parseInt(a.Age_Limit) || 0) - (parseInt(b.Age_Limit) || 0);
         });
 
@@ -469,7 +544,6 @@
           option.textContent = displayName;
           optgroup.appendChild(option);
         });
-
         select.appendChild(optgroup);
       });
     }
@@ -530,6 +604,132 @@
             <input type="text" class="text-input" id="nick-${player.RosterID}" value="${player.Nickname || ''}" placeholder="Player Name">
             <input type="number" class="text-input" id="jersey-${player.RosterID}" value="${player.JerseyNumber || ''}" placeholder="Jersey Number">
             <button class="btn-submit btn-small" style="background-color: var(--text-muted);" id="btn-update-${player.RosterID}" onclick="updatePlayer('${player.RosterID}')">Save Changes</button>
+          </div>
+        `;
+      });
+    }
+
+    // --- AVAILABILITY SELECTION MATRIX COMPILERS ---
+    function populateAvailabilityMenus(venues, sports) {
+      const vSelect = document.getElementById('avail-venue-select');
+      const exVSelect = document.getElementById('ex-venue-id');
+      
+      vSelect.innerHTML = '<option value="">Select Mapped Facility...</option>';
+      exVSelect.innerHTML = '';
+
+      const schoolVenues = venues.filter(v => v.SchoolID === targetSchoolID);
+      
+      schoolVenues.forEach(v => {
+        const sport = sports.find(s => s.SportID === v.SportID);
+        const textLabel = `${v.VenueID} - ${sport ? sport.Name : 'Facility Court'}`;
+        
+        vSelect.innerHTML += `<option value="${v.VenueID}">${textLabel}</option>`;
+        exVSelect.innerHTML += `<option value="${v.VenueID}">${textLabel}</option>`;
+      });
+
+      renderAvailabilityExceptionLogs();
+    }
+
+    function loadSelectedVenueHours(venueId) {
+      const form = document.getElementById('venue-hours-form');
+      if(!venueId) { form.style.display = 'none'; return; }
+
+      const venue = globalVenuesData.find(v => v.VenueID === venueId);
+      if(venue) {
+        document.getElementById('hours-v-wkd-start').value = venue.Weekday_Start_Time || '';
+        document.getElementById('hours-v-wkd-end').value = venue.Weekday_End_Time || '';
+        document.getElementById('hours-v-wnd-start').value = venue.Weekend_Start_Time || '';
+        document.getElementById('hours-v-wnd-end').value = venue.Weekend_End_Time || '';
+        form.style.display = 'block';
+      }
+    }
+
+    function toggleExemptionScope(scopeValue) {
+      const container = document.getElementById('ex-venue-container');
+      container.style.display = (scopeValue === 'venue') ? 'block' : 'none';
+    }
+
+    async function submitVenueHoursUpdate() {
+      const btn = document.getElementById('btn-save-hours');
+      const venueId = document.getElementById('avail-venue-select').value;
+
+      const payload = {
+        action: "updateVenue",
+        venueId: venueId,
+        weekdayStart: document.getElementById('hours-v-wkd-start').value,
+        weekdayEnd: document.getElementById('hours-v-wkd-end').value,
+        weekendStart: document.getElementById('hours-v-wnd-start').value,
+        weekendEnd: document.getElementById('hours-v-wnd-end').value
+      };
+
+      btn.innerText = "Saving Profile...";
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if(result.status === "success") {
+          btn.innerText = "Hours Locked ✓";
+          btn.style.backgroundColor = "#52C920";
+          setTimeout(() => { initApp(); btn.innerText = "Save Facility Hours"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
+        } else { alert("Error: " + result.message); }
+      } catch(e) { alert("Network drop during save transaction loop."); }
+    }
+
+    async function submitAvailabilityException() {
+      const btn = document.getElementById('btn-add-exemption');
+      const start = document.getElementById('ex-start-date').value;
+      const end = document.getElementById('ex-end-date').value;
+
+      if(!start || !end) { alert("Please provide valid Start and End exception date bounds."); return; }
+
+      const payload = {
+        action: "addAvailability",
+        schoolId: targetSchoolID,
+        scope: document.getElementById('ex-scope').value,
+        venueId: document.getElementById('ex-venue-id').value,
+        constraint: document.getElementById('ex-constraint').value,
+        startDate: start,
+        endDate: end
+      };
+
+      btn.innerText = "Transmitting Exception...";
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if(result.status === "success") {
+          btn.innerText = "Logged Sync ✓";
+          btn.style.backgroundColor = "#52C920";
+          document.getElementById('ex-start-date').value = '';
+          document.getElementById('ex-end-date').value = '';
+          setTimeout(() => { initApp(); btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
+        } else { alert("Error: " + result.message); }
+      } catch(e) { alert("Network dropped database execution pack."); }
+    }
+
+    function renderAvailabilityExceptionLogs() {
+      const container = document.getElementById('active-exceptions-list');
+      container.innerHTML = '';
+
+      const schoolVenues = globalVenuesData.filter(v => v.SchoolID === targetSchoolID).map(v => v.VenueID);
+      const elements = globalAvailabilityData.filter(a => schoolVenues.includes(a.VenueID));
+
+      if(elements.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0;">No calendar blackouts filed for this school term.</p>';
+        return;
+      }
+
+      elements.sort((a,b) => new Date(b.StartDate) - new Date(a.StartDate));
+
+      elements.forEach(item => {
+        const badgeClass = item.IsAvailable === false || item.IsAvailable === "false" ? "prop-status-text too-old" : "prop-status-text approved";
+        const badgeLabel = item.IsAvailable === false || item.IsAvailable === "false" ? "🚫 Blackout" : "✔️ Hosting Allowed";
+
+        container.innerHTML += `
+          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
+            <div>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${item.VenueID}</span>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${item.StartDate} to ${item.EndDate}</div>
+            </div>
+            <span class="${badgeClass}" style="font-size:0.65rem;">${badgeLabel}</span>
           </div>
         `;
       });
