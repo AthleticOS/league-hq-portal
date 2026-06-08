@@ -6,7 +6,7 @@
   <title>AthleticOS | Coach Portal</title>
   <link rel="icon" type="image/png" href="../favicon.png">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
 
     :root {
       --primary: #012300;
@@ -16,6 +16,9 @@
       --text-main: #1A1A1A;
       --text-muted: #64748B;
       --border: #E2E8F0;
+      --wizard-step-bg: #EFF6FF;
+      --wizard-step-border: #BFDBFE;
+      --wizard-step-text: #1E40AF;
     }
 
     body {
@@ -69,6 +72,15 @@
     .btn-submit { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
     .btn-submit:active { background-color: var(--accent); color: var(--primary); }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
+
+    /* CONTEXTUAL EXPLAINER BOXES */
+    .explainer-box { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 15px; font-size: 0.8rem; line-height: 1.4; color: #334155; }
+    .explainer-box.info { background-color: #F0FDF4; border-left-color: var(--accent); color: #166534; }
+    .explainer-box strong { display: block; margin-bottom: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* WIZARD TRACK ELEMENTS */
+    .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
+    .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
 
     /* PROPOSAL INTERACTIVE OBJECTS */
     .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
@@ -183,53 +195,79 @@
 
     <div id="tab-availability" class="tab-content">
       
-      <div class="card">
-        <div class="card-header">🛠️ Add New Facility / Field</div>
-        
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FACILITY ARCHITECTURE</label>
-        <select class="status-select" id="facility-type-toggle" onchange="toggleFacilityArchitecture(this.value)" style="margin-bottom:12px;">
-          <option value="standalone">Standalone Pitch / Single Field</option>
-          <option value="complex">Multi-Court Complex (e.g. Gymnasium)</option>
-        </select>
+      <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
+        <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
+        <div class="explainer-box info">
+          <strong>Why precision mapping matters:</strong>
+          Our league engine uses automated geometric allocation loops. If your facility houses multiple overlapping lines (such as a Gymnasium that supports Basketball layouts OR simultaneous Badminton nets), the database must protect those spaces from clashing. By walking through our step-by-step gateway below, the system ensures your school will never be double-booked for home matches.
+        </div>
+      </div>
 
-        <label id="label-venue-name" style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FIELD / PITCH NAME</label>
-        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g. Varsity Soccer Pitch, North Field">
+      <div class="card wizard-card">
+        <span class="wizard-badge">Phase 1: Parent Asset Enrollment</span>
+        <div class="card-header">📦 Declare Physical Asset Box</div>
         
-        <div id="complex-capacity-container" style="display:none;">
-          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">NUMBER OF AVAILABLE SUB-COURTS</label>
-          <input type="number" class="text-input" id="new-venue-unit-count" value="1" min="1" placeholder="Quantity Count (e.g. 3 courts)">
+        <div class="explainer-box">
+          <strong>Instructions:</strong>
+          Enter the primary standalone field name or the containing complex shell here. Do not enter individual court splits or sub-numbers yet.
         </div>
 
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS</label>
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FACILITY SYSTEM ARCHITECTURE</label>
+        <select class="status-select" id="facility-architecture-type" onchange="evaluateOnboardingViewTrack(this.value)" style="margin-bottom:12px;">
+          <option value="standalone">Standalone Single Field (e.g. Soccer Field, Rugby Pitch)</option>
+          <option value="complex">Multi-Court Complex Shell (e.g. Building D - Gymnasium)</option>
+        </select>
+
+        <label id="label-primary-venue-title" style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FIELD / PITCH IDENTIFIER NAME</label>
+        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g. Building D - Gymnasium, Main Turf Field">
+
+        <div id="complex-split-wizard-gate" style="display:none; margin-top:10px; background-color:#F0FDF4; border:1px solid #BBF7D0; padding:12px; border-radius:8px; margin-bottom:12px;">
+          <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">MAX SIMULTANEOUS LOGISTICAL CAPACITY</label>
+          <select class="status-select" id="complex-layout-style" onchange="calculateComplexUnitCapacity(this.value)" style="margin-bottom:10px;">
+            <option value="1">1 Main Premier Court (Takes up the whole building capacity)</option>
+            <option value="2">2 Side-by-Side Courts (Allows 2 games to match concurrently)</option>
+            <option value="3">3 Parallel Sections (Allows 3 games to match concurrently)</option>
+            <option value="4">4 Tournament Grid Zones (Allows 4 games to match concurrently)</option>
+          </select>
+          <input type="hidden" id="new-venue-unit-count" value="1">
+        </div>
+
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE TOURNEY CARRIER CAPACITIES</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
           </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
-            <input type="text" class="text-input" id="new-v-wkd-start" value="16:00:00" placeholder="16:00:00">
+            <input type="text" class="text-input" id="new-v-wkd-start" value="16:00:00">
           </div>
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
-            <input type="text" class="text-input" id="new-v-wkd-end" value="19:30:00" placeholder="19:30:00">
+            <input type="text" class="text-input" id="new-v-wkd-end" value="19:30:00">
           </div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
-            <input type="text" class="text-input" id="new-v-wnd-start" value="08:00:00" placeholder="08:00:00">
+            <input type="text" class="text-input" id="new-v-wnd-start" value="08:00:00">
           </div>
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
-            <input type="text" class="text-input" id="new-v-wnd-end" value="17:00:00" placeholder="17:00:00">
+            <input type="text" class="text-input" id="new-v-wnd-end" value="17:00:00">
           </div>
         </div>
 
-        <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
+        <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Sync Structure to Database Core</button>
       </div>
 
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
+        
+        <div class="explainer-box">
+          <strong>Usage Profile:</strong>
+          Select an engineered playable court below to alter its absolute hourly boundaries for weekday or weekend loops.
+        </div>
+
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
           <option value="">Select Mapped Facility...</option>
         </select>
@@ -361,7 +399,6 @@
   </div>
 
   <script>
-    // Global connection string parameter matching active server channels
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
     
     const urlParams = new URLSearchParams(window.location.search);
@@ -382,7 +419,6 @@
 
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
 
-    // SYSTEM SAFETY INTERCEPTOR: Traps initialization errors cleanly on screen layout canvas
     window.onerror = function(message, source, lineno, colno, error) {
       document.getElementById('loader').style.display = 'none';
       const terminal = document.getElementById('portal-crash-terminal');
@@ -744,20 +780,26 @@
       });
     }
 
-    // --- DEPENDENT VIEW UI LOGIC ---
-    function toggleFacilityArchitecture(type) {
-      const complexContainer = document.getElementById('complex-capacity-container');
-      const nameLabel = document.getElementById('label-venue-name');
+    // --- DEPENDENT WIZARD UI TRACK ENGINE ---
+    function evaluateOnboardingViewTrack(type) {
+      const complexContainer = document.getElementById('complex-split-wizard-gate');
+      const nameLabel = document.getElementById('label-primary-venue-title');
       const unitInput = document.getElementById('new-venue-unit-count');
       
       if (type === 'standalone') {
         complexContainer.style.display = 'none';
-        nameLabel.innerText = "FIELD / PITCH NAME";
-        unitInput.value = "1"; // Force 1 for a standalone
+        nameLabel.innerText = "FIELD / PITCH IDENTIFIER NAME";
+        unitInput.value = "1"; 
       } else {
         complexContainer.style.display = 'block';
-        nameLabel.innerText = "PARENT COMPLEX IDENTIFIER NAME";
+        nameLabel.innerText = "PARENT COMPLEX SHELL IDENTIFIER";
+        // Initialize default select option value into hidden element count
+        calculateComplexUnitCapacity(document.getElementById('complex-layout-style').value);
       }
+    }
+
+    function calculateComplexUnitCapacity(value) {
+      document.getElementById('new-venue-unit-count').value = value;
     }
 
     function populateSportsMenu(sports) {
@@ -788,14 +830,13 @@
       vSelect.innerHTML = '<option value="">Select Mapped Facility...</option>';
       exVSelect.innerHTML = '<option value="">Select Target Facility...</option>';
 
-      // Filter to only this school's venues
       const schoolVenues = venues.filter(v => {
         const schoolFieldVal = String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase();
         return schoolFieldVal === String(targetSchoolID).trim().toLowerCase() || 
                schoolFieldVal === String(targetSchoolName).trim().toLowerCase();
       });
       
-      // Filter out 'Parent' venues so coaches only assign blackouts/hours to actual playable sub-courts or standalone fields
+      // Filter out structural parents so exception hours are only logged to playable sub-courts
       const playableVenues = schoolVenues.filter(v => {
         const capType = String(readFlexibleObjectValue(v, "Capacity_Type")).trim().toLowerCase();
         return capType !== 'parent'; 
@@ -806,17 +847,11 @@
         const sId = readFlexibleObjectValue(v, "SportID");
         const rawName = readFlexibleObjectValue(v, "VenueName");
         
-        // Find the matching sport name
         const sport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
         const sportName = sport ? readFlexibleObjectValue(sport, "Name") : 'Field Court';
-        
-        // Use the clean VenueName if it exists, otherwise fallback to the ID
         const cleanVenueName = rawName ? rawName : String(vId).toUpperCase();
-        
-        // Format the text label cleanly: "Main Gymnasium (Court 1) • Basketball"
         const textLabel = `${cleanVenueName} • ${sportName}`;
         
-        // The value keeps the required ID for the database, but the textLabel shows the clean string to the user
         vSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
         exVSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
       });
@@ -838,6 +873,7 @@
       }
     }
 
+    // --- CALENDAR ENGINES ---
     function toggleExemptionScope(scopeValue) {
       const container = document.getElementById('ex-venue-container');
       container.style.display = (scopeValue === 'venue') ? 'block' : 'none';
@@ -921,7 +957,7 @@
 
     async function submitCreateNewVenue() {
       const btn = document.getElementById('btn-add-court');
-      const vType = document.getElementById('facility-type-toggle').value;
+      const vType = document.getElementById('facility-architecture-type').value;
       const vName = document.getElementById('new-venue-name').value;
       const units = document.getElementById('new-venue-unit-count').value;
       const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
@@ -1056,7 +1092,6 @@
         const badgeClass = isBlocked ? "prop-status-text too-old" : "prop-status-text approved";
         const badgeLabel = isBlocked ? "🚫 Blackout" : "✔️ Hosting Allowed";
 
-        // Format clean name for exception log
         const venueRow = globalVenuesData.find(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase() === String(vId).trim().toLowerCase());
         const rawName = venueRow ? readFlexibleObjectValue(venueRow, "VenueName") : vId;
 
@@ -1219,7 +1254,6 @@
       }
     });
 
-    // Isolated declarative tab execution model prevents root event errors
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
