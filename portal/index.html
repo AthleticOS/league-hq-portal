@@ -126,7 +126,6 @@
     <p id="school-title">Secure Login</p>
   </header>
 
-  <!-- WORKSPACE ERROR FALLBACK INJECTOR -->
   <div id="portal-crash-terminal" style="display:none; margin:20px; padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px; font-family:monospace;">
     <h4 style="margin:0 0 10px 0; color:red;">🛑 CLIENT-SIDE WORKSPACE EXCEPTION</h4>
     <p id="crash-log-text" style="font-size:0.85rem; margin:0; white-space:pre-wrap; color:#333;"></p>
@@ -150,12 +149,10 @@
 
   <div class="container" id="app-container">
     
-    <!-- TAB: GAMES -->
     <div id="tab-games" class="tab-content active">
       <div id="games-list"></div>
     </div>
 
-    <!-- TAB: TEAMS -->
     <div id="tab-teams" class="tab-content">
       <div class="card">
         <div class="card-header">Register for Division</div>
@@ -168,7 +165,6 @@
       </div>
     </div>
 
-    <!-- TAB: ROSTERS -->
     <div id="tab-registration" class="tab-content">
       <div class="card">
         <div class="card-header">Register New Player</div>
@@ -185,10 +181,8 @@
       </div>
     </div>
 
-    <!-- TAB: VENUE AVAILABILITY MANAGEMENT MODULE -->
     <div id="tab-availability" class="tab-content">
       
-      <!-- BLOCK 0: ADD NEW FACILITY DIRECTLY -->
       <div class="card">
         <div class="card-header">🛠️ Add New Parent Facility Asset</div>
         
@@ -200,8 +194,7 @@
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
-          <!-- Generated Dynamically -->
-        </div>
+          </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
@@ -227,7 +220,6 @@
         <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Register Facility Matrix</button>
       </div>
 
-      <!-- BLOCK A: STANDARD VENUE OPERATING ENVELOPE MODIFIER -->
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
@@ -259,7 +251,6 @@
         </div>
       </div>
 
-      <!-- BLOCK B: INTERACTIVE CALENDAR MESH CONTAINER -->
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
         
@@ -280,7 +271,6 @@
         </div>
       </div>
 
-      <!-- BLOCK C: SINGLE DATE BLOCKOUT CALENDAR EXEMPTIONS -->
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
         
@@ -318,19 +308,16 @@
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
-      <!-- BLOCK D: AUDIT TRAIL LOG LIST -->
       <div class="card">
         <div class="card-header">📋 Logged Exceptions Status</div>
         <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
       </div>
     </div>
 
-    <!-- TAB: MESSAGES -->
     <div id="tab-messages" class="tab-content">
       <div class="card" id="messages-list"></div>
     </div>
 
-    <!-- TAB: HELP (RESTORED FAQ COMPONENT) -->
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
@@ -786,9 +773,17 @@
       schoolVenues.forEach(v => {
         const vId = readFlexibleObjectValue(v, "VenueID");
         const sId = readFlexibleObjectValue(v, "SportID");
-        const sport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
-        const textLabel = `${String(vId).toUpperCase()} - ${sport ? readFlexibleObjectValue(sport, "Name") : 'Field Court'}`;
+        const rawName = readFlexibleObjectValue(v, "VenueName");
         
+        // Find the matching sport name
+        const sport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
+        const sportName = sport ? readFlexibleObjectValue(sport, "Name") : 'Field Court';
+        
+        // Use the clean VenueName if it exists, otherwise fallback to the ID, and append the Sport
+        const cleanVenueName = rawName ? rawName : String(vId).toUpperCase();
+        const textLabel = `${cleanVenueName} • ${sportName}`;
+        
+        // The value keeps the required ID for the database, but the textLabel shows the clean string to the user
         vSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
         exVSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
       });
@@ -1000,7 +995,8 @@
       container.innerHTML = '';
 
       const schoolVenues = globalVenuesData.filter(v => {
-        return String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase();
+        const val = String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase();
+        return val === String(targetSchoolID).trim().toLowerCase() || val === String(targetSchoolName).trim().toLowerCase();
       }).map(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase());
       
       const elements = globalAvailabilityData.filter(a => {
