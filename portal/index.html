@@ -184,15 +184,23 @@
     <div id="tab-availability" class="tab-content">
       
       <div class="card">
-        <div class="card-header">🛠️ Add New Parent Facility Asset</div>
+        <div class="card-header">🛠️ Add New Facility / Field</div>
         
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">PARENT COMPLEX IDENTIFIER NAME</label>
-        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g., Main Gymnasium, Sports Pavilion, Field Lot">
-        
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">NUMBER OF AVAILABLE SUB-COURTS / FIELDS</label>
-        <input type="number" class="text-input" id="new-venue-unit-count" value="1" min="1" placeholder="Quantity Count (e.g. 3 courts)">
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FACILITY ARCHITECTURE</label>
+        <select class="status-select" id="facility-type-toggle" onchange="toggleFacilityArchitecture(this.value)" style="margin-bottom:12px;">
+          <option value="standalone">Standalone Pitch / Single Field</option>
+          <option value="complex">Multi-Court Complex (e.g. Gymnasium)</option>
+        </select>
 
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS CARRIER CAPACITIES</label>
+        <label id="label-venue-name" style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FIELD / PITCH NAME</label>
+        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g. Varsity Soccer Pitch, North Field">
+        
+        <div id="complex-capacity-container" style="display:none;">
+          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">NUMBER OF AVAILABLE SUB-COURTS</label>
+          <input type="number" class="text-input" id="new-venue-unit-count" value="1" min="1" placeholder="Quantity Count (e.g. 3 courts)">
+        </div>
+
+        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE SPORTS</label>
         <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
           </div>
 
@@ -736,6 +744,22 @@
       });
     }
 
+    // --- DEPENDENT VIEW UI LOGIC ---
+    function toggleFacilityArchitecture(type) {
+      const complexContainer = document.getElementById('complex-capacity-container');
+      const nameLabel = document.getElementById('label-venue-name');
+      const unitInput = document.getElementById('new-venue-unit-count');
+      
+      if (type === 'standalone') {
+        complexContainer.style.display = 'none';
+        nameLabel.innerText = "FIELD / PITCH NAME";
+        unitInput.value = "1"; // Force 1 for a standalone
+      } else {
+        complexContainer.style.display = 'block';
+        nameLabel.innerText = "PARENT COMPLEX IDENTIFIER NAME";
+      }
+    }
+
     function populateSportsMenu(sports) {
       const container = document.getElementById('new-venue-sports-checkboxes');
       container.innerHTML = '';
@@ -764,13 +788,20 @@
       vSelect.innerHTML = '<option value="">Select Mapped Facility...</option>';
       exVSelect.innerHTML = '<option value="">Select Target Facility...</option>';
 
+      // Filter to only this school's venues
       const schoolVenues = venues.filter(v => {
         const schoolFieldVal = String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase();
         return schoolFieldVal === String(targetSchoolID).trim().toLowerCase() || 
                schoolFieldVal === String(targetSchoolName).trim().toLowerCase();
       });
       
-      schoolVenues.forEach(v => {
+      // Filter out 'Parent' venues so coaches only assign blackouts/hours to actual playable sub-courts or standalone fields
+      const playableVenues = schoolVenues.filter(v => {
+        const capType = String(readFlexibleObjectValue(v, "Capacity_Type")).trim().toLowerCase();
+        return capType !== 'parent'; 
+      });
+
+      playableVenues.forEach(v => {
         const vId = readFlexibleObjectValue(v, "VenueID");
         const sId = readFlexibleObjectValue(v, "SportID");
         const rawName = readFlexibleObjectValue(v, "VenueName");
@@ -779,8 +810,10 @@
         const sport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
         const sportName = sport ? readFlexibleObjectValue(sport, "Name") : 'Field Court';
         
-        // Use the clean VenueName if it exists, otherwise fallback to the ID, and append the Sport
+        // Use the clean VenueName if it exists, otherwise fallback to the ID
         const cleanVenueName = rawName ? rawName : String(vId).toUpperCase();
+        
+        // Format the text label cleanly: "Main Gymnasium (Court 1) • Basketball"
         const textLabel = `${cleanVenueName} • ${sportName}`;
         
         // The value keeps the required ID for the database, but the textLabel shows the clean string to the user
@@ -888,6 +921,7 @@
 
     async function submitCreateNewVenue() {
       const btn = document.getElementById('btn-add-court');
+      const vType = document.getElementById('facility-type-toggle').value;
       const vName = document.getElementById('new-venue-name').value;
       const units = document.getElementById('new-venue-unit-count').value;
       const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
@@ -908,6 +942,7 @@
       const payload = { 
         action: "addVenue", 
         schoolId: targetSchoolID, 
+        facilityType: vType,
         venueName: vName, 
         unitCount: units,
         sportIds: associatedSportIds,
@@ -928,8 +963,8 @@
           document.getElementById('new-venue-unit-count').value = '1';
           checkedBoxes.forEach(cb => cb.checked = false);
           setTimeout(() => { initApp(); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
-        } else { alert("Error: " + result.message); }
-      } catch(e) { alert("Network exception occurred mapping venue loops."); }
+        } else { alert("Error: " + result.message); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }
+      } catch(e) { alert("Network exception occurred mapping venue loops."); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }
     }
 
     async function submitVenueHoursUpdate() {
@@ -953,8 +988,8 @@
           btn.innerText = "Hours Locked ✓";
           btn.style.backgroundColor = "#52C920";
           setTimeout(() => { initApp(); btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
-        } else { alert("Error: " + result.message); }
-      } catch(e) { alert("Network drop during save transaction loop."); }
+        } else { alert("Error: " + result.message); btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)";}
+      } catch(e) { alert("Network drop during save transaction loop."); btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)";}
     }
 
     async function submitAvailabilityException() {
@@ -986,8 +1021,8 @@
           document.getElementById('exemption-form-card').style.borderColor = 'var(--border)';
           document.getElementById('exemption-form-title').innerText = "🚫 Log Calendar Blackout / Exemption";
           setTimeout(() => { initApp(); btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
-        } else { alert("Error: " + result.message); }
-      } catch(e) { alert("Network dropped database execution pack."); }
+        } else { alert("Error: " + result.message); btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)";}
+      } catch(e) { alert("Network dropped database execution pack."); btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)";}
     }
 
     function renderAvailabilityExceptionLogs() {
@@ -1021,10 +1056,14 @@
         const badgeClass = isBlocked ? "prop-status-text too-old" : "prop-status-text approved";
         const badgeLabel = isBlocked ? "🚫 Blackout" : "✔️ Hosting Allowed";
 
+        // Format clean name for exception log
+        const venueRow = globalVenuesData.find(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase() === String(vId).trim().toLowerCase());
+        const rawName = venueRow ? readFlexibleObjectValue(venueRow, "VenueName") : vId;
+
         container.innerHTML += `
           <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
             <div>
-              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${String(vId).toUpperCase()}</span>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--primary); text-transform:uppercase;">${rawName}</span>
               <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${sDate} to ${eDate}</div>
             </div>
             <span class="${badgeClass}" style="font-size:0.65rem;">${badgeLabel}</span>
