@@ -7,7 +7,6 @@
   <link rel="icon" type="image/png" href="../favicon.png">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
-
     :root {
       --primary: #012300;
       --accent: #52C920;
@@ -239,21 +238,21 @@
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
-            <input type="text" class="text-input" id="new-v-wkd-start" value="16:00:00">
+            <input type="time" class="text-input" id="new-v-wkd-start" value="16:00">
           </div>
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
-            <input type="text" class="text-input" id="new-v-wkd-end" value="19:30:00">
+            <input type="time" class="text-input" id="new-v-wkd-end" value="19:30">
           </div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
-            <input type="text" class="text-input" id="new-v-wnd-start" value="08:00:00">
+            <input type="time" class="text-input" id="new-v-wnd-start" value="08:00">
           </div>
           <div>
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
-            <input type="text" class="text-input" id="new-v-wnd-end" value="17:00:00">
+            <input type="time" class="text-input" id="new-v-wnd-end" value="17:00">
           </div>
         </div>
 
@@ -276,21 +275,21 @@
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
             <div>
               <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
-              <input type="text" class="text-input" id="hours-v-wkd-start" placeholder="16:00:00">
+              <input type="time" class="text-input" id="hours-v-wkd-start">
             </div>
             <div>
               <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
-              <input type="text" class="text-input" id="hours-v-wkd-end" placeholder="19:30:00">
+              <input type="time" class="text-input" id="hours-v-wkd-end">
             </div>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
             <div>
               <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
-              <input type="text" class="text-input" id="hours-v-wnd-start" placeholder="08:00:00">
+              <input type="time" class="text-input" id="hours-v-wnd-start">
             </div>
             <div>
               <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
-              <input type="text" class="text-input" id="hours-v-wnd-end" placeholder="17:00:00">
+              <input type="time" class="text-input" id="hours-v-wnd-end">
             </div>
           </div>
           <button class="btn-submit btn-small" id="btn-save-hours" onclick="submitVenueHoursUpdate()">Update Operational Bounds</button>
@@ -400,7 +399,7 @@
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
-    
+   
     const urlParams = new URLSearchParams(window.location.search);
     const targetSchoolID = urlParams.get('school') || '';
     let targetSchoolName = targetSchoolID; 
@@ -414,11 +413,10 @@
     let leagueYear = 2026;
     let cutoffMonth = 1;
     let cutoffDay = 1;
-
     let calFocusDate = new Date(); 
 
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
-
+    
     window.onerror = function(message, source, lineno, colno, error) {
       document.getElementById('loader').style.display = 'none';
       const terminal = document.getElementById('portal-crash-terminal');
@@ -441,7 +439,6 @@
 
       btn.innerText = "Verifying...";
       btn.style.backgroundColor = "#64748B";
-
       try {
         const response = await fetch(API_URL, {
           method: "POST",
@@ -484,7 +481,7 @@
         globalVenuesData = data.Venues || [];
         globalAvailabilityData = data.School_Availability || [];
         globalSportsData = data.Sports || [];
-
+        
         if (data.Schools && data.Schools.length > 0) {
           const schoolData = data.Schools.find(s => {
             const val = readFlexibleObjectValue(s, "SchoolID");
@@ -501,7 +498,6 @@
         }
         
         document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
-
         renderGames(data.Fixtures || [], data.Schools || [], globalSportsData, globalDivisionsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
@@ -510,7 +506,7 @@
         populateAvailabilityMenus(globalVenuesData, globalSportsData);
         populateSportsMenu(globalSportsData);
         buildInteractiveCalendarMesh();
-
+        
         loaderElement.style.display = 'none';
         document.getElementById('app-container').style.display = 'block';
         document.getElementById('bottom-nav').style.display = 'flex';
@@ -550,7 +546,6 @@
         const a = readFlexibleObjectValue(game, "AwayTeamID");
         return String(h).includes(targetSchoolID) || String(a).includes(targetSchoolID);
       });
-
       if (schoolGames.length === 0) {
         container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`;
         return;
@@ -565,6 +560,7 @@
         const gId = readFlexibleObjectValue(game, "GameID");
         const sId = readFlexibleObjectValue(game, "SportID");
         const dId = readFlexibleObjectValue(game, "DivisionID");
+    
         const hTeam = readFlexibleObjectValue(game, "HomeTeamID");
         const aTeam = readFlexibleObjectValue(game, "AwayTeamID");
 
@@ -610,14 +606,14 @@
         const prop1 = readFlexibleObjectValue(game, "ProposedDate1");
         const prop2 = readFlexibleObjectValue(game, "ProposedDate2");
         const prop3 = readFlexibleObjectValue(game, "ProposedDate3");
-
+        
         if (mStatus === "Postponed" && (prop1 || prop2 || prop3)) {
           proposalsHtml += `<div class="proposal-box"><div class="proposal-title">⏱ Mutual Rescheduling Requested</div>`;
           for (let pNum = 1; pNum <= 3; pNum++) {
             let pDate = readFlexibleObjectValue(game, `ProposedDate${pNum}`);
             let pTime = readFlexibleObjectValue(game, `ProposedTime${pNum}`);
             let pStatus = readFlexibleObjectValue(game, `Prop${pNum}_Status`);
-
+            
             if (pDate && pDate !== "") {
               proposalsHtml += `<div class="proposal-row"><span>Option ${pNum}: <b>${pDate}</b> @ ${pTime}</span>`;
               if (!pStatus || pStatus === "" || pStatus === "null") {
@@ -643,7 +639,7 @@
 
         const hScore = readFlexibleObjectValue(game, "HomeScore");
         const aScore = readFlexibleObjectValue(game, "AwayScore");
-
+        
         card.innerHTML = `
           <div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${headerDetails}</div>
           ${scoreBadgeHtml}
@@ -678,7 +674,7 @@
         if (!groups[seasonName]) { groups[seasonName] = []; }
         groups[seasonName].push(div);
       });
-
+      
       const sortedSeasons = Object.keys(groups).sort();
 
       sortedSeasons.forEach(season => {
@@ -706,6 +702,7 @@
           const option = document.createElement('option');
           option.value = dId;
           option.setAttribute('data-sport', sId);
+          
           option.textContent = displayName;
           optgroup.appendChild(option);
         });
@@ -793,7 +790,6 @@
       } else {
         complexContainer.style.display = 'block';
         nameLabel.innerText = "PARENT COMPLEX SHELL IDENTIFIER";
-        // Initialize default select option value into hidden element count
         calculateComplexUnitCapacity(document.getElementById('complex-layout-style').value);
       }
     }
@@ -836,12 +832,11 @@
                schoolFieldVal === String(targetSchoolName).trim().toLowerCase();
       });
       
-      // Filter out structural parents so exception hours are only logged to playable sub-courts
       const playableVenues = schoolVenues.filter(v => {
         const capType = String(readFlexibleObjectValue(v, "Capacity_Type")).trim().toLowerCase();
         return capType !== 'parent'; 
       });
-
+      
       playableVenues.forEach(v => {
         const vId = readFlexibleObjectValue(v, "VenueID");
         const sId = readFlexibleObjectValue(v, "SportID");
@@ -850,12 +845,12 @@
         const sport = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
         const sportName = sport ? readFlexibleObjectValue(sport, "Name") : 'Field Court';
         const cleanVenueName = rawName ? rawName : String(vId).toUpperCase();
+      
         const textLabel = `${cleanVenueName} • ${sportName}`;
         
         vSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
         exVSelect.innerHTML += `<option value="${vId}">${textLabel}</option>`;
       });
-
       renderAvailabilityExceptionLogs();
     }
 
@@ -891,13 +886,12 @@
 
       const year = calFocusDate.getFullYear();
       const month = calFocusDate.getMonth();
-
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       title.innerText = `${monthNames[month]} ${year}`;
-
+      
       const firstDayIdx = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
-
+      
       for (let i = 0; i < firstDayIdx; i++) {
         mesh.innerHTML += `<div class="cal-day-node empty-spacer"></div>`;
       }
@@ -906,7 +900,7 @@
         const val = String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase();
         return val === String(targetSchoolID).trim().toLowerCase() || val === String(targetSchoolName).trim().toLowerCase();
       }).map(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase());
-
+      
       for (let day = 1; day <= totalDays; day++) {
         const loopDate = new Date(year, month, day);
         const loopDateStr = Utilities_formatDateString(loopDate);
@@ -961,13 +955,13 @@
       const vName = document.getElementById('new-venue-name').value;
       const units = document.getElementById('new-venue-unit-count').value;
       const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
-
+      
       if (!vName) { alert("Please provide a facility name."); return; }
       if (checkedBoxes.length === 0) { alert("Please toggle at least one sport checkbox block."); return; }
 
       const selectedBaseNames = Array.from(checkedBoxes).map(cb => cb.value);
       const associatedSportIds = [];
-
+      
       globalSportsData.forEach(sport => {
         const baseName = String(readFlexibleObjectValue(sport, "Name")).split('(')[0].trim();
         if (selectedBaseNames.includes(baseName)) {
@@ -982,10 +976,10 @@
         venueName: vName, 
         unitCount: units,
         sportIds: associatedSportIds,
-        weekdayStart: document.getElementById('new-v-wkd-start').value || "16:00:00",
-        weekdayEnd: document.getElementById('new-v-wkd-end').value || "19:30:00",
-        weekendStart: document.getElementById('new-v-wnd-start').value || "08:00:00",
-        weekendEnd: document.getElementById('new-v-wnd-end').value || "17:00:00"
+        weekdayStart: document.getElementById('new-v-wkd-start').value || "16:00",
+        weekdayEnd: document.getElementById('new-v-wkd-end').value || "19:30",
+        weekendStart: document.getElementById('new-v-wnd-start').value || "08:00",
+        weekendEnd: document.getElementById('new-v-wnd-end').value || "17:00"
       };
 
       btn.innerText = "Syncing Matrix Rows...";
@@ -1000,7 +994,8 @@
           checkedBoxes.forEach(cb => cb.checked = false);
           setTimeout(() => { initApp(); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
         } else { alert("Error: " + result.message); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }
-      } catch(e) { alert("Network exception occurred mapping venue loops."); btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }
+      } catch(e) { alert("Network exception occurred mapping venue loops.");
+      btn.innerText = "➕ Register Facility Matrix"; btn.style.backgroundColor = "var(--primary)"; }
     }
 
     async function submitVenueHoursUpdate() {
@@ -1015,7 +1010,7 @@
         weekendStart: document.getElementById('hours-v-wnd-start').value,
         weekendEnd: document.getElementById('hours-v-wnd-end').value
       };
-
+      
       btn.innerText = "Saving Profile...";
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
@@ -1024,8 +1019,10 @@
           btn.innerText = "Hours Locked ✓";
           btn.style.backgroundColor = "#52C920";
           setTimeout(() => { initApp(); btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
-        } else { alert("Error: " + result.message); btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)";}
-      } catch(e) { alert("Network drop during save transaction loop."); btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)";}
+        } else { alert("Error: " + result.message); btn.innerText = "Update Operational Bounds";
+        btn.style.backgroundColor = "var(--primary)";}
+      } catch(e) { alert("Network drop during save transaction loop.");
+      btn.innerText = "Update Operational Bounds"; btn.style.backgroundColor = "var(--primary)";}
     }
 
     async function submitAvailabilityException() {
@@ -1044,7 +1041,7 @@
         startDate: start,
         endDate: end
       };
-
+      
       btn.innerText = "Transmitting Exception...";
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
@@ -1057,8 +1054,10 @@
           document.getElementById('exemption-form-card').style.borderColor = 'var(--border)';
           document.getElementById('exemption-form-title').innerText = "🚫 Log Calendar Blackout / Exemption";
           setTimeout(() => { initApp(); btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)"; }, 1500);
-        } else { alert("Error: " + result.message); btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)";}
-      } catch(e) { alert("Network dropped database execution pack."); btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)";}
+        } else { alert("Error: " + result.message); btn.innerText = "+ Log Availability Change";
+        btn.style.backgroundColor = "var(--primary)";}
+      } catch(e) { alert("Network dropped database execution pack.");
+      btn.innerText = "+ Log Availability Change"; btn.style.backgroundColor = "var(--primary)";}
     }
 
     function renderAvailabilityExceptionLogs() {
@@ -1074,14 +1073,14 @@
         const vId = readFlexibleObjectValue(a, "VenueID");
         return schoolVenues.includes(String(vId).trim().toLowerCase());
       });
-
+      
       if(elements.length === 0) {
         container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem; margin:0;">No calendar blackouts filed for this school term.</p>';
         return;
       }
 
       elements.sort((a,b) => new Date(readFlexibleObjectValue(b, "StartDate")) - new Date(readFlexibleObjectValue(a, "StartDate")));
-
+      
       elements.forEach(item => {
         const avail = readFlexibleObjectValue(item, "IsAvailable");
         const vId = readFlexibleObjectValue(item, "VenueID");
@@ -1149,14 +1148,16 @@
       const originalText = btn.innerText;
       btn.innerText = "Syncing...";
       btn.style.backgroundColor = "#64748B";
-
       const payload = { action: "updateScore", schoolId: targetSchoolID, gameId: gameId, homeScore: document.getElementById(`homeScore-${gameId}`).value, awayScore: document.getElementById(`awayScore-${gameId}`).value, status: document.getElementById(`status-${gameId}`).value };
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
         const result = await res.json();
-        if(result.status === "success") { btn.innerText = "Logged ✓"; btn.style.backgroundColor = "#52C920"; setTimeout(() => { initApp(); }, 1000); } 
-        else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
-      } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+        if(result.status === "success") { btn.innerText = "Logged ✓"; btn.style.backgroundColor = "#52C920";
+        setTimeout(() => { initApp(); }, 1000); } 
+        else { alert("Error: " + result.message);
+        btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
+      } catch (err) { alert("Connection failed.");
+      btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
     }
 
     async function submitPlayer() {
@@ -1167,9 +1168,8 @@
       const nickname = document.getElementById('reg-nickname').value;
       const dobInput = document.getElementById('reg-dob').value;
       const jerseyNumber = document.getElementById('reg-jersey').value;
-
       if(!teamId || !nickname || !dobInput) { 
-        alert("Please select a team, enter a player name, and provide a valid Date of Birth."); 
+        alert("Please select a team, enter a player name, and provide a valid Date of Birth.");
         return; 
       }
 
@@ -1183,7 +1183,6 @@
           
           const cutoffYear = leagueYear - ageLimit;
           const cutoffDateString = `${cutoffYear}-06-01`;
-
           if (dobInput < cutoffDateString) {
             alert(`⚠️ SUBMISSION BLOCKED:\n\nThis division has an age limit of ${readFlexibleObjectValue(division, "Age_Limit") || ('U' + ageLimit)}.\nTo be eligible, the player must be born on or after ${cutoffDateString}.`);
             return;
@@ -1199,9 +1198,10 @@
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
         const result = await res.json();
         if(result.status === "success") {
-          btn.innerText = "Added ✓"; btn.style.backgroundColor = "#52C920";
+          btn.innerText = "Added ✓";
+          btn.style.backgroundColor = "#52C920";
           document.getElementById('reg-nickname').value = ''; document.getElementById('reg-dob').value = ''; document.getElementById('reg-jersey').value = '';
-          if(document.getElementById('manage-team').value === payload.teamId) initApp(); 
+          if(document.getElementById('manage-team').value === payload.teamId) initApp();
         } else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
       } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
       setTimeout(() => { btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 3000);
@@ -1212,7 +1212,6 @@
       const originalText = btn.innerText;
       btn.innerText = "Saving...";
       btn.style.backgroundColor = "#1A1A1A";
-
       const payload = { action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value };
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
@@ -1231,12 +1230,12 @@
       const originalText = btn.innerText;
       btn.innerText = "Registering...";
       btn.style.backgroundColor = "#64748B";
-
       const payload = { action: "registerTeam", schoolId: targetSchoolID, divisionId: select.options[select.selectedIndex].value, sportId: select.options[select.selectedIndex].getAttribute('data-sport') };
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
         const result = await res.json();
-        if(result.status === "success") { btn.innerText = "Registered ✓"; btn.style.backgroundColor = "#52C920"; setTimeout(() => { initApp(); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 1500); } 
+        if(result.status === "success") { btn.innerText = "Registered ✓"; btn.style.backgroundColor = "#52C920";
+        setTimeout(() => { initApp(); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }, 1500); } 
         else { alert("Error: " + result.message); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
       } catch (err) { alert("Connection failed."); btn.innerText = originalText; btn.style.backgroundColor = "var(--primary)"; }
     }
@@ -1257,7 +1256,6 @@
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
       document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
-      
       const targetTab = document.getElementById(`tab-${tabId}`);
       if (targetTab) targetTab.classList.add('active');
       
