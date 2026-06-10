@@ -198,7 +198,8 @@
         <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
         <div class="explainer-box info">
           <strong>Why precision mapping matters:</strong>
-          Our league engine uses automated geometric allocation loops. If your facility houses multiple overlapping lines (such as a Gymnasium that supports Basketball layouts OR simultaneous Badminton nets), the database must protect those spaces from clashing. By walking through our step-by-step gateway below, the system ensures your school will never be double-booked for home matches.
+          Our league engine uses automated geometric allocation loops. If your facility houses multiple overlapping lines (such as a Gymnasium that supports Basketball layouts OR simultaneous Badminton nets), the database must protect those spaces from clashing. By walking through our step-by-step gateway below, the system ensures your school will never be double-booked for home matches.<br><br>
+          <em>If you need technical help or explanations to accurately map your facilities, please visit the Help tab for video tutorials or to schedule a 20-minute over-the-shoulder Zoom training call with AthleticOS.</em>
         </div>
       </div>
 
@@ -321,8 +322,8 @@
         
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">1. EXEMPTION SCOPE</label>
         <select class="status-select" id="ex-scope" onchange="toggleExemptionScope(this.value)" style="margin-bottom:10px;">
-          <option value="school">Global School Blackout (Applies to all fields)</option>
-          <option value="venue">Specific Mapped Venue Only</option>
+          <option value="school">Global School Blackout (Applies to all fields & teams)</option>
+          <option value="venue">Specific Mapped Venue / Field Only</option>
           <option value="division">Specific Age Group / Team Only</option>
         </select>
 
@@ -370,6 +371,12 @@
     </div>
 
     <div id="tab-help" class="tab-content">
+      <div class="card">
+        <div class="card-header">AthleticOS Support</div>
+        <a href="https://athleticos.net/training" target="_blank" class="btn-submit" style="margin-bottom: 10px; background-color: var(--wizard-step-text);">📹 Video Tutorials</a>
+        <a href="https://calendly.com/athleticos/20min" target="_blank" class="btn-submit" style="background-color: var(--wizard-step-text);">💻 Schedule Zoom Training</a>
+      </div>
+      
       <div class="card">
         <div class="card-header">Contact League Admin</div>
         <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
@@ -633,7 +640,6 @@
       renderAvailabilityExceptionLogs();
     }
 
-    // --- UPDATED: CLEAN UNIFIED DIVISION DROPDOWN ---
     function populateBlackoutDivisions() {
       const divSelect = document.getElementById('ex-div-id');
       divSelect.innerHTML = '<option value="">Select Target Team...</option>';
@@ -651,7 +657,6 @@
       document.getElementById('ex-venue-container').style.display = (scopeValue === 'venue') ? 'block' : 'none';
       document.getElementById('ex-division-container').style.display = (scopeValue === 'division') ? 'block' : 'none';
     }
-    // --------------------------------------
 
     function loadSelectedVenueHours(venueId) {
       const form = document.getElementById('venue-hours-form');
@@ -723,7 +728,7 @@
         action: "addAvailability", schoolId: targetSchoolID, 
         scope: document.getElementById('ex-scope').value, 
         venueId: document.getElementById('ex-venue-id').value, 
-        divisionId: document.getElementById('ex-div-id').value, // Transmits specific team/division ID
+        divisionId: document.getElementById('ex-div-id').value, 
         constraint: document.getElementById('ex-constraint').value, 
         startDate: document.getElementById('ex-start-date').value, endDate: document.getElementById('ex-end-date').value 
       };
@@ -735,7 +740,6 @@
       } catch(e) { alert("Network dropped."); btn.innerText = "+ Log Availability Change"; }
     }
 
-    // --- NEW: DELETE HANDLER ATTACHED TO RENDER LIST ---
     async function deleteAvailability(availId) {
       if(!confirm("Are you sure you want to permanently delete this blackout window?")) return;
       try {
@@ -774,7 +778,6 @@
       });
     }
 
-    // RESTORED MESSAGES RENDERER
     function renderMessages(messages) {
       const container = document.getElementById('messages-list');
       if (!messages || messages.length === 0) {
