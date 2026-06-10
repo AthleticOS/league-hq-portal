@@ -114,8 +114,8 @@
     .message-item { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
     .message-item:last-child { border-bottom: none; }
     .message-title { font-weight: 800; font-size: 1rem; }
-    .message-date { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
-    .message-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; }
+    .message-date { font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-top: 2px; }
+    .message-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; background: #F8FAFC; padding: 10px; border-radius: 6px; border-left: 3px solid var(--border); }
 
     .player-card, .team-card { border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #F8FAFC; }
     .team-card { font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
@@ -376,7 +376,12 @@
     </div>
 
     <div id="tab-messages" class="tab-content">
-      <div class="card" id="messages-list"></div>
+      <div class="card">
+        <div class="card-header" style="color:var(--primary);">💬 Live Chat Rooms</div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">Access your dedicated Google Chat spaces below. (Links activate based on your registered teams).</p>
+        <div id="chat-launchers-container"></div>
+      </div>
+      <div id="messages-list"></div>
     </div>
 
     <div id="tab-help" class="tab-content">
@@ -514,10 +519,12 @@
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
         
         populateAvailabilityMenus(globalVenuesData, globalSportsData);
-        populateBlackoutDivisions(); // Render the new, clean dropdown
+        populateBlackoutDivisions(); 
         populateSportsMenu(globalSportsData);
         buildInteractiveCalendarMesh();
-        renderMessages(data.Messages || []); // Message rendering restored
+        
+        renderChatLaunchers(); // NEW: Render the deep links
+        renderMessages(data.Messages || []); // UPDATED: Render categorized feeds
         
         loaderElement.style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
       } catch (error) { loaderElement.style.color = "red"; loaderElement.innerHTML = `<h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4><p style="font-size:0.8rem;">${error.message}</p>`; }
@@ -813,20 +820,67 @@
       });
     }
 
-    function renderMessages(messages) {
-      const container = document.getElementById('messages-list');
-      if (!messages || messages.length === 0) {
-        container.innerHTML = '<p style="font-size: 0.9rem; text-align:center; color: var(--text-muted);">No new messages.</p>';
+    // --- NEW: DYNAMIC CHAT LAUNCHERS ---
+    function renderChatLaunchers() {
+      const container = document.getElementById('chat-launchers-container');
+      if(!container) return;
+      container.innerHTML = '';
+      
+      const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+      const activeSportIds = [...new Set(schoolTeams.map(t => readFlexibleObjectValue(t, "SportID")).filter(Boolean))];
+
+      if(activeSportIds.length === 0) {
+        container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted);">Register for a team to unlock specific sport chat rooms.</p>';
         return;
       }
-      container.innerHTML = '<div class="card-header">League Announcements</div>';
-      messages.forEach(msg => {
-        const topic = readFlexibleObjectValue(msg, "TopicSubject") || readFlexibleObjectValue(msg, "Topic_Subject") || 'Announcement';
-        const stamp = readFlexibleObjectValue(msg, "Timestamp") || 'Recent';
-        const body = readFlexibleObjectValue(msg, "Content") || '';
 
-        container.innerHTML += `<div class="message-item"><div class="message-title">${topic}</div><div class="message-date">${stamp}</div><div class="message-body">${body}</div></div>`;
+      activeSportIds.forEach(sId => {
+        const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
+        if(sport) {
+          const sportName = readFlexibleObjectValue(sport, "Name") || sId;
+          const chatUrl = readFlexibleObjectValue(sport, "ChatWebhookURL") || '#';
+          container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName} Chat</a>`;
+        }
       });
+    }
+
+    // --- UPDATED: CATEGORIZED MESSAGE RENDERER ---
+    function renderMessages(messages) {
+      const container = document.getElementById('messages-list');
+      container.innerHTML = '';
+
+      if (!messages || messages.length === 0) {
+        container.innerHTML = '<div class="card"><p style="font-size: 0.9rem; text-align:center; color: var(--text-muted);">No new messages.</p></div>';
+        return;
+      }
+
+      const grouped = {};
+      messages.forEach(msg => {
+        const cat = readFlexibleObjectValue(msg, "Category") || "General";
+        if(!grouped[cat]) grouped[cat] = [];
+        grouped[cat].push(msg);
+      });
+
+      for(const [category, msgs] of Object.entries(grouped)) {
+         let groupHtml = `<div class="faq-category">${category} Announcements</div>`;
+         msgs.forEach(msg => {
+           const topic = readFlexibleObjectValue(msg, "TopicSubject") || readFlexibleObjectValue(msg, "Topic_Subject") || 'Announcement';
+           const stamp = readFlexibleObjectValue(msg, "Timestamp") || 'Recent';
+           const body = readFlexibleObjectValue(msg, "Content") || '';
+           const target = readFlexibleObjectValue(msg, "TargetID") || '';
+           let targetBadge = target ? `<span style="font-size:0.65rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:800; color:var(--text-muted);">🎯 ${target}</span>` : '';
+
+           groupHtml += `
+             <div class="message-item">
+               <div class="message-title" style="display:flex; justify-content:space-between; align-items:center;">
+                 <span>${topic} ${targetBadge}</span>
+               </div>
+               <div class="message-date">${stamp}</div>
+               <div class="message-body">${body}</div>
+             </div>`;
+         });
+         container.innerHTML += `<div class="card" style="margin-bottom:15px; border-color:var(--accent);">${groupHtml}</div>`;
+      }
     }
 
     async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
