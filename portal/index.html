@@ -8,25 +8,58 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
     :root {
-      --primary: #012300; --accent: #52C920; --bg: #F8FAFC; --card-bg: #FFFFFF;
-      --text-main: #1A1A1A; --text-muted: #64748B; --border: #E2E8F0;
-      --wizard-step-bg: #EFF6FF; --wizard-step-border: #BFDBFE; --wizard-step-text: #1E40AF;
+      --primary: #012300;
+      --accent: #52C920;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #1A1A1A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --wizard-step-bg: #EFF6FF;
+      --wizard-step-border: #BFDBFE;
+      --wizard-step-text: #1E40AF;
     }
-    body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; padding-bottom: 75px; }
-    header { background-color: var(--primary); color: #fff; padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 4px solid var(--accent); }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+      padding-bottom: 75px;
+    }
+
+    header {
+      background-color: var(--primary);
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 4px solid var(--accent);
+    }
     header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
     header p { margin: 5px 0 0 0; font-size: 0.85rem; color: var(--accent); }
+
+    /* STATE SCREENS */
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
     #loader { text-align: center; padding: 50px; font-weight: 600; color: var(--text-muted); display: none; word-break: break-word; }
+    
+    /* SECURITY PIN SCREEN */
     #pin-screen { display: none; padding: 40px 20px; text-align: center; }
     .pin-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 350px; margin: 0 auto; }
     .pin-box h2 { margin-top: 0; font-size: 1.3rem; }
     .pin-box p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
     .pin-input { font-size: 1.5rem; text-align: center; letter-spacing: 5px; font-weight: 800; width: 100%; max-width: 200px; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 20px; outline: none; }
     .pin-input:focus { border-color: var(--accent); }
+
+    /* APP CONTAINER */
     .container { padding: 15px; display: none; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
+
+    /* CARDS & INPUTS */
     .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .card-header { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .matchup { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; }
@@ -34,25 +67,36 @@
     .score-input { width: 50px; padding: 8px; font-size: 1.1rem; text-align: center; font-weight: 800; }
     .status-select { width: 100%; padding: 10px; margin-bottom: 15px; }
     .text-input { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box; }
+    
     .btn-submit { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
     .btn-submit:active { background-color: var(--accent); color: var(--primary); }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
+
+    /* CONTEXTUAL EXPLAINER BOXES */
     .explainer-box { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 15px; font-size: 0.8rem; line-height: 1.4; color: #334155; }
     .explainer-box.info { background-color: #F0FDF4; border-left-color: var(--accent); color: #166534; }
     .explainer-box strong { display: block; margin-bottom: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+    /* WIZARD TRACK ELEMENTS */
     .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
     .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
+
+    /* PROPOSAL INTERACTIVE OBJECTS */
     .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
     .proposal-title { font-size: 0.8rem; color: #C2410C; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
     .proposal-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
+    .proposal-row:last-child { margin-bottom: 0; }
     .prop-actions { display: flex; gap: 5px; }
     .btn-prop-accept { background: #166534; color: #fff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; }
     .btn-prop-decline { background: #991B1B; color: #fff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; }
+    
     .prop-status-text { font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
     .prop-status-text.waiting { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
     .prop-status-text.action-needed { background: #FCE7F3; color: #9D174D; border: 1px dashed #F472B6; }
     .prop-status-text.approved { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
     .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
+
+    /* CALENDAR GRID LAYOUT */
     .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
     .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
     .cal-day-node { background: #F1F5F9; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; }
@@ -60,18 +104,27 @@
     .cal-day-node.has-blackout { background: #FEE2E2; color: #991B1B; }
     .cal-day-node.has-travel-only { background: #FFEDD5; color: #C2410C; }
     .cal-day-node.empty-spacer { background: transparent; cursor: default; }
-    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
+
+    @keyframes pulse {
+      0% { opacity: 1; }
+      50% { opacity: 0.7; }
+      100% { opacity: 1; }
+    }
+
     .message-item { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
     .message-item:last-child { border-bottom: none; }
     .message-title { font-weight: 800; font-size: 1rem; }
     .message-date { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
     .message-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; }
+
     .player-card, .team-card { border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #F8FAFC; }
     .team-card { font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .player-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
+    
     .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7rem; }
     .status-badge.pending { background: #FEF08A; color: #854D0E; }
     .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
+
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; }
     .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
@@ -140,6 +193,7 @@
     </div>
 
     <div id="tab-availability" class="tab-content">
+      
       <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
         <div class="explainer-box info">
@@ -151,6 +205,7 @@
       <div class="card wizard-card">
         <span class="wizard-badge">Phase 1: Parent Asset Enrollment</span>
         <div class="card-header">📦 Declare Physical Asset Box</div>
+        
         <div class="explainer-box">
           <strong>Instructions:</strong>
           Enter the primary standalone field name or the containing complex shell here. Do not enter individual court splits or sub-numbers yet.
@@ -177,15 +232,28 @@
         </div>
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE TOURNEY CARRIER CAPACITIES</label>
-        <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;"></div>
+        <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
+          </div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
-          <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label><input type="time" class="text-input" id="new-v-wkd-start" value="16:00"></div>
-          <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label><input type="time" class="text-input" id="new-v-wkd-end" value="19:30"></div>
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
+            <input type="time" class="text-input" id="new-v-wkd-start" value="16:00">
+          </div>
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
+            <input type="time" class="text-input" id="new-v-wkd-end" value="19:30">
+          </div>
         </div>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-          <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label><input type="time" class="text-input" id="new-v-wnd-start" value="08:00"></div>
-          <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label><input type="time" class="text-input" id="new-v-wnd-end" value="17:00"></div>
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
+            <input type="time" class="text-input" id="new-v-wnd-start" value="08:00">
+          </div>
+          <div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
+            <input type="time" class="text-input" id="new-v-wnd-end" value="17:00">
+          </div>
         </div>
 
         <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Sync Structure to Database Core</button>
@@ -193,17 +261,36 @@
 
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
-        <div class="explainer-box"><strong>Usage Profile:</strong> Select an engineered playable court below to alter its absolute hourly boundaries for weekday or weekend loops.</div>
-        <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;"><option value="">Select Mapped Facility...</option></select>
+        
+        <div class="explainer-box">
+          <strong>Usage Profile:</strong>
+          Select an engineered playable court below to alter its absolute hourly boundaries for weekday or weekend loops.
+        </div>
+
+        <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
+          <option value="">Select Mapped Facility...</option>
+        </select>
         
         <div id="venue-hours-form" style="display:none;" class="space-y-2">
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
-            <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label><input type="time" class="text-input" id="hours-v-wkd-start"></div>
-            <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label><input type="time" class="text-input" id="hours-v-wkd-end"></div>
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
+              <input type="time" class="text-input" id="hours-v-wkd-start">
+            </div>
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
+              <input type="time" class="text-input" id="hours-v-wkd-end">
+            </div>
           </div>
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
-            <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label><input type="time" class="text-input" id="hours-v-wnd-start"></div>
-            <div><label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label><input type="time" class="text-input" id="hours-v-wnd-end"></div>
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
+              <input type="time" class="text-input" id="hours-v-wnd-start">
+            </div>
+            <div>
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
+              <input type="time" class="text-input" id="hours-v-wnd-end">
+            </div>
           </div>
           <button class="btn-submit btn-small" id="btn-save-hours" onclick="submitVenueHoursUpdate()">Update Operational Bounds</button>
         </div>
@@ -211,13 +298,22 @@
 
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
+        
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <button onclick="navigateCalendarMonth(-1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">◀</button>
           <span id="cal-month-title" style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">June 2026</span>
           <button onclick="navigateCalendarMonth(1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">▶</button>
         </div>
-        <div class="cal-header-row"><span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span></div>
+
+        <div class="cal-header-row">
+          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+        </div>
         <div class="cal-grid-mesh" id="calendar-days-mesh"></div>
+        
+        <div style="margin-top:12px; display:flex; gap:12px; font-size:0.65rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FEE2E2; border-radius:3px;"></span>Blackout / Holiday</div>
+          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FFEDD5; border-radius:3px;"></span>Travel Only</div>
+        </div>
       </div>
 
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
@@ -225,8 +321,8 @@
         
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">1. EXEMPTION SCOPE</label>
         <select class="status-select" id="ex-scope" onchange="toggleExemptionScope(this.value)" style="margin-bottom:10px;">
-          <option value="school">Global School Blackout (Applies to all fields & teams)</option>
-          <option value="venue">Specific Mapped Venue / Field Only</option>
+          <option value="school">Global School Blackout (Applies to all fields)</option>
+          <option value="venue">Specific Mapped Venue Only</option>
           <option value="division">Specific Age Group / Team Only</option>
         </select>
 
@@ -236,10 +332,8 @@
         </div>
 
         <div id="ex-division-container" style="display:none; margin-bottom:10px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
-          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">GENDER IDENTIFIER</label>
-          <select class="status-select" id="ex-div-gender" onchange="renderBlackoutAges(this.value)" style="margin-bottom:10px;"></select>
-          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">AGE GROUP BOUNDARY</label>
-          <select class="status-select" id="ex-div-age" style="margin-bottom:0;"></select>
+          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET TEAM / DIVISION</label>
+          <select class="status-select" id="ex-div-id" style="margin-bottom:0;"></select>
         </div>
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">2. AVAILABILITY CONSTRAINT</label>
@@ -252,9 +346,16 @@
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">3. DATE WINDOW</label>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-          <div><span style="font-size:0.65rem; color:var(--text-muted);">START DATE</span><input type="date" class="text-input" id="ex-start-date" style="margin-bottom:0;"></div>
-          <div><span style="font-size:0.65rem; color:var(--text-muted);">END DATE</span><input type="date" class="text-input" id="ex-end-date" style="margin-bottom:0;"></div>
+          <div>
+            <span style="font-size:0.65rem; color:var(--text-muted);">START DATE</span>
+            <input type="date" class="text-input" id="ex-start-date" style="margin-bottom:0;">
+          </div>
+          <div>
+            <span style="font-size:0.65rem; color:var(--text-muted);">END DATE</span>
+            <input type="date" class="text-input" id="ex-end-date" style="margin-bottom:0;">
+          </div>
         </div>
+
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
@@ -264,11 +365,31 @@
       </div>
     </div>
 
-    <div id="tab-messages" class="tab-content"><div class="card" id="messages-list"></div></div>
+    <div id="tab-messages" class="tab-content">
+      <div class="card" id="messages-list"></div>
+    </div>
+
     <div id="tab-help" class="tab-content">
       <div class="card">
         <div class="card-header">Contact League Admin</div>
         <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
+        <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: #25D366; color: white;">💬 WhatsApp Admin</a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Frequently Asked Questions</div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I report a final score?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Go to the 'Games' tab, enter the Home and Away scores, select 'Completed' from the status dropdown, and tap 'Update Match'.</p>
+        </div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I register a new team?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Navigate to the 'Teams' tab, select the division you wish to compete in, and tap 'Register Team'. The division will then activate in your Rosters tab dropdown list.</p>
+        </div>
+        <div style="margin-bottom: 0;">
+          <strong style="font-size: 0.9rem;">Why can't I edit a player's Date of Birth?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">To maintain league eligibility compliance, player birthdays are permanently locked upon submission. Contact your League Director to request an official change.</p>
+        </div>
       </div>
     </div>
   </div>
@@ -351,9 +472,10 @@
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
         
         populateAvailabilityMenus(globalVenuesData, globalSportsData);
-        populateBlackoutGenders(); 
+        populateBlackoutDivisions(); // Render the new, clean dropdown
         populateSportsMenu(globalSportsData);
         buildInteractiveCalendarMesh();
+        renderMessages(data.Messages || []); // Message rendering restored
         
         loaderElement.style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
       } catch (error) { loaderElement.style.color = "red"; loaderElement.innerHTML = `<h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4><p style="font-size:0.8rem;">${error.message}</p>`; }
@@ -404,8 +526,43 @@
           isScoreLocked = true; scoreActionButtonsHtml = "";
           scoreBadgeHtml = mStatus === "Disputed" ? `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px; background-color:#FEE2E2; color:#991B1B; border-color:#FCA5A5;">⚠️ DISPUTED</div>` : `<div class="prop-status-text approved" style="text-align:center; margin-bottom:12px;">✓ Verified</div>`;
         }
+
+        let proposalsHtml = "";
+        const prop1 = readFlexibleObjectValue(game, "ProposedDate1");
+        const prop2 = readFlexibleObjectValue(game, "ProposedDate2");
+        const prop3 = readFlexibleObjectValue(game, "ProposedDate3");
         
-        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hTeam, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aTeam, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}`;
+        if (mStatus === "Postponed" && (prop1 || prop2 || prop3)) {
+          proposalsHtml += `<div class="proposal-box"><div class="proposal-title">⏱ Mutual Rescheduling Requested</div>`;
+          for (let pNum = 1; pNum <= 3; pNum++) {
+            let pDate = readFlexibleObjectValue(game, `ProposedDate${pNum}`);
+            let pTime = readFlexibleObjectValue(game, `ProposedTime${pNum}`);
+            let pStatus = readFlexibleObjectValue(game, `Prop${pNum}_Status`);
+            
+            if (pDate && pDate !== "") {
+              proposalsHtml += `<div class="proposal-row"><span>Option ${pNum}: <b>${pDate}</b> @ ${pTime}</span>`;
+              if (!pStatus || pStatus === "" || pStatus === "null") {
+                proposalsHtml += `
+                  <div class="prop-actions">
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${gId}', ${pNum}, 'accept')">Accept</button>
+                    <button class="btn-prop-decline" onclick="submitProposalVote('${gId}', ${pNum}, 'decline')">Decline</button>
+                  </div>`;
+              } else if (pStatus === currentSide) {
+                proposalsHtml += `<span class="prop-status-text waiting">Waiting on Opponent</span>`;
+              } else {
+                proposalsHtml += `
+                  <div class="prop-actions">
+                    <span class="prop-status-text action-needed" style="margin-right:5px;">Opponent Agreed!</span>
+                    <button class="btn-prop-accept" onclick="submitProposalVote('${gId}', ${pNum}, 'accept')">Agree & Finalize</button>
+                  </div>`;
+              }
+              proposalsHtml += `</div>`;
+            }
+          }
+          proposalsHtml += `</div>`;
+        }
+        
+        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hTeam, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aTeam, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
         container.appendChild(card);
       });
     }
@@ -476,47 +633,17 @@
       renderAvailabilityExceptionLogs();
     }
 
-    // --- NEW: DYNAMIC BLACKOUT UI LOGIC WITH TEAM FILTERING ---
-    function populateBlackoutGenders() {
-      const genderSelect = document.getElementById('ex-div-gender');
-      genderSelect.innerHTML = '<option value="">Select Gender...</option>';
+    // --- UPDATED: CLEAN UNIFIED DIVISION DROPDOWN ---
+    function populateBlackoutDivisions() {
+      const divSelect = document.getElementById('ex-div-id');
+      divSelect.innerHTML = '<option value="">Select Target Team...</option>';
       
-      // Step 1: Find all divisions where this school actively has a team registered
-      const schoolTeamDivIds = globalTeamsData
-        .filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase())
-        .map(t => readFlexibleObjectValue(t, "DivisionID"));
-
-      // Step 2: Extract only the unique genders from those specific divisions
-      const genders = [...new Set(globalDivisionsData
-        .filter(d => schoolTeamDivIds.includes(readFlexibleObjectValue(d, "DivisionID")))
-        .map(d => readFlexibleObjectValue(d, "Gender"))
-        .filter(Boolean))];
-        
-      genders.sort().forEach(g => { genderSelect.innerHTML += `<option value="${g}">${g}</option>`; });
-    }
-
-    function renderBlackoutAges(selectedGender) {
-      const ageSelect = document.getElementById('ex-div-age');
-      ageSelect.innerHTML = '<option value="">Select Age Group...</option>';
-      if (!selectedGender) return;
-      
-      const schoolTeamDivIds = globalTeamsData
-        .filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase())
-        .map(t => readFlexibleObjectValue(t, "DivisionID"));
-
-      const distinctAges = [];
-      globalDivisionsData
-        .filter(d => String(readFlexibleObjectValue(d, "Gender")) === String(selectedGender) && schoolTeamDivIds.includes(readFlexibleObjectValue(d, "DivisionID")))
-        .forEach(d => {
-          const rawAge = readFlexibleObjectValue(d, "Age_Limit");
-          const divId = readFlexibleObjectValue(d, "DivisionID");
-          if(rawAge && !distinctAges.some(a => a.age === rawAge)) {
-            distinctAges.push({ age: rawAge, id: divId });
-          }
-      });
-
-      distinctAges.sort((a,b) => parseInt(String(a.age).replace(/\D/g, '')) - parseInt(String(b.age).replace(/\D/g, ''))).forEach(item => {
-        ageSelect.innerHTML += `<option value="${item.id}">${item.age}</option>`;
+      const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+      schoolTeams.forEach(team => {
+        const sId = readFlexibleObjectValue(team, "SportID");
+        const dId = readFlexibleObjectValue(team, "DivisionID");
+        const displayName = getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData);
+        divSelect.innerHTML += `<option value="${dId}">${displayName}</option>`;
       });
     }
 
@@ -596,7 +723,7 @@
         action: "addAvailability", schoolId: targetSchoolID, 
         scope: document.getElementById('ex-scope').value, 
         venueId: document.getElementById('ex-venue-id').value, 
-        divisionId: document.getElementById('ex-div-age').value, 
+        divisionId: document.getElementById('ex-div-id').value, // Transmits specific team/division ID
         constraint: document.getElementById('ex-constraint').value, 
         startDate: document.getElementById('ex-start-date').value, endDate: document.getElementById('ex-end-date').value 
       };
@@ -608,22 +735,59 @@
       } catch(e) { alert("Network dropped."); btn.innerText = "+ Log Availability Change"; }
     }
 
+    // --- NEW: DELETE HANDLER ATTACHED TO RENDER LIST ---
+    async function deleteAvailability(availId) {
+      if(!confirm("Are you sure you want to permanently delete this blackout window?")) return;
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteAvailability", availId: availId }) });
+        if((await res.json()).status === "success") initApp();
+      } catch(e) { alert("Network drop."); }
+    }
+
     function renderAvailabilityExceptionLogs() {
       const container = document.getElementById('active-exceptions-list'); container.innerHTML = '';
       const elements = globalAvailabilityData.filter(a => String(readFlexibleObjectValue(a, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       if(elements.length === 0) return container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem;">No calendar blackouts filed.</p>';
 
       elements.forEach(item => {
+        const availId = readFlexibleObjectValue(item, "AvailabilityID");
         const badgeClass = readFlexibleObjectValue(item, "IsAvailable") === false || String(readFlexibleObjectValue(item, "IsAvailable")).toLowerCase() === "false" ? "prop-status-text too-old" : "prop-status-text approved";
         let title = "Global School Constraint";
         if (readFlexibleObjectValue(item, "DivisionID")) {
-          const divObj = globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") === readFlexibleObjectValue(item, "DivisionID"));
-          title = `Age Group: ${divObj ? readFlexibleObjectValue(divObj, "Gender") + " U" + readFlexibleObjectValue(divObj, "Age_Limit") : readFlexibleObjectValue(item, "DivisionID")}`;
+          title = `Team: ${getTeamDisplayName(readFlexibleObjectValue(globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") === readFlexibleObjectValue(item, "DivisionID")), "SportID"), readFlexibleObjectValue(item, "DivisionID"), globalSportsData, globalDivisionsData)}`;
         } else if (readFlexibleObjectValue(item, "VenueID")) {
           const venObj = globalVenuesData.find(v => readFlexibleObjectValue(v, "VenueID") === readFlexibleObjectValue(item, "VenueID"));
           title = `Venue: ${venObj ? readFlexibleObjectValue(venObj, "VenueName") : readFlexibleObjectValue(item, "VenueID")}`;
         }
-        container.innerHTML += `<div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center"><div><span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${title}</span><div style="font-size:0.7rem; color:var(--text-muted);">Range: ${readFlexibleObjectValue(item, "StartDate")} to ${readFlexibleObjectValue(item, "EndDate")}</div></div><span class="${badgeClass}" style="font-size:0.65rem;">Logged</span></div>`;
+        
+        container.innerHTML += `
+          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
+            <div>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${title}</span>
+              <div style="font-size:0.7rem; color:var(--text-muted);">Range: ${readFlexibleObjectValue(item, "StartDate")} to ${readFlexibleObjectValue(item, "EndDate")}</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center;">
+              <span class="${badgeClass}" style="font-size:0.65rem;">Logged</span>
+              <button onclick="deleteAvailability('${availId}')" style="background:none; border:none; cursor:pointer; color:#991B1B;" title="Delete Blackout">🗑️</button>
+            </div>
+          </div>`;
+      });
+    }
+
+    // RESTORED MESSAGES RENDERER
+    function renderMessages(messages) {
+      const container = document.getElementById('messages-list');
+      if (!messages || messages.length === 0) {
+        container.innerHTML = '<p style="font-size: 0.9rem; text-align:center; color: var(--text-muted);">No new messages.</p>';
+        return;
+      }
+      container.innerHTML = '<div class="card-header">League Announcements</div>';
+      messages.forEach(msg => {
+        const topic = readFlexibleObjectValue(msg, "TopicSubject") || readFlexibleObjectValue(msg, "Topic_Subject") || 'Announcement';
+        const stamp = readFlexibleObjectValue(msg, "Timestamp") || 'Recent';
+        const body = readFlexibleObjectValue(msg, "Content") || '';
+
+        container.innerHTML += `<div class="message-item"><div class="message-title">${topic}</div><div class="message-date">${stamp}</div><div class="message-body">${body}</div></div>`;
       });
     }
 
