@@ -523,8 +523,8 @@
         populateSportsMenu(globalSportsData);
         buildInteractiveCalendarMesh();
         
-        renderChatLaunchers(); // NEW: Render the deep links
-        renderMessages(data.Messages || []); // UPDATED: Render categorized feeds
+        renderChatLaunchers();
+        renderMessages(data.Messages || []);
         
         loaderElement.style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
       } catch (error) { loaderElement.style.color = "red"; loaderElement.innerHTML = `<h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4><p style="font-size:0.8rem;">${error.message}</p>`; }
@@ -820,7 +820,6 @@
       });
     }
 
-    // --- NEW: DYNAMIC CHAT LAUNCHERS ---
     function renderChatLaunchers() {
       const container = document.getElementById('chat-launchers-container');
       if(!container) return;
@@ -844,7 +843,6 @@
       });
     }
 
-    // --- UPDATED: CATEGORIZED MESSAGE RENDERER ---
     function renderMessages(messages) {
       const container = document.getElementById('messages-list');
       container.innerHTML = '';
@@ -861,7 +859,19 @@
         grouped[cat].push(msg);
       });
 
-      for(const [category, msgs] of Object.entries(grouped)) {
+      // FORCED CATEGORY SORTING ARRAY
+      const categoryOrder = ["League", "Conference", "Sport", "Public"];
+      
+      const sortedCategories = Object.keys(grouped).sort((a, b) => {
+        let indexA = categoryOrder.indexOf(a);
+        let indexB = categoryOrder.indexOf(b);
+        if (indexA === -1) indexA = 999;
+        if (indexB === -1) indexB = 999;
+        return indexA - indexB;
+      });
+
+      sortedCategories.forEach(category => {
+         const msgs = grouped[category];
          let groupHtml = `<div class="faq-category">${category} Announcements</div>`;
          msgs.forEach(msg => {
            const topic = readFlexibleObjectValue(msg, "TopicSubject") || readFlexibleObjectValue(msg, "Topic_Subject") || 'Announcement';
@@ -880,7 +890,7 @@
              </div>`;
          });
          container.innerHTML += `<div class="card" style="margin-bottom:15px; border-color:var(--accent);">${groupHtml}</div>`;
-      }
+      });
     }
 
     async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
