@@ -8,38 +8,25 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
     :root {
-      --primary: #012300;
-      --accent: #52C920;
-      --bg: #F8FAFC;
-      --card-bg: #FFFFFF;
-      --text-main: #1A1A1A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --wizard-step-bg: #EFF6FF;
-      --wizard-step-border: #BFDBFE;
-      --wizard-step-text: #1E40AF;
+      --primary: #012300; --accent: #52C920; --bg: #F8FAFC; --card-bg: #FFFFFF;
+      --text-main: #1A1A1A; --text-muted: #64748B; --border: #E2E8F0;
+      --wizard-step-bg: #EFF6FF; --wizard-step-border: #BFDBFE; --wizard-step-text: #1E40AF;
     }
-
     body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 0; padding-bottom: 75px; }
-
     header { background-color: var(--primary); color: #fff; padding: 20px; text-align: center; position: sticky; top: 0; z-index: 100; border-bottom: 4px solid var(--accent); }
     header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
     header p { margin: 5px 0 0 0; font-size: 0.85rem; color: var(--accent); }
-
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
     #loader { text-align: center; padding: 50px; font-weight: 600; color: var(--text-muted); display: none; word-break: break-word; }
-    
     #pin-screen { display: none; padding: 40px 20px; text-align: center; }
     .pin-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 350px; margin: 0 auto; }
     .pin-box h2 { margin-top: 0; font-size: 1.3rem; }
     .pin-box p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
     .pin-input { font-size: 1.5rem; text-align: center; letter-spacing: 5px; font-weight: 800; width: 100%; max-width: 200px; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 20px; outline: none; }
     .pin-input:focus { border-color: var(--accent); }
-
     .container { padding: 15px; display: none; }
     .tab-content { display: none; }
     .tab-content.active { display: block; }
-
     .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .card-header { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .matchup { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; }
@@ -47,32 +34,25 @@
     .score-input { width: 50px; padding: 8px; font-size: 1.1rem; text-align: center; font-weight: 800; }
     .status-select { width: 100%; padding: 10px; margin-bottom: 15px; }
     .text-input { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box; }
-    
     .btn-submit { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
     .btn-submit:active { background-color: var(--accent); color: var(--primary); }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
-
     .explainer-box { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 15px; font-size: 0.8rem; line-height: 1.4; color: #334155; }
     .explainer-box.info { background-color: #F0FDF4; border-left-color: var(--accent); color: #166534; }
     .explainer-box strong { display: block; margin-bottom: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
-
     .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
     .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
-
     .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
     .proposal-title { font-size: 0.8rem; color: #C2410C; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
     .proposal-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
-    .proposal-row:last-child { margin-bottom: 0; }
     .prop-actions { display: flex; gap: 5px; }
     .btn-prop-accept { background: #166534; color: #fff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; }
     .btn-prop-decline { background: #991B1B; color: #fff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; }
-    
     .prop-status-text { font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
     .prop-status-text.waiting { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
     .prop-status-text.action-needed { background: #FCE7F3; color: #9D174D; border: 1px dashed #F472B6; }
     .prop-status-text.approved { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
     .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
-
     .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
     .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
     .cal-day-node { background: #F1F5F9; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; }
@@ -80,23 +60,18 @@
     .cal-day-node.has-blackout { background: #FEE2E2; color: #991B1B; }
     .cal-day-node.has-travel-only { background: #FFEDD5; color: #C2410C; }
     .cal-day-node.empty-spacer { background: transparent; cursor: default; }
-
     @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.7; } 100% { opacity: 1; } }
-
     .message-item { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
     .message-item:last-child { border-bottom: none; }
     .message-title { font-weight: 800; font-size: 1rem; }
     .message-date { font-size: 0.75rem; color: var(--accent); font-weight: 600; }
     .message-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 5px; }
-
     .player-card, .team-card { border: 1px solid var(--border); padding: 10px; border-radius: 8px; margin-bottom: 10px; background: #F8FAFC; }
     .team-card { font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .player-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
-    
     .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7rem; }
     .status-badge.pending { background: #FEF08A; color: #854D0E; }
     .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
-
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; }
     .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
@@ -176,7 +151,6 @@
       <div class="card wizard-card">
         <span class="wizard-badge">Phase 1: Parent Asset Enrollment</span>
         <div class="card-header">📦 Declare Physical Asset Box</div>
-        
         <div class="explainer-box">
           <strong>Instructions:</strong>
           Enter the primary standalone field name or the containing complex shell here. Do not enter individual court splits or sub-numbers yet.
@@ -502,11 +476,22 @@
       renderAvailabilityExceptionLogs();
     }
 
-    // --- NEW: DYNAMIC BLACKOUT UI LOGIC ---
+    // --- NEW: DYNAMIC BLACKOUT UI LOGIC WITH TEAM FILTERING ---
     function populateBlackoutGenders() {
       const genderSelect = document.getElementById('ex-div-gender');
       genderSelect.innerHTML = '<option value="">Select Gender...</option>';
-      const genders = [...new Set(globalDivisionsData.map(d => readFlexibleObjectValue(d, "Gender")).filter(Boolean))];
+      
+      // Step 1: Find all divisions where this school actively has a team registered
+      const schoolTeamDivIds = globalTeamsData
+        .filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase())
+        .map(t => readFlexibleObjectValue(t, "DivisionID"));
+
+      // Step 2: Extract only the unique genders from those specific divisions
+      const genders = [...new Set(globalDivisionsData
+        .filter(d => schoolTeamDivIds.includes(readFlexibleObjectValue(d, "DivisionID")))
+        .map(d => readFlexibleObjectValue(d, "Gender"))
+        .filter(Boolean))];
+        
       genders.sort().forEach(g => { genderSelect.innerHTML += `<option value="${g}">${g}</option>`; });
     }
 
@@ -515,13 +500,19 @@
       ageSelect.innerHTML = '<option value="">Select Age Group...</option>';
       if (!selectedGender) return;
       
+      const schoolTeamDivIds = globalTeamsData
+        .filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase())
+        .map(t => readFlexibleObjectValue(t, "DivisionID"));
+
       const distinctAges = [];
-      globalDivisionsData.filter(d => String(readFlexibleObjectValue(d, "Gender")) === String(selectedGender)).forEach(d => {
-        const rawAge = readFlexibleObjectValue(d, "Age_Limit");
-        const divId = readFlexibleObjectValue(d, "DivisionID");
-        if(rawAge && !distinctAges.some(a => a.age === rawAge)) {
-          distinctAges.push({ age: rawAge, id: divId });
-        }
+      globalDivisionsData
+        .filter(d => String(readFlexibleObjectValue(d, "Gender")) === String(selectedGender) && schoolTeamDivIds.includes(readFlexibleObjectValue(d, "DivisionID")))
+        .forEach(d => {
+          const rawAge = readFlexibleObjectValue(d, "Age_Limit");
+          const divId = readFlexibleObjectValue(d, "DivisionID");
+          if(rawAge && !distinctAges.some(a => a.age === rawAge)) {
+            distinctAges.push({ age: rawAge, id: divId });
+          }
       });
 
       distinctAges.sort((a,b) => parseInt(String(a.age).replace(/\D/g, '')) - parseInt(String(b.age).replace(/\D/g, ''))).forEach(item => {
@@ -559,7 +550,7 @@
         let dayClass = "cal-day-node";
         
         const activeBlocks = globalAvailabilityData.filter(a => {
-          if(!String(readFlexibleObjectValue(a, "VenueID")).includes(targetSchoolID) && !String(readFlexibleObjectValue(a, "DivisionID"))) return false;
+          if(String(readFlexibleObjectValue(a, "SchoolID")).trim().toLowerCase() !== String(targetSchoolID).trim().toLowerCase()) return false;
           return loopDate >= new Date(readFlexibleObjectValue(a, "StartDate")) && loopDate <= new Date(readFlexibleObjectValue(a, "EndDate"));
         });
         if (activeBlocks.length > 0) dayClass += activeBlocks.some(b => String(readFlexibleObjectValue(b, "Reason") || '').toUpperCase().includes("TRAVEL")) ? " has-travel-only" : " has-blackout";
@@ -605,7 +596,7 @@
         action: "addAvailability", schoolId: targetSchoolID, 
         scope: document.getElementById('ex-scope').value, 
         venueId: document.getElementById('ex-venue-id').value, 
-        divisionId: document.getElementById('ex-div-age').value, // Transmits the new division data
+        divisionId: document.getElementById('ex-div-age').value, 
         constraint: document.getElementById('ex-constraint').value, 
         startDate: document.getElementById('ex-start-date').value, endDate: document.getElementById('ex-end-date').value 
       };
@@ -619,12 +610,19 @@
 
     function renderAvailabilityExceptionLogs() {
       const container = document.getElementById('active-exceptions-list'); container.innerHTML = '';
-      const elements = globalAvailabilityData.filter(a => String(readFlexibleObjectValue(a, "VenueID")).includes(targetSchoolID) || readFlexibleObjectValue(a, "DivisionID"));
+      const elements = globalAvailabilityData.filter(a => String(readFlexibleObjectValue(a, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       if(elements.length === 0) return container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem;">No calendar blackouts filed.</p>';
 
       elements.forEach(item => {
         const badgeClass = readFlexibleObjectValue(item, "IsAvailable") === false || String(readFlexibleObjectValue(item, "IsAvailable")).toLowerCase() === "false" ? "prop-status-text too-old" : "prop-status-text approved";
-        const title = readFlexibleObjectValue(item, "DivisionID") ? `Age Group: ${readFlexibleObjectValue(item, "DivisionID")}` : `Venue: ${readFlexibleObjectValue(item, "VenueID")}`;
+        let title = "Global School Constraint";
+        if (readFlexibleObjectValue(item, "DivisionID")) {
+          const divObj = globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") === readFlexibleObjectValue(item, "DivisionID"));
+          title = `Age Group: ${divObj ? readFlexibleObjectValue(divObj, "Gender") + " U" + readFlexibleObjectValue(divObj, "Age_Limit") : readFlexibleObjectValue(item, "DivisionID")}`;
+        } else if (readFlexibleObjectValue(item, "VenueID")) {
+          const venObj = globalVenuesData.find(v => readFlexibleObjectValue(v, "VenueID") === readFlexibleObjectValue(item, "VenueID"));
+          title = `Venue: ${venObj ? readFlexibleObjectValue(venObj, "VenueName") : readFlexibleObjectValue(item, "VenueID")}`;
+        }
         container.innerHTML += `<div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center"><div><span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${title}</span><div style="font-size:0.7rem; color:var(--text-muted);">Range: ${readFlexibleObjectValue(item, "StartDate")} to ${readFlexibleObjectValue(item, "EndDate")}</div></div><span class="${badgeClass}" style="font-size:0.65rem;">Logged</span></div>`;
       });
     }
