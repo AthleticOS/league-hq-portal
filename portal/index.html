@@ -456,9 +456,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const targetSchoolID = urlParams.get('school') || '';
     let targetSchoolName = targetSchoolID; 
-    let targetSchoolRegion = ''; // NEW: Holds the region for Conference Chat
+    let targetSchoolRegion = ''; 
     
-    let globalSettingsData = {}; // NEW: Holds Settings for Chat Links
+    let globalSettingsData = {}; 
     let globalRosterData = []; let globalTeamsData = []; let globalDivisionsData = [];
     let globalVenuesData = []; let globalAvailabilityData = []; let globalSportsData = [];
     
@@ -516,7 +516,7 @@
           const schoolData = data.Schools.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() || String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase());
           if (schoolData) {
             targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
-            targetSchoolRegion = readFlexibleObjectValue(schoolData, "Region") || ''; // Grabs North/South context
+            targetSchoolRegion = readFlexibleObjectValue(schoolData, "Region") || ''; 
           }
         }
         
@@ -806,18 +806,22 @@
         const availId = readFlexibleObjectValue(item, "AvailabilityID");
         const badgeClass = readFlexibleObjectValue(item, "IsAvailable") === false || String(readFlexibleObjectValue(item, "IsAvailable")).toLowerCase() === "false" ? "prop-status-text too-old" : "prop-status-text approved";
         let title = "Global School Constraint";
+        
         if (readFlexibleObjectValue(item, "DivisionID")) {
           title = `Team: ${getTeamDisplayName(readFlexibleObjectValue(globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") === readFlexibleObjectValue(item, "DivisionID")), "SportID"), readFlexibleObjectValue(item, "DivisionID"), globalSportsData, globalDivisionsData)}`;
         } else if (readFlexibleObjectValue(item, "VenueID")) {
           const venObj = globalVenuesData.find(v => readFlexibleObjectValue(v, "VenueID") === readFlexibleObjectValue(item, "VenueID"));
           title = `Venue: ${venObj ? readFlexibleObjectValue(venObj, "VenueName") : readFlexibleObjectValue(item, "VenueID")}`;
         }
+
+        const reasonText = readFlexibleObjectValue(item, "Reason") || "Constraint Applied";
         
         container.innerHTML += `
-          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC;" class="flex justify-between items-center">
+          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC; margin-bottom: 8px;" class="flex justify-between items-center">
             <div>
               <span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${title}</span>
-              <div style="font-size:0.7rem; color:var(--text-muted);">Range: ${readFlexibleObjectValue(item, "StartDate")} to ${readFlexibleObjectValue(item, "EndDate")}</div>
+              <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${readFlexibleObjectValue(item, "StartDate")} to ${readFlexibleObjectValue(item, "EndDate")}</div>
+              <div style="font-size:0.7rem; color:var(--primary); font-weight:600; margin-top:2px;">Reason: ${reasonText}</div>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
               <span class="${badgeClass}" style="font-size:0.65rem;">Logged</span>
@@ -832,7 +836,6 @@
       if(!container) return;
       container.innerHTML = '';
       
-      // 1. Render Global Links from Settings
       const leagueLink = readFlexibleObjectValue(globalSettingsData, "League_Chat_Link") || '#';
       const publicLink = readFlexibleObjectValue(globalSettingsData, "Public_Chat_Link") || '#';
       
@@ -854,7 +857,6 @@
 
       container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#0EA5E9; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
 
-      // 2. Render Dynamic Sports Links
       const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       const activeSportIds = [...new Set(schoolTeams.map(t => readFlexibleObjectValue(t, "SportID")).filter(Boolean))];
 
@@ -886,7 +888,6 @@
         grouped[cat].push(msg);
       });
 
-      // FORCED CATEGORY SORTING ARRAY
       const categoryOrder = ["League", "Conference", "Sport", "Public"];
       
       const sortedCategories = Object.keys(grouped).sort((a, b) => {
