@@ -412,6 +412,15 @@
           return convertDriveLink(sch[key].trim());
         }
       }
+      for (const rawKey in sch) {
+        const cleanKey = rawKey.toLowerCase().replace(/[^a-z]/g, '');
+        if (cleanKey.includes('logo') || cleanKey.includes('image')) {
+          const val = String(sch[rawKey]).trim();
+          if (val.startsWith('http')) {
+            return convertDriveLink(val);
+          }
+        }
+      }
       return '';
     }
 
@@ -420,7 +429,8 @@
       if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
         if (match && match[0]) {
-          return `https://docs.google.com/uc?export=view&id=${match[0]}`;
+          // Utilizing Google's official LH3 CDN endpoint to bypass embedded restrictions
+          return `https://lh3.googleusercontent.com/d/${match[0]}`;
         }
       }
       return url;
@@ -813,7 +823,6 @@
           ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />`
           : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
 
-        // UPDATED: Added interactive click classes and onclick anchor trigger
         container.innerHTML += `
           <div onclick="openSchoolProfileModal('${sId}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-athleticos-green/40 cursor-pointer transition-all">
             <div class="flex items-center space-x-4">
