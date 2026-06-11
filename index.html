@@ -167,7 +167,7 @@
     <section id="view-schools" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">School Directory</h2>
-        <p class="text-slate-500 text-sm">Directory of all league schools, primary contacts, and administrative notes.</p>
+        <p class="text-slate-500 text-sm">Directory of all league schools. Click any profile card to view operational teams, facility coordinates, and live rosters.</p>
       </div>
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       </div>
@@ -245,6 +245,50 @@
 
   </main>
 
+  <div id="schoolProfileModal" class="fixed inset-0 bg-athleticos-carbon/70 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col border border-slate-200">
+      <div class="bg-athleticos-evergreen p-6 text-white flex justify-between items-start border-b-4 border-athleticos-green">
+        <div class="flex items-center space-x-4">
+          <div id="modalLogoPort" class="h-16 w-16 bg-white rounded-xl border border-slate-800 p-1 flex items-center justify-center shrink-0"></div>
+          <div>
+            <span id="modalRegionBadge" class="bg-athleticos-carbon/40 border border-athleticos-green/30 text-athleticos-green text-[10px] font-black tracking-widest uppercase px-2 py-0.5 rounded">Conference</span>
+            <h3 id="modalSchoolName" class="text-xl font-black tracking-tight mt-1">School Profile</h3>
+          </div>
+        </div>
+        <button onclick="closeSchoolProfileModal()" class="text-slate-400 hover:text-white text-xl bg-athleticos-carbon/30 hover:bg-athleticos-carbon/60 h-8 w-8 rounded-full flex items-center justify-center transition-all">✕</button>
+      </div>
+
+      <div class="p-6 space-y-6 flex-grow">
+        <div class="grid grid-cols-2 gap-4">
+          <div class="bg-athleticos-porcelain p-4 rounded-xl border border-slate-100 text-center">
+            <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider block">Fielded Squads</span>
+            <span id="modalStatTeams" class="text-2xl font-black text-athleticos-carbon">0</span>
+          </div>
+          <div class="bg-athleticos-porcelain p-4 rounded-xl border border-slate-100 text-center">
+            <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider block">Active Roster Headcount</span>
+            <span id="modalStatAthletes" class="text-2xl font-black text-athleticos-green">0</span>
+          </div>
+        </div>
+
+        <div class="space-y-4">
+          <h4 class="text-xs uppercase tracking-widest font-black text-slate-400 border-b border-slate-100 pb-1">Registered Competitive Squads</h4>
+          <div id="modalTeamsContainer" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <div class="space-y-4">
+          <h4 class="text-xs uppercase tracking-widest font-black text-slate-400 border-b border-slate-100 pb-1">Facility Logistics & Navigation</h4>
+          <div class="bg-slate-50 border border-slate-200 p-4 rounded-xl space-y-3">
+            <p id="modalVenueNotes" class="text-xs text-slate-600 italic leading-relaxed"></p>
+            <a id="modalMapsLink" href="#" target="_blank" class="inline-flex items-center space-x-2 bg-white hover:bg-slate-100 border border-slate-300 px-3 py-2 rounded-lg text-xs font-bold text-athleticos-carbon transition-colors shadow-sm">
+              <i class="fa-solid fa-map-location-dot text-athleticos-green"></i>
+              <span>Open Directions in Google Maps</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <footer class="bg-athleticos-evergreen border-t border-athleticos-green/20 text-slate-400 py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-800 pb-8">
@@ -260,7 +304,7 @@
             </div>
             <div class="text-left">
               <span class="text-[9px] uppercase tracking-widest text-slate-500 block font-bold leading-none">System Architect</span>
-              <span class="text-xs font-bold text-slate-300">Powered by <span class="text-white font-black group-hover:text-athleticos-green transition-colors">Athletic<span class="text-athleticos-yellow">OS</span></span></span>
+              <span class="text-xs font-bold text-slate-300">Powered by <span class="text-white font-black group-hover:text-athleticos-green transition-colors">Athletic<span class="text-white">OS</span></span></span>
             </div>
             <i class="fa-solid fa-arrow-up-right-from-square text-xs text-slate-600 group-hover:text-athleticos-green pl-2 transition-colors"></i>
           </a>
@@ -279,21 +323,10 @@
 
     const LOADING_DATABASE = {
       Messages: [{ MessageID: "L-1", Timestamp: "2026-05-20", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Term 2 Kickoff & Protocols", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
-      Sports: [
-        { SportID: "SPT-1", Name: "Basketball" }
-      ],
-      Divisions: [
-        { DivisionID: "DIV-1", Age_Limit: "Under 18", Gender: "Boys", SportID: "SPT-1" }
-      ],
-      Schools: [
-        { SchoolID: "SCH-1", Name: "North Academy", Region: "North Conference", PrimaryContact: "Coach Carter", Notes: "Field access is from Maple Street.", Acronym: "NAC", "Year Joined": "2021", Website_Logo: "https://drive.google.com/file/d/108TAUuT3NYLzrZqdTcJwpGWJzJtYEXV7/view" },
-        { SchoolID: "SCH-2", Name: "South Summit High", Region: "South Conference", PrimaryContact: "Coach Davis", Notes: "Gymnasium is located behind the main athletic pavilion.", Acronym: "SSH", "Year Joined": "2022", Website_Logo: "https://drive.google.com/file/d/13mql1iszbG8-IbOUnypVMiWe4hp5xN8i/view" },
-        { SchoolID: "SCH-3", Name: "Lakeside Collegiate", Region: "North Conference", PrimaryContact: "Coach Henderson", Notes: "Strict facility gate policy.", Acronym: "LKC", "Year Joined": "2019", Website_Logo: "https://drive.google.com/file/d/1139ue28f0GiIfxJFHzB-oMhwYr274e-q/view" }
-      ], 
-      Teams: [
-        { TeamID: "TM-1", RegistrationStatus: "Approved", SchoolID: "SCH-1", SportID: "SPT-1", DivisionID: "DIV-1" },
-        { TeamID: "TM-2", RegistrationStatus: "Approved", SchoolID: "SCH-2", SportID: "SPT-1", DivisionID: "DIV-1" }
-      ], 
+      Sports: [{ SportID: "SPT-1", Name: "Basketball" }],
+      Divisions: [{ DivisionID: "DIV-1", Age_Limit: "Under 18", Gender: "Boys", SportID: "SPT-1" }],
+      Schools: [], 
+      Teams: [], 
       Roster: [], 
       Fixtures: []
     };
@@ -379,15 +412,6 @@
           return convertDriveLink(sch[key].trim());
         }
       }
-      for (const rawKey in sch) {
-        const cleanKey = rawKey.toLowerCase().replace(/[^a-z]/g, '');
-        if (cleanKey.includes('logo') || cleanKey.includes('image')) {
-          const val = String(sch[rawKey]).trim();
-          if (val.startsWith('http')) {
-            return convertDriveLink(val);
-          }
-        }
-      }
       return '';
     }
 
@@ -396,7 +420,7 @@
       if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
         if (match && match[0]) {
-          return `https://lh3.googleusercontent.com/d/${match[0]}`;
+          return `https://docs.google.com/uc?export=view&id=${match[0]}`;
         }
       }
       return url;
@@ -463,7 +487,12 @@
       });
 
       schools.forEach(sch => {
-        schoolSelect.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
+        const sId = sch.SchoolID ? String(sch.SchoolID).trim() : '';
+        const sName = sch.Name ? String(sch.Name).trim() : '';
+        // Skip header lines
+        if (sId && sName && sId.toLowerCase() !== 'schoolid') {
+          schoolSelect.innerHTML += `<option value="${sId}">${sName}</option>`;
+        }
       });
 
       if (savedSport) sportSelect.value = savedSport;
@@ -769,18 +798,24 @@
       });
 
       sortedSchools.forEach(sch => {
+        const sId = sch.SchoolID ? String(sch.SchoolID).trim() : '';
+        const sName = sch.Name ? String(sch.Name).trim() : '';
+        
+        // FIX: Reject row index #1 data column headers completely
+        if (!sId || !sName || sId.toLowerCase() === 'schoolid') return;
+
         const schoolColor = getSchoolColor(sch.Name);
         const acronym = sch.Acronym || (sch.Name ? sch.Name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase() : "SCH");
         const yearJoined = sch["Year Joined"] || sch.YearJoined || sch.Year_Joined || "2024";
-        
         const logoUrl = getSchoolLogo(sch);
 
         const logoHtml = logoUrl 
           ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />`
           : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
 
+        // UPDATED: Added interactive click classes and onclick anchor trigger
         container.innerHTML += `
-          <div class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md transition-all">
+          <div onclick="openSchoolProfileModal('${sId}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-athleticos-green/40 cursor-pointer transition-all">
             <div class="flex items-center space-x-4">
               ${logoHtml}
               <div>
@@ -804,13 +839,75 @@
               </div>
             </div>
 
-            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 space-y-1">
-              <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Venue Logistics</span>
-              <p class="text-xs text-slate-600 leading-relaxed italic">"${sch.Notes || sch["Notes/Instructions"] || 'No custom track profiles documented.'}"</p>
+            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500">
+              <span>View Full Dashboard Profile</span>
+              <i class="fa-solid fa-circle-arrow-right text-slate-300 group-hover:text-athleticos-green"></i>
             </div>
           </div>
         `;
       });
+    }
+
+    // --- INTERACTIVE PROFILE MODAL CONTROLLERS ---
+    function openSchoolProfileModal(schoolId) {
+      const school = activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(schoolId).trim());
+      if (!school) return;
+
+      const approvedTeams = getApprovedTeams();
+      const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
+      const rosterList = activeDatabase.Roster || [];
+      
+      // Calculate dynamic cumulative athlete numbers across all registered teams
+      const teamIDs = schoolTeams.map(t => t.TeamID);
+      const uniqueAthleteCount = rosterList.filter(player => teamIDs.includes(player.TeamID)).length;
+
+      document.getElementById('modalSchoolName').innerText = school.Name || "School Profile";
+      document.getElementById('modalRegionBadge').innerText = school.Region || "Conference";
+      document.getElementById('modalVenueNotes').innerText = school.Notes || school["Notes/Instructions"] || "No venue instructions filed.";
+      
+      document.getElementById('modalStatTeams').innerText = schoolTeams.length;
+      document.getElementById('modalStatAthletes').innerText = uniqueAthleteCount;
+
+      // Handle Logo/Fallback icon in modal header
+      const logoPort = document.getElementById('modalLogoPort');
+      const logoUrl = getSchoolLogo(school);
+      if (logoUrl) {
+        logoPort.innerHTML = `<img src="${logoUrl}" class="h-full w-full object-contain" />`;
+      } else {
+        const schoolColor = getSchoolColor(school.Name);
+        const acronym = school.Acronym || "SCH";
+        logoPort.innerHTML = `<div class="h-full w-full rounded-lg flex items-center justify-center font-bold text-lg ${schoolColor.bg}">${acronym}</div>`;
+      }
+
+      // Generate Dynamic Team Pills
+      const teamsPort = document.getElementById('modalTeamsContainer');
+      teamsPort.innerHTML = '';
+      if (schoolTeams.length === 0) {
+        teamsPort.innerHTML = `<span class="text-xs text-slate-400 italic">No operational teams registered for current seasons.</span>`;
+      } else {
+        schoolTeams.forEach(team => {
+          const sport = activeDatabase.Sports.find(s => s.SportID === team.SportID);
+          const div = activeDatabase.Divisions.find(d => d.DivisionID === team.DivisionID);
+          const sportName = sport ? sport.Name : "Sport";
+          const divName = div ? `${div.Age_Limit} (${div.Gender})` : "";
+          
+          teamsPort.innerHTML += `
+            <span class="bg-slate-100 border border-slate-200 text-slate-700 text-xs px-2.5 py-1 rounded-lg font-semibold">
+              🏆 ${sportName} • ${divName}
+            </span>`;
+        });
+      }
+
+      // Generate Google Maps Directions URI Parameter Link
+      const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
+      document.getElementById('modalMapsLink').href = `https://www.google.com/maps/search/?api=1&query=${mapSearchQuery}`;
+
+      // Open Modal Window view
+      document.getElementById('schoolProfileModal').classList.remove('hidden');
+    }
+
+    function closeSchoolProfileModal() {
+      document.getElementById('schoolProfileModal').classList.add('hidden');
     }
 
     function renderRosterSelectors() {
@@ -821,7 +918,10 @@
       if (schools.length === 0) return;
 
       schools.forEach(sch => {
-        schoolSelector.innerHTML += `<option value="${sch.SchoolID}">${sch.Name}</option>`;
+        const sId = sch.SchoolID ? String(sch.SchoolID).trim() : '';
+        if (sId && sId.toLowerCase() !== 'schoolid') {
+          schoolSelector.innerHTML += `<option value="${sId}">${sch.Name}</option>`;
+        }
       });
 
       onRosterSelectionChange();
@@ -833,7 +933,7 @@
       teamSelector.innerHTML = '';
 
       const approvedTeams = getApprovedTeams();
-      const schoolTeams = approvedTeams.filter(t => t.SchoolID === schoolId);
+      const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
 
       if (schoolTeams.length === 0) {
         teamSelector.innerHTML = '<option value="">No registered squads</option>';
@@ -863,7 +963,7 @@
       }
 
       const rosters = activeDatabase.Roster || [];
-      const players = rosters.filter(p => p.TeamID === teamId);
+      const players = rosters.filter(p => String(p.TeamID).trim() === String(teamId).trim());
 
       if (players.length === 0) {
         tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No verified athletes found on this squad's official registry ledger.</td></tr>`;
@@ -894,13 +994,10 @@
 
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
-      
       try {
         const response = await fetch(apiUrl);
         if (!response.ok) throw new Error("Network data exchange failure");
-        
         const data = await response.json();
-        
         if (data.Fixtures && data.Schools && data.Teams && data.Roster) {
           activeDatabase = data;
           statusElement.className = "flex items-center space-x-2 bg-athleticos-carbon/55 px-4 py-2 rounded-full text-xs font-semibold border border-athleticos-green/10";
