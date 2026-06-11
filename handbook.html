@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BISAL | Official Athletics Handbook</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap');
+    
+    :root {
+      /* BISAL BRAND COLORS */
+      --primary: #04174a;
+      --primary-light: #0a2569;
+      --bg-main: #f3f4f6;
+      --bg-card: #ffffff;
+      --text-dark: #111827;
+      --text-muted: #4b5563;
+      --border: #e5e7eb;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      line-height: 1.6;
+    }
+
+    /* LOADER OVERLAY */
+    #loader {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--bg-main);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    .spinner {
+      border: 4px solid var(--border);
+      border-top: 4px solid var(--primary);
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin-bottom: 15px;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* SIDEBAR NAVIGATION */
+    .sidebar {
+      width: 280px;
+      background-color: var(--primary);
+      color: #fff;
+      position: fixed;
+      height: 100vh;
+      overflow-y: auto;
+      border-right: 1px solid var(--primary-light);
+      z-index: 100;
+    }
+    
+    .sidebar-header {
+      padding: 30px 20px;
+      text-align: center;
+      border-bottom: 1px solid var(--primary-light);
+    }
+    .sidebar-header h1 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+    .sidebar-header p {
+      margin: 5px 0 0 0;
+      font-size: 0.75rem;
+      color: #9ca3af;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+    }
+
+    .nav-links {
+      list-style: none;
+      padding: 20px 0;
+      margin: 0;
+    }
+    .nav-links li {
+      margin-bottom: 5px;
+    }
+    .nav-links a {
+      display: block;
+      padding: 12px 25px;
+      color: #d1d5db;
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: background 0.2s, color 0.2s;
+    }
+    .nav-links a:hover {
+      background-color: var(--primary-light);
+      color: #fff;
+      border-left: 4px solid #fff;
+      padding-left: 21px;
+    }
+
+    /* MAIN CONTENT AREA */
+    .content {
+      margin-left: 280px;
+      padding: 40px;
+      width: calc(100% - 280px);
+      box-sizing: border-box;
+      max-width: 1000px;
+      display: none; /* Hidden until loaded */
+    }
+
+    .page-title {
+      font-size: 2.5rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-top: 0;
+      margin-bottom: 10px;
+      border-bottom: 3px solid var(--primary);
+      padding-bottom: 15px;
+    }
+
+    .section-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    }
+    
+    .section-card h2 {
+      color: var(--primary);
+      margin-top: 0;
+      font-size: 1.5rem;
+      font-weight: 800;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 10px;
+      margin-bottom: 20px;
+    }
+
+    .section-card h3 {
+      font-size: 1.1rem;
+      color: var(--text-dark);
+      margin-top: 25px;
+      margin-bottom: 10px;
+    }
+
+    p, li {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+    li {
+      margin-bottom: 8px;
+    }
+
+    /* DATA TABLES */
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 15px;
+      margin-bottom: 15px;
+      font-size: 0.9rem;
+    }
+    th, td {
+      text-align: left;
+      padding: 12px 15px;
+      border-bottom: 1px solid var(--border);
+    }
+    th {
+      background-color: var(--bg-main);
+      color: var(--text-dark);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+      letter-spacing: 0.5px;
+    }
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    /* VALUES HIGHLIGHT BOX */
+    .values-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 15px;
+      margin-top: 20px;
+    }
+    .value-box {
+      background: var(--bg-main);
+      padding: 15px;
+      border-radius: 8px;
+      border-left: 4px solid var(--primary);
+      font-weight: 700;
+      font-size: 0.9rem;
+      color: var(--primary);
+    }
+
+    .alert-box {
+      background-color: #fef2f2;
+      border-left: 4px solid #b91c1c;
+      padding: 15px;
+      border-radius: 0 8px 8px 0;
+      margin: 20px 0;
+    }
+    .alert-box p {
+      margin: 0;
+      color: #991b1b;
+      font-weight: 600;
+    }
+
+    /* RESPONSIVE DESIGN */
+    @media (max-width: 768px) {
+      body { flex-direction: column; }
+      .sidebar { width: 100%; height: auto; position: relative; border-right: none; }
+      .content { margin-left: 0; width: 100%; padding: 20px; }
+      .nav-links { display: flex; flex-wrap: wrap; justify-content: center; }
+      .nav-links a { padding: 10px; font-size: 0.8rem; border-left: none; }
+      .nav-links a:hover { border-left: none; border-bottom: 2px solid #fff; padding-left: 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="loader">
+    <div class="spinner"></div>
+    <div style="font-weight: 700; color: var(--primary); letter-spacing: 1px;">SYNCING LEAGUE DATA...</div>
+  </div>
+
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <img src="https://github.com/AthleticOS/league-hq-portal/blob/main/BISAL.png?raw=true" alt="BISAL Logo" style="max-width: 140px; height: auto; display: block; margin-left: auto; margin-right: auto; margin-bottom: 15px;">
+      <h1>BISAL</h1>
+      <p>Official Athletics Handbook</p>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#mission">Mission & Values</a></li>
+      <li><a href="#membership">Membership Guidelines</a></li>
+      <li><a href="#age-groups">Age Groupings</a></li>
+      <li><a href="#tournament">Tournament Formats</a></li>
+      <li><a href="#sport-rules">Rules & Regulations</a></li>
+      <li><a href="#conduct">Code of Conduct</a></li>
+      <li><a href="#health">Health & Safety Protocol</a></li>
+      <li><a href="#conference">Conference Alignment</a></li>
+      <li><a href="#directory">League Directory</a></li>
+    </ul>
+  </nav>
+
+  <main class="content" id="main-content">
+    
+    <h1 class="page-title">League Handbook & Guidelines</h1>
+
+    <section id="mission" class="section-card">
+      <h2>Mission, Vision & Values</h2>
+      <p>The Bangkok International School Athletics League (BISAL) was established with the goal of fostering a love for sportsmanship and competition between schools. We achieve this by organizing sporting events that create a positive, mindful, and inclusive environment.</p>
+      
+      <h3>Vision</h3>
+      <p><strong>Embrace Uniqueness, Achieve Greatness, Experience Success.</strong></p>
+
+      <h3>Core Values (S.C.H.O.O.L.E.D)</h3>
+      <div class="values-grid">
+        <div class="value-box">Sportsmanship</div>
+        <div class="value-box">Community Spirit</div>
+        <div class="value-box">Healthy Competition</div>
+        <div class="value-box">Openness & Inclusivity</div>
+        <div class="value-box">Outstanding Teamwork</div>
+        <div class="value-box">Lasting Memories</div>
+        <div class="value-box">Embrace Flexibility</div>
+        <div class="value-box">Dedicated Collaboration</div>
+      </div>
+    </section>
+
+    <section id="membership" class="section-card">
+      <h2>Membership Guidelines & Responsibilities</h2>
+      <p>All schools involved in BISAL-organized events must share and support the league's Aims and Vision.</p>
+      
+      <ul>
+        <li>Each school needs a designated point person, such as an Athletic Director or qualified PE Teacher.</li>
+        <li>Schools must have access to safe and appropriate facilities to host or co-host BISAL tournaments.</li>
+        <li>A coach or qualified adult supervisor must accompany each team to all fixtures.</li>
+        <li>Schools are expected to participate in at least three of the core sports across two or three age categories throughout the academic year.</li>
+      </ul>
+
+      <h3>Fee Structure & Deadlines</h3>
+      <p>All schools joining BISAL will be charged an annual fee of <strong><span id="dyn-full-fee">...</span> Thai Baht</strong>. This fee reflects the established infrastructure, including venue rentals, referee costs, trophies/medals, and digital platforms.</p>
+      <p>Schools with fewer than three sports teams can join BISAL by paying a partial membership fee of <strong><span id="dyn-partial-fee">...</span> Thai Baht</strong> per age category.</p>
+      <p>All payments must be received by <strong><span id="dyn-pay-deadline">...</span></strong> (school working hours). To ensure timely payments, a late fee of <strong><span id="dyn-late-fee">...</span> Thai Baht</strong> will be applied to memberships renewed after this date. Members will have a grace period until <strong><span id="dyn-grace-deadline">...</span></strong> to settle the payment and late fee. After this date, the school will NOT be allowed to join any tournaments or fixtures.</p>
+    </section>
+
+    <section id="age-groups" class="section-card">
+      <h2>Age Groupings & Eligibility</h2>
+      <p>Players are categorized by their age on <strong><span class="dyn-cutoff-text">...</span></strong> of the current academic year. Students can compete in an older age group ("play up") but are not allowed to compete in a younger age group unless formally evaluated and approved for basic-level skill exceptions.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Division</th>
+            <th>Eligibility Cutoff</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>9U</strong></td>
+            <td>Must not have reached the age of 9 before <span class="dyn-cutoff-text">...</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>11U</strong></td>
+            <td>Must not have reached the age of 11 before <span class="dyn-cutoff-text">...</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>13U</strong></td>
+            <td>Must not have reached the age of 13 before <span class="dyn-cutoff-text">...</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>15U</strong></td>
+            <td>Must not have reached the age of 15 before <span class="dyn-cutoff-text">...</span>.</td>
+          </tr>
+          <tr>
+            <td><strong>18U</strong></td>
+            <td>Must not have reached the age of 18 before <span class="dyn-cutoff-text">...</span>.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="alert-box">
+        <p>Fielding overage players undermines fair play. Disciplinary action will apply if eligibility is broken, ranging from written warnings to one-year suspensions.</p>
+      </div>
+    </section>
+
+    <section id="tournament" class="section-card">
+      <h2>Tournament Formats & Procedures</h2>
+      <p>Tournaments will follow standardized bracket alignments to ensure uniform competition across the league.</p>
+      
+      <ul>
+        <li><strong>3 to 5 Teams:</strong> Round Robin format. Each team plays each other in a league-style event. No requirement for a final.</li>
+        <li><strong>6 Teams:</strong> 2 Pools of 3 teams. Cross-over semi-finals (1st Pool A vs 2nd Pool B). 3rd place in groups play each other at the same time as the final.</li>
+        <li><strong>8 Teams:</strong> 2 Pools of 4 teams. Cross-over semi-finals. 3rd in groups play each other, and 4th vs 4th.</li>
+      </ul>
+
+      <h3>Agreed Tie-Breaker Formula</h3>
+      <ol>
+        <li>Head to Head record</li>
+        <li>Goal / Points difference</li>
+        <li>Total Points scored</li>
+      </ol>
+    </section>
+
+    <section id="sport-rules" class="section-card">
+      <h2>Rules & Regulations by Sport</h2>
+      <p>All BISAL games adhere to international official rule books unless modified below.</p>
+      
+      <div id="dynamic-rules-container">
+        <p style="color:var(--text-muted); font-style:italic;">Loading official sport regulations...</p>
+      </div>
+    </section>
+
+    <section id="conduct" class="section-card">
+      <h2>Respect & Code of Conduct</h2>
+      <p>BISAL is committed to fostering a positive and respectful environment for everyone involved.</p>
+      
+      <h3>Coaches & Teachers</h3>
+      <p>Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in BISAL events.</p>
+
+      <h3>Players</h3>
+      <p>Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.</p>
+
+      <h3>Spectators</h3>
+      <p>Schools are responsible for the conduct of their attending spectators. Minor incidents will result in a warning to the school representative. Repeated offenses may result in team point deductions, spectator ejection, or disqualification from the event.</p>
+    </section>
+
+    <section id="health" class="section-card">
+      <h2>Health, Safety & Head Injury Protocol</h2>
+      
+      <h3>Head Injury Action Plan</h3>
+      <ul>
+        <li>Remove player from play immediately. Rest 15-30 minutes and apply ice.</li>
+        <li>The Head of PE or Athletic Director must be informed regarding any symptomatic concussion cases.</li>
+        <li>Return to sport will be gradual and monitored via the sports department after receipt of a doctor's medical clearance letter.</li>
+      </ul>
+
+      <h3>Illness Policy</h3>
+      <p>Students feeling unwell should avoid BISAL tournaments. As a precaution, players with minor, non-contagious symptoms are permitted to wear masks while participating.</p>
+    </section>
+
+    <section id="conference" class="section-card">
+      <h2>Conference Alignment</h2>
+      <p>To accommodate league growth and optimize playing conditions, BISAL splits schools into geographical zones.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>North Conference</th>
+            <th>South Conference</th>
+          </tr>
+        </thead>
+        <tbody id="dynamic-conference-table">
+          <tr><td colspan="2" style="text-align:center; color:var(--text-muted);">Loading active alignment...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="directory" class="section-card">
+      <h2>Active League Directory</h2>
+      <p>Official contact information for member school Athletic Departments.</p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>School / Campus</th>
+            <th>Athletic Director / Contact</th>
+            <th>Email Address</th>
+          </tr>
+        </thead>
+        <tbody id="dynamic-directory-table">
+          <tr><td colspan="3" style="text-align:center; color:var(--text-muted);">Loading directory...</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+
+  <script>
+    const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
+
+    // Helper to safely extract object values accounting for spaces/underscores
+    function readFlexibleObjectValue(obj, targetKeyString) {
+      if (!obj) return '';
+      const matchKey = String(targetKeyString).toLowerCase().replace(/[^a-z0-9]/g, '');
+      const accurateKey = Object.keys(obj).find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === matchKey);
+      return accurateKey ? obj[accurateKey] : '';
+    }
+
+    // Helper for ordinals (1st, 2nd, 3rd, 4th)
+    function getOrdinalSuffix(n) {
+      const s = ["th", "st", "nd", "rd"];
+      const v = n % 100;
+      return n + (s[(v - 20) % 10] || s[v] || s[0]);
+    }
+
+    // Smooth Scrolling
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
+      });
+    });
+
+    // Boot Up API Fetch
+    async function loadHandbookData() {
+      try {
+        const response = await fetch(API_URL);
+        const data = await response.json();
+        
+        if (data.status === "error") throw new Error(data.message);
+
+        // Extract matrices
+        const settings = (data.Settings && data.Settings.length > 0) ? data.Settings[0] : {};
+        const schools = data.Schools || [];
+        const sports = data.Sports || [];
+
+        /* 1. INJECT SETTINGS & FINANCIALS */
+        document.getElementById('dyn-full-fee').innerText = readFlexibleObjectValue(settings, "Full_Membership_Fee") || "25,000";
+        document.getElementById('dyn-partial-fee').innerText = readFlexibleObjectValue(settings, "Partial_Membership_Fee") || "2,000";
+        document.getElementById('dyn-pay-deadline').innerText = readFlexibleObjectValue(settings, "Payment_Deadline") || "August 30th";
+        document.getElementById('dyn-late-fee').innerText = readFlexibleObjectValue(settings, "Late_Payment_Fee") || "1,000";
+        document.getElementById('dyn-grace-deadline').innerText = readFlexibleObjectValue(settings, "Grace_Period_Deadline") || "September 15th";
+
+        /* 2. INJECT CUTOFF DATES */
+        const cMonthNum = parseInt(readFlexibleObjectValue(settings, "Cutoff_Month")) || 6;
+        const cDayNum = parseInt(readFlexibleObjectValue(settings, "Cutoff_Day")) || 1;
+        const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const cutoffString = `${monthNames[cMonthNum - 1]} ${getOrdinalSuffix(cDayNum)}`;
+        
+        document.querySelectorAll('.dyn-cutoff-text').forEach(el => {
+          el.innerText = cutoffString;
+        });
+
+        /* 3. GENERATE DYNAMIC RULES */
+        const rulesContainer = document.getElementById('dynamic-rules-container');
+        if (sports.length > 0) {
+          rulesContainer.innerHTML = '';
+          sports.forEach(sport => {
+            const name = readFlexibleObjectValue(sport, "Name") || "Sport";
+            const rules = readFlexibleObjectValue(sport, "Rules") || "No official modifications recorded for this sport.";
+            // Format rules cleanly handling newlines
+            const formattedRules = rules.replace(/\n/g, '<br>');
+            
+            rulesContainer.innerHTML += `
+              <div style="margin-bottom: 20px;">
+                <h3>${name}</h3>
+                <p style="background:var(--bg-main); padding:15px; border-radius:8px; border-left:3px solid var(--primary);">${formattedRules}</p>
+              </div>
+            `;
+          });
+        }
+
+        /* 4. GENERATE CONFERENCE ALIGNMENT */
+        const confTable = document.getElementById('dynamic-conference-table');
+        confTable.innerHTML = '';
+        const northSchools = schools.filter(s => String(readFlexibleObjectValue(s, "Region")).toLowerCase().includes("north"));
+        const southSchools = schools.filter(s => String(readFlexibleObjectValue(s, "Region")).toLowerCase().includes("south"));
+        
+        const maxRows = Math.max(northSchools.length, southSchools.length);
+        for (let i = 0; i < maxRows; i++) {
+          const nName = northSchools[i] ? readFlexibleObjectValue(northSchools[i], "Name") : "";
+          const sName = southSchools[i] ? readFlexibleObjectValue(southSchools[i], "Name") : "";
+          confTable.innerHTML += `<tr><td>${nName}</td><td>${sName}</td></tr>`;
+        }
+
+        /* 5. GENERATE CONTACT DIRECTORY */
+        const dirTable = document.getElementById('dynamic-directory-table');
+        dirTable.innerHTML = '';
+        const sortedSchools = [...schools].sort((a,b) => {
+          let nameA = String(readFlexibleObjectValue(a, "Name")).toUpperCase();
+          let nameB = String(readFlexibleObjectValue(b, "Name")).toUpperCase();
+          return nameA.localeCompare(nameB);
+        });
+
+        sortedSchools.forEach(school => {
+          const sName = readFlexibleObjectValue(school, "Name");
+          const contact = readFlexibleObjectValue(school, "Contact_Person") || readFlexibleObjectValue(school, "Athletic_Director") || "N/A";
+          const email = readFlexibleObjectValue(school, "Email") || readFlexibleObjectValue(school, "Contact_Email") || "N/A";
+          
+          if (sName) {
+            dirTable.innerHTML += `<tr>
+              <td style="font-weight:600; color:var(--primary);">${sName}</td>
+              <td>${contact}</td>
+              <td><a href="mailto:${email}" style="color:var(--primary-light); text-decoration:none;">${email}</a></td>
+            </tr>`;
+          }
+        });
+
+        // Hide loader, show content
+        document.getElementById('loader').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+
+      } catch (err) {
+        document.getElementById('loader').innerHTML = `
+          <h2 style="color:#991b1b; margin-bottom:5px;">Database Sync Failed</h2>
+          <p style="color:var(--text-muted);">${err.message}</p>
+          <button onclick="location.reload()" style="margin-top:15px; padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:700;">Try Again</button>
+        `;
+      }
+    }
+
+    // Execute on page load
+    document.addEventListener("DOMContentLoaded", loadHandbookData);
+  </script>
+</body>
+</html>
