@@ -15,9 +15,9 @@
       --text-main: #1A1A1A;
       --text-muted: #64748B;
       --border: #E2E8F0;
-      --wizard-step-bg: #EFF6FF;
-      --wizard-step-border: #BFDBFE;
-      --wizard-step-text: #1E40AF;
+      --wizard-step-bg: #F0FDF4;
+      --wizard-step-border: #BBF7D0;
+      --wizard-step-text: #166534;
     }
 
     body {
@@ -100,7 +100,7 @@
     .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
     .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
     .cal-day-node { background: #F1F5F9; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; }
-    .cal-day-node.active-selected { border-color: var(--primary); background: #E2E8F0; }
+    .cal-day-node.active-selected { border-color: var(--primary); background: #F5F8F1; }
     .cal-day-node.has-blackout { background: #FEE2E2; color: #991B1B; }
     .cal-day-node.has-travel-only { background: #FFEDD5; color: #C2410C; }
     .cal-day-node.empty-spacer { background: transparent; cursor: default; }
@@ -133,7 +133,7 @@
     .faq-category { font-weight: 800; font-size: 0.9rem; color: var(--primary); margin: 15px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 5px; text-transform: uppercase; }
     details.faq-item { margin-bottom: 10px; background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.2s ease; }
     details.faq-item summary { font-size: 0.85rem; font-weight: 700; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; }
-    details.faq-item summary::-webkit-details-marker { display: none; } /* Hides native arrow */
+    details.faq-item summary::-webkit-details-marker { display: none; }
     details.faq-item summary::after { content: '+'; font-size: 1.2rem; color: var(--accent); transition: transform 0.2s; font-weight: 400; }
     details.faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
     details.faq-item p { margin: 0; padding: 0 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 10px; }
@@ -394,7 +394,7 @@
       <div class="card">
         <div class="card-header">Contact League Admin</div>
         <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
-        <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: #25D366; color: white;">💬 WhatsApp Admin</a>
+        <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: var(--text-main); color: white;">💬 WhatsApp Admin</a>
       </div>
 
       <div class="card">
@@ -861,13 +861,13 @@
         confName = 'South Conference';
       }
 
-      container.innerHTML += `<a href="${leagueLink}" target="_blank" class="btn-submit btn-small" style="background-color:#1E40AF; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">🌍 League Chat</a>`;
+      container.innerHTML += `<a href="${leagueLink}" target="_blank" class="btn-submit btn-small" style="background-color:var(--primary); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">🌍 League Chat</a>`;
       
       if(targetSchoolRegion) {
-         container.innerHTML += `<a href="${confLink}" target="_blank" class="btn-submit btn-small" style="background-color:#0369A1; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📍 ${confName} Chat</a>`;
+         container.innerHTML += `<a href="${confLink}" target="_blank" class="btn-submit btn-small" style="background-color:#1A1A1A; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📍 ${confName} Chat</a>`;
       }
 
-      container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#0EA5E9; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
+      container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#334155; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
 
       const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       const activeSportIds = [...new Set(schoolTeams.map(t => readFlexibleObjectValue(t, "SportID")).filter(Boolean))];
