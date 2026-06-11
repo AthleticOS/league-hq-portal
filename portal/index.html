@@ -133,7 +133,7 @@
     .faq-category { font-weight: 800; font-size: 0.9rem; color: var(--primary); margin: 15px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 5px; text-transform: uppercase; }
     details.faq-item { margin-bottom: 10px; background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.2s ease; }
     details.faq-item summary { font-size: 0.85rem; font-weight: 700; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; }
-    details.faq-item summary::-webkit-details-marker { display: none; }
+    details.faq-item summary::-webkit-details-marker { display: none; } /* Hides native arrow */
     details.faq-item summary::after { content: '+'; font-size: 1.2rem; color: var(--accent); transition: transform 0.2s; font-weight: 400; }
     details.faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
     details.faq-item p { margin: 0; padding: 0 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 10px; }
@@ -727,14 +727,26 @@
       for (let i = 0; i < firstDayIdx; i++) mesh.innerHTML += `<div class="cal-day-node empty-spacer"></div>`;
 
       for (let day = 1; day <= totalDays; day++) {
-        const loopDate = new Date(year, month, day); const loopDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const loopDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         let dayClass = "cal-day-node";
         
         const activeBlocks = globalAvailabilityData.filter(a => {
           if(String(readFlexibleObjectValue(a, "SchoolID")).trim().toLowerCase() !== String(targetSchoolID).trim().toLowerCase()) return false;
-          return loopDate >= new Date(readFlexibleObjectValue(a, "StartDate")) && loopDate <= new Date(readFlexibleObjectValue(a, "EndDate"));
+          
+          const sDate = readFlexibleObjectValue(a, "StartDate");
+          const eDate = readFlexibleObjectValue(a, "EndDate");
+          if (!sDate || !eDate) return false;
+          return loopDateStr >= sDate && loopDateStr <= eDate;
         });
-        if (activeBlocks.length > 0) dayClass += activeBlocks.some(b => String(readFlexibleObjectValue(b, "Reason") || '').toUpperCase().includes("TRAVEL")) ? " has-travel-only" : " has-blackout";
+        
+        if (activeBlocks.length > 0) {
+          const reasons = activeBlocks.map(b => String(readFlexibleObjectValue(b, "Reason")).toUpperCase());
+          if (reasons.some(r => r.includes("HOLIDAY") || r.includes("NOT AVAILABLE"))) {
+            dayClass += " has-blackout";
+          } else if (reasons.some(r => r.includes("TRAVEL"))) {
+            dayClass += " has-travel-only";
+          }
+        }
         mesh.innerHTML += `<div class="${dayClass}" data-date="${loopDateStr}" onclick="handleCalendarDayClick(this, '${loopDateStr}')">${day}</div>`;
       }
     }
