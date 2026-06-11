@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BISAL | Official Athletics Handbook</title>
+  <link rel="icon" type="image/png" href="https://github.com/AthleticOS/league-hq-portal/blob/main/Logo%20Icon.png?raw=true">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;500;600;700;800&display=swap');
     
@@ -527,8 +528,9 @@
 
         sortedSchools.forEach(school => {
           const sName = readFlexibleObjectValue(school, "Name");
-          const contact = readFlexibleObjectValue(school, "Contact_Person") || readFlexibleObjectValue(school, "Athletic_Director") || "N/A";
-          const email = readFlexibleObjectValue(school, "Email") || readFlexibleObjectValue(school, "Contact_Email") || "N/A";
+          // UPDATED: Now hunting specifically for PrimaryContact and PrimaryContactEmail keys
+          const contact = readFlexibleObjectValue(school, "PrimaryContact") || readFlexibleObjectValue(school, "Contact_Person") || "N/A";
+          const email = readFlexibleObjectValue(school, "PrimaryContactEmail") || readFlexibleObjectValue(school, "Email") || "N/A";
           
           if (sName) {
             dirTable.innerHTML += `<tr>
