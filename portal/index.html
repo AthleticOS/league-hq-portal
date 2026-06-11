@@ -133,7 +133,7 @@
     .faq-category { font-weight: 800; font-size: 0.9rem; color: var(--primary); margin: 15px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 5px; text-transform: uppercase; }
     details.faq-item { margin-bottom: 10px; background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.2s ease; }
     details.faq-item summary { font-size: 0.85rem; font-weight: 700; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; }
-    details.faq-item summary::-webkit-details-marker { display: none; } /* Hides native arrow */
+    details.faq-item summary::-webkit-details-marker { display: none; }
     details.faq-item summary::after { content: '+'; font-size: 1.2rem; color: var(--accent); transition: transform 0.2s; font-weight: 400; }
     details.faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
     details.faq-item p { margin: 0; padding: 0 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 10px; }
@@ -456,6 +456,9 @@
     const urlParams = new URLSearchParams(window.location.search);
     const targetSchoolID = urlParams.get('school') || '';
     let targetSchoolName = targetSchoolID; 
+    let targetSchoolRegion = ''; // NEW: Holds the region for Conference Chat
+    
+    let globalSettingsData = {}; // NEW: Holds Settings for Chat Links
     let globalRosterData = []; let globalTeamsData = []; let globalDivisionsData = [];
     let globalVenuesData = []; let globalAvailabilityData = []; let globalSportsData = [];
     
@@ -502,15 +505,19 @@
         globalRosterData = data.Roster || []; globalTeamsData = data.Teams || []; globalDivisionsData = data.Divisions || [];
         globalVenuesData = data.Venues || []; globalAvailabilityData = data.School_Availability || []; globalSportsData = data.Sports || [];
         
-        if (data.Schools && data.Schools.length > 0) {
-          const schoolData = data.Schools.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() || String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase());
-          if (schoolData) targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
+        if (data.Settings && data.Settings.length > 0) {
+          globalSettingsData = data.Settings[0];
+          leagueYear = parseInt(readFlexibleObjectValue(globalSettingsData, "Season_Year")) || 2026;
+          cutoffMonth = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Month")) || 1;
+          cutoffDay = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Day")) || 1;
         }
 
-        if (data.Settings && data.Settings.length > 0) {
-          leagueYear = parseInt(readFlexibleObjectValue(data.Settings[0], "Season_Year")) || 2026;
-          cutoffMonth = parseInt(readFlexibleObjectValue(data.Settings[0], "Cutoff_Month")) || 1;
-          cutoffDay = parseInt(readFlexibleObjectValue(data.Settings[0], "Cutoff_Day")) || 1;
+        if (data.Schools && data.Schools.length > 0) {
+          const schoolData = data.Schools.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() || String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase());
+          if (schoolData) {
+            targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
+            targetSchoolRegion = readFlexibleObjectValue(schoolData, "Region") || ''; // Grabs North/South context
+          }
         }
         
         document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
@@ -825,22 +832,42 @@
       if(!container) return;
       container.innerHTML = '';
       
+      // 1. Render Global Links from Settings
+      const leagueLink = readFlexibleObjectValue(globalSettingsData, "League_Chat_Link") || '#';
+      const publicLink = readFlexibleObjectValue(globalSettingsData, "Public_Chat_Link") || '#';
+      
+      let confLink = '#';
+      let confName = 'Conference';
+      if (targetSchoolRegion.toLowerCase().includes('north')) {
+        confLink = readFlexibleObjectValue(globalSettingsData, "North_Conf_Chat_Link") || '#';
+        confName = 'North Conference';
+      } else if (targetSchoolRegion.toLowerCase().includes('south')) {
+        confLink = readFlexibleObjectValue(globalSettingsData, "South_Conf_Chat_Link") || '#';
+        confName = 'South Conference';
+      }
+
+      container.innerHTML += `<a href="${leagueLink}" target="_blank" class="btn-submit btn-small" style="background-color:#1E40AF; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">🌍 League Chat</a>`;
+      
+      if(targetSchoolRegion) {
+         container.innerHTML += `<a href="${confLink}" target="_blank" class="btn-submit btn-small" style="background-color:#0369A1; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📍 ${confName} Chat</a>`;
+      }
+
+      container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#0EA5E9; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
+
+      // 2. Render Dynamic Sports Links
       const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       const activeSportIds = [...new Set(schoolTeams.map(t => readFlexibleObjectValue(t, "SportID")).filter(Boolean))];
 
-      if(activeSportIds.length === 0) {
-        container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted);">Register for a team to unlock specific sport chat rooms.</p>';
-        return;
+      if(activeSportIds.length > 0) {
+        activeSportIds.forEach(sId => {
+          const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
+          if(sport) {
+            const sportName = readFlexibleObjectValue(sport, "Name") || sId;
+            const chatUrl = readFlexibleObjectValue(sport, "ChatSpaceLink") || '#';
+            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
+          }
+        });
       }
-
-      activeSportIds.forEach(sId => {
-        const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
-        if(sport) {
-          const sportName = readFlexibleObjectValue(sport, "Name") || sId;
-          const chatUrl = readFlexibleObjectValue(sport, "ChatWebhookURL") || '#';
-          container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName} Chat</a>`;
-        }
-      });
     }
 
     function renderMessages(messages) {
