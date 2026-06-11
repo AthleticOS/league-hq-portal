@@ -88,6 +88,10 @@
           <i class="fa-solid fa-users-rectangle"></i>
           <span>Rosters</span>
         </button>
+        <button onclick="switchTab('join')" id="tab-join" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
+          <i class="fa-solid fa-file-signature"></i>
+          <span>Join the League</span>
+        </button>
       </div>
     </div>
   </nav>
@@ -100,7 +104,7 @@
         <p class="text-slate-500 text-sm">Real-time alerts, league-wide news, and operational details for parents and fans.</p>
       </div>
       <div id="bulletinsContainer" class="grid gap-6 md:grid-cols-2">
-        </div>
+      </div>
     </section>
 
     <section id="view-fixtures" class="tab-view hidden space-y-6">
@@ -122,7 +126,7 @@
         </div>
       </div>
       <div id="fixturesContainer" class="grid gap-4">
-        </div>
+      </div>
     </section>
 
     <section id="view-standings" class="tab-view hidden space-y-6">
@@ -133,9 +137,9 @@
         </div>
         <div class="flex gap-2">
           <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            </select>
+          </select>
           <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            </select>
+          </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -154,7 +158,7 @@
               </tr>
             </thead>
             <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600">
-              </tbody>
+            </tbody>
           </table>
         </div>
       </div>
@@ -166,7 +170,7 @@
         <p class="text-slate-500 text-sm">Directory of all league schools, primary contacts, and administrative notes.</p>
       </div>
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        </div>
+      </div>
     </section>
 
     <section id="view-rosters" class="tab-view hidden space-y-6">
@@ -177,9 +181,9 @@
         </div>
         <div class="flex gap-2">
           <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            </select>
+          </select>
           <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-            </select>
+          </select>
         </div>
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
@@ -195,8 +199,46 @@
               </tr>
             </thead>
             <tbody id="rosterBody" class="divide-y divide-slate-200 text-slate-600">
-              </tbody>
+            </tbody>
           </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-join" class="tab-view hidden space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Membership Registration</h2>
+        <p class="text-slate-500 text-sm">Follow our system onboarding pipeline to enroll your international school campus into active athletic operations.</p>
+      </div>
+      
+      <div class="bg-white rounded-xl border border-slate-200 p-6 md:p-10 shadow-sm max-w-3xl mx-auto space-y-6">
+        <div class="flex items-center space-x-4 bg-athleticos-porcelain p-4 rounded-xl border border-slate-100">
+          <div class="h-12 w-12 bg-athleticos-evergreen rounded-lg flex items-center justify-center text-white shrink-0 text-xl shadow-sm">
+            <i class="fa-solid fa-landmark-flag"></i>
+          </div>
+          <div>
+            <h3 class="text-base font-black text-athleticos-carbon">New School Admissions Gateway</h3>
+            <p class="text-xs text-slate-500">Applications must align with core athletic facilities frameworks.</p>
+          </div>
+        </div>
+
+        <div class="text-sm text-slate-600 space-y-3 leading-relaxed">
+          <p>Thank you for your interest in connecting your institution to our sports conference network. To initiate review by the Executive Management Group, you must submit a formal infrastructure profile.</p>
+          <div class="bg-slate-50 border-l-4 border-athleticos-green p-3.5 rounded-r-lg space-y-1 text-xs">
+            <span class="font-extrabold uppercase tracking-wider text-athleticos-evergreen">Onboarding Prerequisites:</span>
+            <ul class="list-disc pl-4 space-y-1 text-slate-500">
+              <li>Designated Athletic Director, Activities Coordinator, or qualified PE Point of Contact.</li>
+              <li>Validated access to safe, competitive fields or indoor courts capable of hosting matches.</li>
+              <li>Commitment to field competitive team squads across multiple core divisions.</li>
+            </ul>
+          </div>
+          <p>Please launch our automated application ledger using the anchor below. Ensure all facility specifications, logistical constraints, and athletic department contacts are fully logged before submitting.</p>
+        </div>
+
+        <div class="pt-4">
+          <a href="https://docs.google.com/forms/d/e/1FAIpQLSc5T5v_iGG4QORmU3kTwTVTaSjOhxBEnnQuez-8FaTX8NCd6g/viewform" target="_blank" class="w-full bg-athleticos-evergreen hover:bg-athleticos-carbon text-white font-black text-center py-4 px-6 rounded-xl border-b-4 border-athleticos-green block transition-all tracking-wide text-sm uppercase shadow-sm">
+            <i class="fa-solid fa-file-invoice-dollar mr-2 text-athleticos-yellow"></i> Launch Official Admission Form
+          </a>
         </div>
       </div>
     </section>
@@ -211,10 +253,8 @@
   </footer>
 
   <script>
-    // --- SECURE HARDCODED LIVE API LINK (Consolidated Domain Endpoint Master) ---
     const GOOGLE_API_ENDPOINT = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
 
-    // Initial Loading State Placeholder Data
     const LOADING_DATABASE = {
       Messages: [{ MessageID: "L-1", Timestamp: "2026-05-20", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Term 2 Kickoff & Protocols", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
       Sports: [
@@ -238,7 +278,6 @@
 
     let activeDatabase = LOADING_DATABASE;
 
-    // --- INITIALIZE APPLICATION ---
     window.onload = function() {
       processAppInit();
       fetchLiveSheetData(GOOGLE_API_ENDPOINT);
@@ -253,17 +292,15 @@
       renderRosterSelectors();
     }
 
-    // --- HELPER: GET APPROVED TEAMS ---
     function getApprovedTeams() {
       const teams = activeDatabase.Teams || [];
       return teams.filter(t => 
         t.RegistrationStatus === 'Approved' || 
         t.RegistrationStatus === 'approved' ||
-        !t.RegistrationStatus // Fallback if status isn't set yet
+        !t.RegistrationStatus
       );
     }
 
-    // --- TAB SWITCHER LOGIC ---
     function switchTab(tabId) {
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       document.querySelectorAll('.tab-btn').forEach(btn => {
@@ -279,7 +316,6 @@
       }
     }
 
-    // --- DYNAMIC DIVISION GENERATORS FOR CASCADING ---
     function updateDivisionFilterOptions() {
       const sportSelect = document.getElementById('filterSport');
       const divSelect = document.getElementById('filterDivision');
@@ -313,19 +349,14 @@
       }
     }
 
-    // --- NEW SIMPLIFIED LOGO HELPER ---
     function getSchoolLogo(sch) {
       if (!sch) return '';
-      
-      // Step 1: Direct property check
       const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
       for (const key of directKeys) {
         if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) {
           return convertDriveLink(sch[key].trim());
         }
       }
-
-      // Step 2: Fallback scan matching keys containing string attributes
       for (const rawKey in sch) {
         const cleanKey = rawKey.toLowerCase().replace(/[^a-z]/g, '');
         if (cleanKey.includes('logo') || cleanKey.includes('image')) {
@@ -381,7 +412,6 @@
       }
     }
 
-    // --- FILTER INITIALIZATION ---
     function populateFilterSelections() {
       const sportSelect = document.getElementById('filterSport');
       const schoolSelect = document.getElementById('filterSchool');
@@ -427,7 +457,6 @@
       renderFixtures();
     }
 
-    // --- RENDER BULLETIN BOARD ---
     function renderAnnouncements() {
       const container = document.getElementById('bulletinsContainer');
       container.innerHTML = '';
@@ -466,7 +495,6 @@
       });
     }
 
-    // --- RENDER SCHEDULES / FIXTURES ---
     function renderFixtures() {
       const container = document.getElementById('fixturesContainer');
       container.innerHTML = '';
@@ -587,7 +615,6 @@
       renderFixtures();
     }
 
-    // --- CALCULATE LIVE STANDINGS ---
     function calculateStandings() {
       const sportVal = document.getElementById('standingsSport').value;
       const divVal = document.getElementById('standingsDivision').value;
@@ -683,7 +710,6 @@
       });
     }
 
-    // --- HELPER: COLOR GENERATOR FOR BACKUP SQUARES ---
     function getSchoolColor(name) {
       const colors = [
         { bg: 'bg-blue-900 text-white' },
@@ -702,7 +728,6 @@
       return colors[Math.abs(hash) % colors.length];
     }
 
-    // --- RENDER SCHOOL DIRECTORY ---
     function renderSchools() {
       const container = document.getElementById('schoolsContainer');
       container.innerHTML = '';
@@ -766,7 +791,6 @@
       });
     }
 
-    // --- RENDER ROSTERS TAB ---
     function renderRosterSelectors() {
       const schoolSelector = document.getElementById('rosterSchoolFilter');
       schoolSelector.innerHTML = '';
@@ -846,7 +870,6 @@
       calculateStandings();
     }
 
-    // --- STREAMING PIPELINE ENGINE ---
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
       
