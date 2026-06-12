@@ -222,8 +222,8 @@
             <i class="fa-solid fa-user-tie"></i>
           </div>
           <h3 class="text-lg font-black text-athleticos-carbon">Coaches & Teachers</h3>
-          <p class="text-sm text-slate-600 leading-relaxed">
-            Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in league events.
+          <p id="public-coc-coaches" class="text-sm text-slate-600 leading-relaxed">
+            Loading...
           </p>
         </div>
 
@@ -232,8 +232,8 @@
             <i class="fa-solid fa-medal"></i>
           </div>
           <h3 class="text-lg font-black text-athleticos-carbon">Student Athletes</h3>
-          <p class="text-sm text-slate-600 leading-relaxed">
-            Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.
+          <p id="public-coc-players" class="text-sm text-slate-600 leading-relaxed">
+            Loading...
           </p>
         </div>
 
@@ -242,8 +242,8 @@
             <i class="fa-solid fa-users"></i>
           </div>
           <h3 class="text-lg font-black text-athleticos-carbon">Parents & Spectators</h3>
-          <p class="text-sm text-slate-600 leading-relaxed">
-            Schools are responsible for the conduct of their attending spectators. Minor incidents will result in a warning to the school representative. Repeated offenses may result in team point deductions, spectator ejection, or disqualification from the event.
+          <p id="public-coc-spectators" class="text-sm text-slate-600 leading-relaxed">
+            Loading...
           </p>
         </div>
 
@@ -373,7 +373,8 @@
       Schools: [], 
       Teams: [], 
       Roster: [], 
-      Fixtures: []
+      Fixtures: [],
+      Settings: [{ CoC_Coaches: "Loading...", CoC_Players: "Loading...", CoC_Spectators: "Loading..." }]
     };
 
     let activeDatabase = LOADING_DATABASE;
@@ -383,6 +384,13 @@
       fetchLiveSheetData(GOOGLE_API_ENDPOINT);
     };
 
+    function readFlexibleObjectValue(obj, targetKeyString) {
+      if (!obj) return '';
+      const matchKey = String(targetKeyString).toLowerCase().replace(/[^a-z0-9]/g, '');
+      const accurateKey = Object.keys(obj).find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === matchKey);
+      return accurateKey ? obj[accurateKey] : '';
+    }
+
     function processAppInit() {
       populateFilterSelections();
       renderAnnouncements();
@@ -390,6 +398,16 @@
       calculateStandings();
       renderSchools();
       renderRosterSelectors();
+      renderSettings();
+    }
+
+    function renderSettings() {
+      if (activeDatabase.Settings && activeDatabase.Settings.length > 0) {
+        const settings = activeDatabase.Settings[0];
+        document.getElementById('public-coc-coaches').innerText = readFlexibleObjectValue(settings, "CoC_Coaches") || "Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in league events.";
+        document.getElementById('public-coc-players').innerText = readFlexibleObjectValue(settings, "CoC_Players") || "Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.";
+        document.getElementById('public-coc-spectators').innerText = readFlexibleObjectValue(settings, "CoC_Spectators") || "Schools are responsible for the conduct of their attending spectators. Minor incidents will result in a warning to the school representative. Repeated offenses may result in team point deductions, spectator ejection, or disqualification from the event.";
+      }
     }
 
     function getApprovedTeams() {
