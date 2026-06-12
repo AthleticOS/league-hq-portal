@@ -170,7 +170,28 @@
   <div class="container" id="app-container">
     
     <div id="tab-games" class="tab-content active">
+      <div class="explainer-box info" style="margin-bottom: 15px;">
+        <strong>Match Day Operations</strong>
+        <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 0.8rem;">
+          <li>An adult supervisor must accompany the team to all fixtures.</li>
+          <li>Communicate any travel delays immediately to the host school.</li>
+          <li>Verify and submit final match scores within 24 hours of conclusion.</li>
+        </ul>
+      </div>
+
       <div id="games-list"></div>
+
+      <div class="card" style="margin-top: 15px;">
+        <div class="card-header">League Code of Conduct</div>
+        <details class="faq-item">
+          <summary>Coaches & Teachers</summary>
+          <p>Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in BISAL events.</p>
+        </details>
+        <details class="faq-item">
+          <summary>Players</summary>
+          <p>Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.</p>
+        </details>
+      </div>
     </div>
 
     <div id="tab-teams" class="tab-content">
@@ -197,6 +218,9 @@
       <div class="card">
         <div class="card-header">Manage Existing Roster</div>
         <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
+        
+        <div id="dynamic-roster-compliance" class="explainer-box" style="display: none; border-left-color: #C2410C; background-color: #FFF7ED; color: #9A3412;"></div>
+        
         <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
       </div>
     </div>
@@ -385,7 +409,6 @@
     </div>
 
     <div id="tab-help" class="tab-content">
-      
       <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">League Resources</div>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Access the live official rules, regulations, and age cutoff dates below.</p>
@@ -660,9 +683,42 @@
 
     function renderRosterList(teamId) {
       const container = document.getElementById('roster-list');
-      if (!teamId) { container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; return; }
+      const complianceBox = document.getElementById('dynamic-roster-compliance');
+
+      if (!teamId) { 
+        container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; 
+        complianceBox.style.display = 'none';
+        return; 
+      }
+      
+      // DYNAMIC COMPLIANCE ENGINE
+      const team = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
+      if (team) {
+        const sportId = readFlexibleObjectValue(team, "SportID");
+        const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
+        const sportName = sport ? String(readFlexibleObjectValue(sport, "Name")).toLowerCase() : '';
+
+        let ruleText = "<strong>Kit & Safety Protocol</strong><br>Ensure proper athletic footwear and matching school kits.";
+        if (sportName.includes('football') || sportName.includes('soccer') || sportName.includes('futsal')) {
+          ruleText = "<strong>Kit & Safety Protocol</strong><br>Mandatory: All players must wear shin pads. Swapping is prohibited. Visiting teams must bring contrasting bibs.";
+        } else if (sportName.includes('basketball')) {
+          ruleText = "<strong>Kit & Safety Protocol</strong><br>Ensure correct match ball sizes (Size 6 for Girls/U12 Boys, Size 7 for U14+ Boys).";
+        }
+
+        complianceBox.innerHTML = ruleText;
+        complianceBox.style.display = 'block';
+      } else {
+        complianceBox.style.display = 'none';
+      }
+
       const teamRoster = globalRosterData.filter(p => String(readFlexibleObjectValue(p, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
       container.innerHTML = '';
+      
+      if (teamRoster.length === 0) {
+        container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No players registered for this squad yet.</p>';
+        return;
+      }
+
       teamRoster.forEach(player => {
         const rId = readFlexibleObjectValue(player, "RosterID");
         const statusText = String(readFlexibleObjectValue(player, "EligibilityStatus")).toUpperCase().includes("OLD") ? "❌ TOO OLD" : "✔️ Eligible";
