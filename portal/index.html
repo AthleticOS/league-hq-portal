@@ -29,7 +29,7 @@
       padding-bottom: 75px;
     }
 
-    /* UPDATED HEADER: 3-Part Flexbox Layout */
+    /* HEADER: 3-Part Flexbox Layout */
     header {
       background-color: var(--primary);
       color: #fff;
@@ -99,6 +99,24 @@
     .btn-submit { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
     .btn-submit:active { background-color: var(--accent); color: var(--primary); }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
+
+    /* RESPONSIVE GRID FOR HELP TAB */
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 15px;
+      margin-bottom: 15px;
+    }
+    @media (min-width: 768px) {
+      .action-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .action-grid .card {
+        margin-bottom: 0;
+        display: flex;
+        flex-direction: column;
+      }
+    }
 
     /* CONTEXTUAL EXPLAINER BOXES */
     .explainer-box { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 15px; font-size: 0.8rem; line-height: 1.4; color: #334155; }
@@ -467,22 +485,32 @@
 
     <div id="tab-help" class="tab-content">
       
-      <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
-        <div class="card-header" style="color: var(--primary);">League Resources</div>
-        <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Access the live official rules, regulations, and age cutoff dates below.</p>
-        <a href="https://AthleticOS.github.io/league-hq-portal/handbook.html" target="_blank" class="btn-submit" style="background-color: var(--primary);">📖 Official League Handbook</a>
-      </div>
+      <div class="action-grid">
+        <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
+          <div class="card-header" style="color: var(--primary);">League Resources</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Access the live official rules, regulations, and age cutoff dates below.</p>
+          <div style="margin-top: auto;">
+            <a href="https://AthleticOS.github.io/league-hq-portal/handbook.html" target="_blank" class="btn-submit" style="background-color: var(--primary);">📖 Official League Handbook</a>
+          </div>
+        </div>
 
-      <div class="card">
-        <div class="card-header">AthleticOS Support</div>
-        <a href="https://athleticos.net/training" target="_blank" class="btn-submit" style="margin-bottom: 10px; background-color: var(--wizard-step-text);">📹 Video Tutorials</a>
-        <a href="https://calendly.com/athleticos/20min" target="_blank" class="btn-submit" style="background-color: var(--wizard-step-text);">💻 Schedule Zoom Training</a>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">Contact League Admin</div>
-        <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
-        <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: var(--text-main); color: white;">💬 WhatsApp Admin</a>
+        <div class="card">
+          <div class="card-header">AthleticOS Support</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Get help mapping your venues or training your staff.</p>
+          <div style="margin-top: auto;">
+            <a href="https://athleticos.net/training" target="_blank" class="btn-submit" style="margin-bottom: 10px; background-color: var(--wizard-step-text);">📹 Video Tutorials</a>
+            <a href="https://calendly.com/athleticos/20min" target="_blank" class="btn-submit" style="background-color: var(--wizard-step-text);">💻 Schedule Zoom Training</a>
+          </div>
+        </div>
+        
+        <div class="card">
+          <div class="card-header">Contact League Admin</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Reach out for official roster changes or match disputes.</p>
+          <div style="margin-top: auto;">
+            <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
+            <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: var(--text-main); color: white;">💬 WhatsApp Admin</a>
+          </div>
+        </div>
       </div>
 
       <div class="card">
