@@ -29,18 +29,31 @@
       padding-bottom: 75px;
     }
 
+    /* UPDATED HEADER LAYOUT */
     header {
       background-color: var(--primary);
       color: #fff;
-      padding: 20px;
-      text-align: center;
+      padding: 15px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
       position: sticky;
       top: 0;
       z-index: 100;
       border-bottom: 4px solid var(--accent);
     }
-    header h1 { margin: 0; font-size: 1.2rem; font-weight: 800; }
-    header p { margin: 5px 0 0 0; font-size: 0.85rem; color: var(--accent); }
+    header .header-logo {
+      height: 73px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+    header .header-text {
+      text-align: left;
+    }
+    header h1 { margin: 0; font-size: 1.4rem; font-weight: 800; line-height: 1.1; }
+    header p { margin: 4px 0 0 0; font-size: 0.85rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
     /* STATE SCREENS */
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
@@ -142,8 +155,11 @@
 <body>
 
   <header>
-    <h1>AthleticOS Hub</h1>
-    <p id="school-title">Secure Login</p>
+    <img src="https://github.com/AthleticOS/league-hq-portal/blob/main/Logo%20Icon.png?raw=true" alt="AthleticOS Logo" class="header-logo">
+    <div class="header-text">
+      <h1>AthleticOS Hub</h1>
+      <p id="school-title">Secure Login</p>
+    </div>
   </header>
 
   <div id="portal-crash-terminal" style="display:none; margin:20px; padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px; font-family:monospace;">
