@@ -582,17 +582,30 @@
         const rulesContainer = document.getElementById('dynamic-rules-container');
         if (sports.length > 0) {
           rulesContainer.innerHTML = '';
+          const renderedSports = new Set(); // Track base names to prevent duplicates
+
           sports.forEach(sport => {
-            const name = readFlexibleObjectValue(sport, "Name") || "Sport";
-            const rules = readFlexibleObjectValue(sport, "Rules") || "No official modifications recorded for this sport.";
-            const formattedRules = rules.replace(/\n/g, '<br>');
+            const rawName = readFlexibleObjectValue(sport, "Name") || "Sport";
             
-            rulesContainer.innerHTML += `
-              <div style="margin-bottom: 20px;">
-                <h3>${name}</h3>
-                <p style="background:var(--bg-main); padding:15px; border-radius:8px; border-left:3px solid var(--primary);">${formattedRules}</p>
-              </div>
-            `;
+            // Clean the string: Splitting by '(' or '-' to drop the term info (e.g. "Basketball (Term 1)" -> "Basketball")
+            const baseNameMatch = rawName.match(/^([^(|\-]+)/);
+            const baseName = baseNameMatch ? baseNameMatch[1].trim() : rawName.trim();
+            const lookupKey = baseName.toLowerCase();
+
+            // Only render if we haven't seen this sport base name yet
+            if (!renderedSports.has(lookupKey)) {
+              renderedSports.add(lookupKey);
+              
+              const rules = readFlexibleObjectValue(sport, "Rules") || "No official modifications recorded for this sport.";
+              const formattedRules = rules.replace(/\n/g, '<br>');
+              
+              rulesContainer.innerHTML += `
+                <div style="margin-bottom: 20px;">
+                  <h3>${baseName}</h3>
+                  <p style="background:var(--bg-main); padding:15px; border-radius:8px; border-left:3px solid var(--primary);">${formattedRules}</p>
+                </div>
+              `;
+            }
           });
         }
 
