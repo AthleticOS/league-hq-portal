@@ -207,14 +207,34 @@
     </div>
 
     <div id="tab-registration" class="tab-content">
+      
       <div class="card">
-        <div class="card-header">Register New Player</div>
+        <div class="card-header">Bulk Import Roster (CSV)</div>
+        <div class="explainer-box info">
+          <strong>Prerequisite Requirement:</strong>
+          You must register an active team in the 'Teams' tab before you can upload a roster for it.
+        </div>
+        <select class="status-select" id="bulk-reg-team" style="margin-bottom: 10px;">
+          <option value="">1. Select Target Team...</option>
+        </select>
+        
+        <div style="display:flex; gap: 10px; margin-bottom: 10px;">
+          <a href="data:text/csv;charset=utf-8,Nickname,DateOfBirth,JerseyNumber%0AJohn%20Doe,2010-05-15,10%0AJane%20Smith,2011-08-22,23" download="BISAL_Roster_Template.csv" class="btn-submit btn-small" style="background-color: var(--text-muted); flex: 1; text-align:center;">⬇️ Get Template</a>
+          
+          <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+          <button id="btn-upload-csv-trigger" class="btn-submit btn-small" style="flex: 1;" onclick="document.getElementById('csv-file-input').click()">⬆️ Upload CSV Roster</button>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Manual Register New Player</div>
         <select class="status-select" id="reg-team" style="margin-bottom: 10px;"><option value="">Select Team...</option></select>
         <input type="text" class="text-input" id="reg-nickname" placeholder="Player Name / Nickname">
         <input type="date" class="text-input" id="reg-dob">
         <input type="number" class="text-input" id="reg-jersey" placeholder="Jersey Number">
-        <button class="btn-submit btn-small" id="btn-add-player" onclick="submitPlayer()">+ Add Player</button>
+        <button class="btn-submit btn-small" id="btn-add-player" onclick="submitPlayer()">+ Add Single Player</button>
       </div>
+
       <div class="card">
         <div class="card-header">Manage Existing Roster</div>
         <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
@@ -409,7 +429,6 @@
     </div>
 
     <div id="tab-help" class="tab-content">
-      
       <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">League Resources</div>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Access the live official rules, regulations, and age cutoff dates below.</p>
@@ -542,7 +561,6 @@
           cutoffMonth = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Month")) || 1;
           cutoffDay = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Day")) || 1;
           
-          // DYNAMIC CODE OF CONDUCT INJECTION
           document.getElementById('coc-coaches-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Coaches") || "Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in league events.";
           document.getElementById('coc-players-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Players") || "Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.";
         }
@@ -676,11 +694,16 @@
     }
 
     function renderTeamsData(teams, sportsData, divisionsData) {
-      document.getElementById('reg-team').innerHTML = '<option value="">Select Team...</option>'; document.getElementById('manage-team').innerHTML = '<option value="">Select Team to View Roster...</option>'; document.getElementById('current-teams-list').innerHTML = '';
+      document.getElementById('reg-team').innerHTML = '<option value="">Select Team...</option>'; 
+      document.getElementById('bulk-reg-team').innerHTML = '<option value="">1. Select Target Team...</option>'; 
+      document.getElementById('manage-team').innerHTML = '<option value="">Select Team to View Roster...</option>'; 
+      document.getElementById('current-teams-list').innerHTML = '';
+      
       const schoolTeams = teams.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       schoolTeams.forEach(team => {
         const displayName = getTeamDisplayName(readFlexibleObjectValue(team, "SportID"), readFlexibleObjectValue(team, "DivisionID"), sportsData, divisionsData);
         document.getElementById('reg-team').innerHTML += `<option value="${readFlexibleObjectValue(team, "TeamID")}">${displayName}</option>`;
+        document.getElementById('bulk-reg-team').innerHTML += `<option value="${readFlexibleObjectValue(team, "TeamID")}">${displayName}</option>`;
         document.getElementById('manage-team').innerHTML += `<option value="${readFlexibleObjectValue(team, "TeamID")}">${displayName}</option>`;
         document.getElementById('current-teams-list').innerHTML += `<div class="team-card"><span>${displayName}</span><span class="status-badge active">${readFlexibleObjectValue(team, "RegistrationStatus") || 'Active'}</span></div>`;
       });
@@ -998,6 +1021,81 @@
          });
          container.innerHTML += `<div class="card" style="margin-bottom:15px; border-color:var(--accent);">${groupHtml}</div>`;
       });
+    }
+
+    // --- BULK CSV PARSING ENGINE ---
+    function handleCSVUpload(event) {
+      const file = event.target.files[0];
+      const teamId = document.getElementById('bulk-reg-team').value;
+      
+      if (!teamId) {
+        alert("Please select a target team from the dropdown menu first.");
+        event.target.value = ''; 
+        return;
+      }
+      
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const text = e.target.result;
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        
+        if (lines.length < 2) {
+          alert("The CSV file appears to be empty or is missing player data rows.");
+          return;
+        }
+
+        const players = [];
+        for (let i = 1; i < lines.length; i++) {
+          const cols = lines[i].split(',');
+          if (cols.length >= 2) {
+            players.push({
+              nickname: cols[0] ? cols[0].trim() : '',
+              dob: cols[1] ? cols[1].trim() : '',
+              jerseyNumber: cols[2] ? cols[2].trim() : ''
+            });
+          }
+        }
+
+        if(players.length === 0) {
+          alert("No valid player data found in the CSV file.");
+          return;
+        }
+
+        if(confirm(`Ready to import ${players.length} players into the selected squad?`)) {
+          submitBulkRoster(teamId, players);
+        }
+        event.target.value = ''; 
+      };
+      reader.readAsText(file);
+    }
+
+    async function submitBulkRoster(teamId, playersArray) {
+      document.getElementById('app-container').style.display = 'none';
+      document.getElementById('loader').style.display = 'block';
+      document.getElementById('loader').innerText = `Processing bulk import of ${playersArray.length} athletes. Please do not close this window...`;
+
+      const payload = {
+        action: "bulkImportRoster",
+        schoolId: targetSchoolID,
+        teamId: teamId,
+        players: playersArray
+      };
+
+      try {
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const result = await res.json();
+        if (result.status === "success") {
+          initApp(); 
+        } else {
+          alert("Bulk Import Failed: " + result.message);
+          initApp(); 
+        }
+      } catch (err) {
+        alert("Network transaction dropped during upload.");
+        initApp();
+      }
     }
 
     async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
