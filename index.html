@@ -417,18 +417,31 @@
       );
     }
 
+    // --- UPDATED DYNAMIC TAB SWITCHING ---
     function switchTab(tabId) {
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
+      
+      // Reset all buttons and icons to default grey state
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('border-b-2', 'border-athleticos-green', 'text-athleticos-evergreen', 'font-bold');
         btn.classList.add('border-b-2', 'border-transparent', 'text-slate-500');
+        const icon = btn.querySelector('i');
+        if (icon) {
+          icon.classList.remove('text-athleticos-green');
+        }
       });
 
       document.getElementById('view-' + tabId).classList.remove('hidden');
+      
+      // Apply active green styling to the clicked button and its icon
       const activeBtn = document.getElementById('tab-' + tabId);
       if (activeBtn) {
         activeBtn.classList.remove('border-transparent', 'text-slate-500');
         activeBtn.classList.add('border-athleticos-green', 'text-athleticos-evergreen', 'font-bold');
+        const activeIcon = activeBtn.querySelector('i');
+        if (activeIcon) {
+          activeIcon.classList.add('text-athleticos-green');
+        }
       }
     }
 
