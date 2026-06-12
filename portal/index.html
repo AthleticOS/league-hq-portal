@@ -185,11 +185,11 @@
         <div class="card-header">League Code of Conduct</div>
         <details class="faq-item">
           <summary>Coaches & Teachers</summary>
-          <p>Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in BISAL events.</p>
+          <p id="coc-coaches-text">Loading...</p>
         </details>
         <details class="faq-item">
           <summary>Players</summary>
-          <p>Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.</p>
+          <p id="coc-players-text">Loading...</p>
         </details>
       </div>
     </div>
@@ -409,6 +409,7 @@
     </div>
 
     <div id="tab-help" class="tab-content">
+      
       <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">League Resources</div>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Access the live official rules, regulations, and age cutoff dates below.</p>
@@ -540,6 +541,10 @@
           leagueYear = parseInt(readFlexibleObjectValue(globalSettingsData, "Season_Year")) || 2026;
           cutoffMonth = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Month")) || 1;
           cutoffDay = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Day")) || 1;
+          
+          // DYNAMIC CODE OF CONDUCT INJECTION
+          document.getElementById('coc-coaches-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Coaches") || "Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in league events.";
+          document.getElementById('coc-players-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Players") || "Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.";
         }
 
         if (data.Schools && data.Schools.length > 0) {
@@ -691,7 +696,6 @@
         return; 
       }
       
-      // DYNAMIC COMPLIANCE ENGINE
       const team = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
       if (team) {
         const sportId = readFlexibleObjectValue(team, "SportID");
