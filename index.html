@@ -88,6 +88,10 @@
           <i class="fa-solid fa-users-rectangle"></i>
           <span>Rosters</span>
         </button>
+        <button onclick="switchTab('conduct')" id="tab-conduct" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
+          <i class="fa-solid fa-scale-balanced"></i>
+          <span>Conduct</span>
+        </button>
         <button onclick="switchTab('join')" id="tab-join" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-file-signature"></i>
           <span>Join the League</span>
@@ -202,6 +206,47 @@
             </tbody>
           </table>
         </div>
+      </div>
+    </section>
+
+    <section id="view-conduct" class="tab-view hidden space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">League Code of Conduct</h2>
+        <p class="text-slate-500 text-sm">Our commitment to fostering a positive, respectful, and safe competitive environment for all participants.</p>
+      </div>
+
+      <div class="grid gap-6 md:grid-cols-3">
+        
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col items-center text-center space-y-4 hover:shadow-md hover:border-athleticos-green/40 transition-all">
+          <div class="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center text-athleticos-evergreen text-2xl mb-2">
+            <i class="fa-solid fa-user-tie"></i>
+          </div>
+          <h3 class="text-lg font-black text-athleticos-carbon">Coaches & Teachers</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in league events.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col items-center text-center space-y-4 hover:shadow-md hover:border-athleticos-green/40 transition-all">
+          <div class="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center text-athleticos-evergreen text-2xl mb-2">
+            <i class="fa-solid fa-medal"></i>
+          </div>
+          <h3 class="text-lg font-black text-athleticos-carbon">Student Athletes</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.
+          </p>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 flex flex-col items-center text-center space-y-4 hover:shadow-md hover:border-athleticos-green/40 transition-all">
+          <div class="h-16 w-16 rounded-full bg-slate-100 flex items-center justify-center text-athleticos-evergreen text-2xl mb-2">
+            <i class="fa-solid fa-users"></i>
+          </div>
+          <h3 class="text-lg font-black text-athleticos-carbon">Parents & Spectators</h3>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Schools are responsible for the conduct of their attending spectators. Minor incidents will result in a warning to the school representative. Repeated offenses may result in team point deductions, spectator ejection, or disqualification from the event.
+          </p>
+        </div>
+
       </div>
     </section>
 
@@ -429,7 +474,6 @@
       if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
         if (match && match[0]) {
-          // Utilizing Google's official LH3 CDN endpoint to bypass embedded restrictions
           return `https://lh3.googleusercontent.com/d/${match[0]}`;
         }
       }
@@ -499,7 +543,6 @@
       schools.forEach(sch => {
         const sId = sch.SchoolID ? String(sch.SchoolID).trim() : '';
         const sName = sch.Name ? String(sch.Name).trim() : '';
-        // Skip header lines
         if (sId && sName && sId.toLowerCase() !== 'schoolid') {
           schoolSelect.innerHTML += `<option value="${sId}">${sName}</option>`;
         }
@@ -811,7 +854,6 @@
         const sId = sch.SchoolID ? String(sch.SchoolID).trim() : '';
         const sName = sch.Name ? String(sch.Name).trim() : '';
         
-        // FIX: Reject row index #1 data column headers completely
         if (!sId || !sName || sId.toLowerCase() === 'schoolid') return;
 
         const schoolColor = getSchoolColor(sch.Name);
@@ -857,7 +899,6 @@
       });
     }
 
-    // --- INTERACTIVE PROFILE MODAL CONTROLLERS ---
     function openSchoolProfileModal(schoolId) {
       const school = activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(schoolId).trim());
       if (!school) return;
@@ -866,7 +907,6 @@
       const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
       const rosterList = activeDatabase.Roster || [];
       
-      // Calculate dynamic cumulative athlete numbers across all registered teams
       const teamIDs = schoolTeams.map(t => t.TeamID);
       const uniqueAthleteCount = rosterList.filter(player => teamIDs.includes(player.TeamID)).length;
 
@@ -877,7 +917,6 @@
       document.getElementById('modalStatTeams').innerText = schoolTeams.length;
       document.getElementById('modalStatAthletes').innerText = uniqueAthleteCount;
 
-      // Handle Logo/Fallback icon in modal header
       const logoPort = document.getElementById('modalLogoPort');
       const logoUrl = getSchoolLogo(school);
       if (logoUrl) {
@@ -888,7 +927,6 @@
         logoPort.innerHTML = `<div class="h-full w-full rounded-lg flex items-center justify-center font-bold text-lg ${schoolColor.bg}">${acronym}</div>`;
       }
 
-      // Generate Dynamic Team Pills
       const teamsPort = document.getElementById('modalTeamsContainer');
       teamsPort.innerHTML = '';
       if (schoolTeams.length === 0) {
@@ -907,11 +945,9 @@
         });
       }
 
-      // Generate Google Maps Directions URI Parameter Link
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
       document.getElementById('modalMapsLink').href = `https://www.google.com/maps/search/?api=1&query=${mapSearchQuery}`;
 
-      // Open Modal Window view
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
 
