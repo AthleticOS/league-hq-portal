@@ -29,22 +29,26 @@
       padding-bottom: 75px;
     }
 
-    /* UPDATED HEADER LAYOUT */
+    /* UPDATED HEADER: 3-Part Flexbox Layout */
     header {
       background-color: var(--primary);
       color: #fff;
       padding: 15px 20px;
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 15px;
+      justify-content: space-between;
       position: sticky;
       top: 0;
       z-index: 100;
       border-bottom: 4px solid var(--accent);
     }
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
     header .header-logo {
-      height: 73px;
+      height: 65px;
       width: auto;
       object-fit: contain;
       filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
@@ -52,8 +56,19 @@
     header .header-text {
       text-align: left;
     }
-    header h1 { margin: 0; font-size: 1.4rem; font-weight: 800; line-height: 1.1; }
-    header p { margin: 4px 0 0 0; font-size: 0.85rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    header h1 { margin: 0; font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
+    header p { margin: 4px 0 0 0; font-size: 0.8rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    
+    /* NEW: DYNAMIC SCHOOL LOGO STYLING */
+    .header-school-logo {
+      height: 55px;
+      width: 55px;
+      object-fit: contain;
+      background-color: #fff;
+      border-radius: 8px;
+      padding: 4px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
 
     /* STATE SCREENS */
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
@@ -155,11 +170,14 @@
 <body>
 
   <header>
-    <img src="https://github.com/AthleticOS/league-hq-portal/blob/main/Logo%20Icon.png?raw=true" alt="AthleticOS Logo" class="header-logo">
-    <div class="header-text">
-      <h1>AthleticOS Hub</h1>
-      <p id="school-title">Secure Login</p>
+    <div class="header-left">
+      <img src="https://github.com/AthleticOS/league-hq-portal/blob/main/Logo%20Icon.png?raw=true" alt="AthleticOS Logo" class="header-logo">
+      <div class="header-text">
+        <h1>AthleticOS Hub</h1>
+        <p id="school-title">Secure Login</p>
+      </div>
     </div>
+    <div id="dynamic-school-logo-container"></div>
   </header>
 
   <div id="portal-crash-terminal" style="display:none; margin:20px; padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px; font-family:monospace;">
@@ -448,6 +466,7 @@
     </div>
 
     <div id="tab-help" class="tab-content">
+      
       <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">League Resources</div>
         <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Access the live official rules, regulations, and age cutoff dates below.</p>
@@ -507,6 +526,22 @@
           <p>Scroll to the 'Logged Exceptions Status' at the bottom of the Availability tab and click the red trash can icon next to the entry to permanently delete it.</p>
         </details>
       </div>
+
+      <div class="card" style="background-color: var(--primary); color: #fff; border-color: var(--accent); margin-top: 25px;">
+        <div class="card-header" style="color: var(--accent);">System Architecture</div>
+        <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px;">
+          <div style="background: #fff; border-radius: 8px; padding: 5px; height: 55px; width: 55px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            <img src="https://github.com/AthleticOS/league-hq-portal/blob/main/Logo%20Icon.png?raw=true" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+          </div>
+          <div>
+            <p style="margin: 0; font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; font-weight: 800; letter-spacing: 1px;">Powered By</p>
+            <h3 style="margin: 2px 0 3px 0; font-size: 1.2rem; font-weight: 900;">Athletic<span style="color: var(--accent);">OS</span></h3>
+            <p style="margin: 0; font-size: 0.75rem; color: #cbd5e1;">Enterprise League Management</p>
+          </div>
+        </div>
+        <a href="https://athleticos.net" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); margin-top: 15px;">Visit AthleticOS.net</a>
+      </div>
+
     </div>
   </div>
 
@@ -546,6 +581,38 @@
       const matchKey = String(targetKeyString).toLowerCase().replace(/[^a-z0-9]/g, '');
       const accurateKey = Object.keys(obj).find(k => k.toLowerCase().replace(/[^a-z0-9]/g, '') === matchKey);
       return accurateKey ? obj[accurateKey] : '';
+    }
+
+    // --- NEW LOGO FETCH HELPERS ---
+    function getSchoolLogo(sch) {
+      if (!sch) return '';
+      const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
+      for (const key of directKeys) {
+        if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) {
+          return convertDriveLink(sch[key].trim());
+        }
+      }
+      for (const rawKey in sch) {
+        const cleanKey = rawKey.toLowerCase().replace(/[^a-z]/g, '');
+        if (cleanKey.includes('logo') || cleanKey.includes('image')) {
+          const val = String(sch[rawKey]).trim();
+          if (val.startsWith('http')) {
+            return convertDriveLink(val);
+          }
+        }
+      }
+      return '';
+    }
+
+    function convertDriveLink(url) {
+      if (!url) return '';
+      if (url.includes('drive.google.com')) {
+        const match = url.match(/[-\w]{25,}/);
+        if (match && match[0]) {
+          return `https://lh3.googleusercontent.com/d/${match[0]}`;
+        }
+      }
+      return url;
     }
 
     async function verifyPin() {
@@ -589,6 +656,13 @@
           if (schoolData) {
             targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
             targetSchoolRegion = readFlexibleObjectValue(schoolData, "Region") || ''; 
+            
+            // DYNAMICALLY INJECT SCHOOL LOGO INTO HEADER
+            const logoUrl = getSchoolLogo(schoolData);
+            const logoContainer = document.getElementById('dynamic-school-logo-container');
+            if (logoUrl) {
+              logoContainer.innerHTML = `<img src="${logoUrl}" class="header-school-logo" alt="School Logo">`;
+            }
           }
         }
         
