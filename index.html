@@ -66,8 +66,12 @@
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex space-x-8 overflow-x-auto py-4 custom-scrollbar whitespace-nowrap">
-        <button onclick="switchTab('bulletins')" id="tab-bulletins" class="tab-btn flex items-center space-x-2 border-b-2 border-athleticos-green text-athleticos-evergreen px-1 pb-2 text-sm font-bold transition-all">
-          <i class="fa-solid fa-bullhorn text-athleticos-green"></i>
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex items-center space-x-2 border-b-2 border-athleticos-green text-athleticos-evergreen px-1 pb-2 text-sm font-bold transition-all">
+          <i class="fa-solid fa-satellite-dish text-athleticos-green"></i>
+          <span>League Intel</span>
+        </button>
+        <button onclick="switchTab('bulletins')" id="tab-bulletins" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
+          <i class="fa-solid fa-bullhorn"></i>
           <span>League Announcements</span>
         </button>
         <button onclick="switchTab('fixtures')" id="tab-fixtures" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
@@ -100,7 +104,84 @@
 
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <section id="view-bulletins" class="tab-view space-y-6">
+    <section id="view-dashboard" class="tab-view space-y-8 animate-in fade-in duration-500">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 class="text-2xl md:text-3xl font-extrabold text-athleticos-carbon tracking-tight">League Intelligence Engine</h2>
+        <p class="text-slate-500 text-sm md:text-base mt-1">Cumulative real-time telemetry tracking active ecosystem scale and seasonal execution.</p>
+      </div>
+
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+        <div class="bg-athleticos-evergreen rounded-xl p-6 border-b-4 border-athleticos-green shadow-sm flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
+          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Active Institutions</span>
+          <span id="dash-schools" class="text-4xl md:text-5xl font-black text-white">0</span>
+        </div>
+        <div class="bg-athleticos-evergreen rounded-xl p-6 border-b-4 border-athleticos-yellow shadow-sm flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
+          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Registered Athletes</span>
+          <span id="dash-athletes" class="text-4xl md:text-5xl font-black text-white">0</span>
+        </div>
+        <div class="bg-athleticos-evergreen rounded-xl p-6 border-b-4 border-athleticos-green shadow-sm flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
+          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Active Command Teams</span>
+          <span id="dash-teams" class="text-4xl md:text-5xl font-black text-white">0</span>
+        </div>
+        <div class="bg-athleticos-evergreen rounded-xl p-6 border-b-4 border-athleticos-teal shadow-sm flex flex-col items-center justify-center text-center hover:-translate-y-1 transition-transform">
+          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-widest mb-1">Competitive Divisions</span>
+          <span id="dash-divisions" class="text-4xl md:text-5xl font-black text-white">0</span>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+          <div class="flex items-center justify-between">
+            <h3 class="text-lg font-black text-athleticos-carbon flex items-center gap-2">
+              <i class="fa-solid fa-server text-athleticos-green"></i> Live Season Execution
+            </h3>
+            <span id="dash-progress-text" class="text-sm font-black text-athleticos-green bg-athleticos-green/10 px-3 py-1 rounded-full">0%</span>
+          </div>
+          
+          <div class="relative w-full h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+            <div id="dash-progress-bar" class="absolute top-0 left-0 h-full bg-athleticos-green transition-all duration-1000 w-0"></div>
+          </div>
+
+          <div class="grid grid-cols-3 gap-4 pt-2">
+            <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+              <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-total">0</span>
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fixtures Mapped</span>
+            </div>
+            <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+              <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-completed">0</span>
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Completed</span>
+            </div>
+            <div class="text-center bg-rose-50 p-3 rounded-lg border border-rose-100">
+              <span class="block text-xl font-black text-rose-600 animate-pulse" id="dash-fixtures-live">0</span>
+              <span class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Live Now</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+          <h3 class="text-lg font-black text-athleticos-carbon flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
+            <i class="fa-solid fa-chart-pie text-athleticos-yellow"></i> Infrastructure Breakdown
+          </h3>
+          
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+              <span class="text-sm font-bold text-slate-600">Total Governed Sports</span>
+              <span id="dash-sports-total" class="text-lg font-black text-athleticos-evergreen bg-slate-100 px-3 py-1 rounded-md">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+              <span class="text-sm font-bold text-slate-600">Boys' Divisions</span>
+              <span id="dash-sports-boys" class="text-lg font-black text-athleticos-evergreen bg-slate-100 px-3 py-1 rounded-md">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+              <span class="text-sm font-bold text-slate-600">Girls' Divisions</span>
+              <span id="dash-sports-girls" class="text-lg font-black text-athleticos-evergreen bg-slate-100 px-3 py-1 rounded-md">0</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-bulletins" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Public Bulletins</h2>
         <p class="text-slate-500 text-sm">Real-time alerts, league-wide news, and operational details for parents and fans.</p>
@@ -390,6 +471,7 @@
     }
 
     function processAppInit() {
+      renderDashboard();
       populateFilterSelections();
       renderAnnouncements();
       renderFixtures();
@@ -397,6 +479,51 @@
       renderSchools();
       renderRosterSelectors();
       renderSettings();
+    }
+
+    // --- NEW LEAGUE INTEL DASHBOARD LOGIC ---
+    function renderDashboard() {
+      const approvedTeams = getApprovedTeams();
+      const totalSchools = activeDatabase.Schools ? activeDatabase.Schools.length : 0;
+      const totalAthletes = activeDatabase.Roster ? activeDatabase.Roster.length : 0;
+      const totalTeams = approvedTeams.length;
+      const totalDivisions = activeDatabase.Divisions ? activeDatabase.Divisions.length : 0;
+      const totalSports = activeDatabase.Sports ? activeDatabase.Sports.length : 0;
+
+      const fixtures = activeDatabase.Fixtures || [];
+      const totalFixtures = fixtures.length;
+      const completedFixtures = fixtures.filter(f => f.MatchStatus === 'Completed' || f.MatchStatus === 'Finished').length;
+      const liveFixtures = fixtures.filter(f => f.MatchStatus === 'In Progress' || f.MatchStatus === 'Live').length;
+
+      let completionPercent = totalFixtures > 0 ? Math.round((completedFixtures / totalFixtures) * 100) : 0;
+
+      let boysDivs = 0, girlsDivs = 0, coedDivs = 0;
+      if(activeDatabase.Divisions) {
+        activeDatabase.Divisions.forEach(d => {
+          const gender = (d.Gender || '').toLowerCase();
+          if(gender.includes('boy')) boysDivs++;
+          else if(gender.includes('girl')) girlsDivs++;
+          else coedDivs++;
+        });
+      }
+
+      // Update High-Impact Counters
+      document.getElementById('dash-schools').innerText = totalSchools;
+      document.getElementById('dash-athletes').innerText = totalAthletes;
+      document.getElementById('dash-teams').innerText = totalTeams;
+      document.getElementById('dash-divisions').innerText = totalDivisions;
+
+      // Update Season Execution Trackers
+      document.getElementById('dash-fixtures-total').innerText = totalFixtures;
+      document.getElementById('dash-fixtures-completed').innerText = completedFixtures;
+      document.getElementById('dash-fixtures-live').innerText = liveFixtures;
+      document.getElementById('dash-progress-text').innerText = completionPercent + '%';
+      document.getElementById('dash-progress-bar').style.width = completionPercent + '%';
+
+      // Update Sports Breakdown
+      document.getElementById('dash-sports-total').innerText = totalSports;
+      document.getElementById('dash-sports-boys').innerText = boysDivs;
+      document.getElementById('dash-sports-girls').innerText = girlsDivs;
     }
 
     function renderSettings() {
@@ -503,7 +630,7 @@
       if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
         if (match && match[0]) {
-          return `https://lh3.googleusercontent.com/d/${match[0]}`;
+          return `https://lh3.googleusercontent.com/d/$${match[0]}`;
         }
       }
       return url;
@@ -975,7 +1102,7 @@
       }
 
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `https://www.google.com/maps/search/?api=1&query=${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `https://maps.google.com/?q=${mapSearchQuery}`;
 
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
