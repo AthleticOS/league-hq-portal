@@ -128,57 +128,83 @@
         </div>
       </div>
 
-      <div class="grid md:grid-cols-2 gap-8">
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
+      <div class="grid lg:grid-cols-3 gap-6 md:gap-8">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6 lg:col-span-1">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-black text-athleticos-carbon flex items-center gap-2">
-              <i class="fa-solid fa-server text-athleticos-green"></i> Live Season Execution
+            <h3 class="text-base font-black text-athleticos-carbon flex items-center gap-2">
+              <i class="fa-solid fa-server text-athleticos-green"></i> Season Execution
             </h3>
-            <span id="dash-progress-text" class="text-sm font-black text-athleticos-green bg-athleticos-green/10 px-3 py-1 rounded-full">0%</span>
+            <span id="dash-progress-text" class="text-xs font-black text-athleticos-green bg-athleticos-green/10 px-3 py-1 rounded-full">0%</span>
           </div>
-          <div class="relative w-full h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+          <div class="relative w-full h-3 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
             <div id="dash-progress-bar" class="absolute top-0 left-0 h-full bg-athleticos-green transition-all duration-1000 w-0"></div>
           </div>
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
-            <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
-              <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-total">0</span>
-              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Mapped</span>
+          <div class="grid grid-cols-2 gap-3 pt-2">
+            <div class="text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+              <span class="block text-lg font-black text-athleticos-carbon" id="dash-fixtures-total">0</span>
+              <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Mapped</span>
             </div>
-            <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
-              <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-upcoming">0</span>
-              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Upcoming</span>
+            <div class="text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+              <span class="block text-lg font-black text-athleticos-carbon" id="dash-fixtures-upcoming">0</span>
+              <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Upcoming</span>
             </div>
-            <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
-              <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-completed">0</span>
-              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Completed</span>
+            <div class="text-center bg-slate-50 p-2 rounded-lg border border-slate-100">
+              <span class="block text-lg font-black text-athleticos-carbon" id="dash-fixtures-completed">0</span>
+              <span class="text-[9px] font-bold text-slate-500 uppercase tracking-widest">Completed</span>
             </div>
-            <div class="text-center bg-rose-50 p-3 rounded-lg border border-rose-100">
-              <span class="block text-xl font-black text-rose-600 animate-pulse" id="dash-fixtures-live">0</span>
-              <span class="text-[10px] font-bold text-rose-500 uppercase tracking-widest">Live Now</span>
+            <div class="text-center bg-rose-50 p-2 rounded-lg border border-rose-100">
+              <span class="block text-lg font-black text-rose-600 animate-pulse" id="dash-fixtures-live">0</span>
+              <span class="text-[9px] font-bold text-rose-500 uppercase tracking-widest">Live</span>
             </div>
           </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 md:p-8 space-y-6">
-          <h3 class="text-lg font-black text-athleticos-carbon flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6 lg:col-span-1">
+          <h3 class="text-base font-black text-athleticos-carbon flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
+            <i class="fa-solid fa-users-viewfinder text-athleticos-green"></i> Demographic Intel
+          </h3>
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
+              <span class="text-sm font-bold text-slate-600">Avg Roster Size</span>
+              <span id="dash-avg-roster" class="text-base font-black text-athleticos-evergreen">0.0</span>
+            </div>
+            <div class="pt-2">
+              <span class="text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-2 block">Age Distribution Matrix</span>
+              <div class="space-y-2">
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-600">
+                  <span>Under 14 Years</span><span id="dash-age-u14" class="font-bold text-athleticos-carbon bg-slate-100 px-2 py-0.5 rounded">0</span>
+                </div>
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-600">
+                  <span>14 to 16 Years</span><span id="dash-age-1516" class="font-bold text-athleticos-carbon bg-slate-100 px-2 py-0.5 rounded">0</span>
+                </div>
+                <div class="flex items-center justify-between text-xs font-semibold text-slate-600">
+                  <span>17+ / Seniors</span><span id="dash-age-17plus" class="font-bold text-athleticos-carbon bg-slate-100 px-2 py-0.5 rounded">0</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-6 lg:col-span-1">
+          <h3 class="text-base font-black text-athleticos-carbon flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
             <i class="fa-solid fa-chart-pie text-athleticos-yellow"></i> Infrastructure Breakdown
           </h3>
-          <div class="grid grid-cols-2 gap-4">
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+          <div class="space-y-3">
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
               <span class="text-sm font-bold text-slate-600">Governed Sports</span>
-              <span id="dash-sports-total" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
+              <span id="dash-sports-total" class="text-base font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-2.5 py-0.5 rounded">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
               <span class="text-sm font-bold text-slate-600">Boys' Divisions</span>
-              <span id="dash-sports-boys" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
+              <span id="dash-sports-boys" class="text-base font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-2.5 py-0.5 rounded">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
               <span class="text-sm font-bold text-slate-600">Girls' Divisions</span>
-              <span id="dash-sports-girls" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
+              <span id="dash-sports-girls" class="text-base font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-2.5 py-0.5 rounded">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+            <div class="flex items-center justify-between p-2.5 bg-slate-50 rounded-lg border border-slate-100">
               <span class="text-sm font-bold text-slate-600">Co-Ed Divisions</span>
-              <span id="dash-sports-coed" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
+              <span id="dash-sports-coed" class="text-base font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-2.5 py-0.5 rounded">0</span>
             </div>
           </div>
         </div>
@@ -294,8 +320,18 @@
     <section id="view-schools" class="tab-view hidden space-y-6">
       <div class="border-b border-slate-200 pb-4">
         <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">School Directory</h2>
-        <p class="text-slate-500 text-sm">Directory of all league schools. Click any profile card to view operational teams, facility coordinates, and live rosters.</p>
+        <p class="text-slate-500 text-sm">Geographic mapping and directory of all league schools. Click any profile card to view operational teams and rosters.</p>
       </div>
+      
+      <div class="w-full h-64 md:h-96 bg-slate-200 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center border border-slate-300 shadow-inner">
+        <div id="googleMapElement" class="absolute inset-0 z-0"></div>
+        <div id="mapOverlay" class="z-10 text-center pointer-events-none bg-white/90 p-6 rounded-2xl shadow-lg backdrop-blur-sm border border-slate-200">
+          <i class="fa-solid fa-map-location-dot text-4xl text-athleticos-green mb-3"></i>
+          <p class="text-sm font-black text-athleticos-carbon uppercase tracking-widest">Dynamic Map Engine Offline</p>
+          <p class="text-xs text-slate-500 mt-1">Awaiting Google Cloud API Key Injection</p>
+        </div>
+      </div>
+
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
     </section>
 
@@ -452,7 +488,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.0.0</p>
+        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.1.0</p>
       </div>
     </div>
   </footer>
@@ -473,6 +509,7 @@
     let currentStandingsConference = 'Overall'; 
     let calendarCurrentDate = new Date();
     let calendarSelectedDateStr = ''; 
+    let mapEngineInitialized = false;
 
     window.onload = function() {
       processAppInit();
@@ -496,13 +533,13 @@
       renderSchools();
       renderRosterSelectors();
       renderSettings();
+      initDynamicMap();
     }
 
     function populateDashboardFilter() {
       const select = document.getElementById('dashSeasonFilter');
       if (!select) return;
       const currentVal = select.value || 'All';
-      
       const sports = activeDatabase.Sports || [];
       const seasons = [...new Set(sports.map(s => String(s.Season || '').trim()).filter(Boolean))];
       
@@ -513,7 +550,6 @@
 
     function renderDashboard() {
       const seasonFilter = document.getElementById('dashSeasonFilter') ? document.getElementById('dashSeasonFilter').value : 'All';
-
       const allSports = activeDatabase.Sports || [];
       const filteredSports = seasonFilter === 'All' ? allSports : allSports.filter(s => String(s.Season || '').trim() === seasonFilter);
       const sportIDs = filteredSports.map(s => String(s.SportID).trim());
@@ -546,6 +582,24 @@
       const upcoming = filteredFixtures.length - (completed + live);
       let pct = filteredFixtures.length > 0 ? Math.round((completed / filteredFixtures.length) * 100) : 0;
 
+      // Calculate Average Roster Size
+      const avgRoster = filteredTeams.length > 0 ? (filteredRosters.length / filteredTeams.length).toFixed(1) : "0.0";
+
+      // Calculate Age Demographics
+      let ageU14 = 0, age1516 = 0, age17plus = 0;
+      const currentYear = new Date().getFullYear(); // Standardizing to current machine year dynamically
+      filteredRosters.forEach(p => {
+        if(p.DateOfBirth) {
+          const dob = new Date(p.DateOfBirth);
+          if(!isNaN(dob)) {
+            const age = currentYear - dob.getFullYear();
+            if(age < 15) ageU14++;
+            else if(age >= 15 && age <= 16) age1516++;
+            else age17plus++;
+          }
+        }
+      });
+
       document.getElementById('dash-schools').innerText = filteredSchools.length;
       document.getElementById('dash-athletes').innerText = filteredRosters.length;
       document.getElementById('dash-teams').innerText = filteredTeams.length;
@@ -562,6 +616,11 @@
       document.getElementById('dash-sports-boys').innerText = boysDivs;
       document.getElementById('dash-sports-girls').innerText = girlsDivs;
       document.getElementById('dash-sports-coed').innerText = coedDivs;
+
+      document.getElementById('dash-avg-roster').innerText = avgRoster;
+      document.getElementById('dash-age-u14').innerText = ageU14;
+      document.getElementById('dash-age-1516').innerText = age1516;
+      document.getElementById('dash-age-17plus').innerText = age17plus;
     }
 
     function renderSettings() {
@@ -593,32 +652,23 @@
         const activeIcon = activeBtn.querySelector('i');
         if (activeIcon) activeIcon.classList.add('text-athleticos-green');
       }
+
+      // If switching to schools tab, refresh map to prevent blank grey box glitch from hidden containers
+      if(tabId === 'schools' && mapEngineInitialized && typeof google !== 'undefined') {
+         initDynamicMap(); 
+      }
     }
 
     function buildConferenceGroupedOptions(schoolsArray, includeAllOption = true) {
       const validSchools = schoolsArray.filter(sch => sch.SchoolID && sch.Name && String(sch.SchoolID).toLowerCase() !== 'schoolid');
-      
       const northSchools = validSchools.filter(sch => String(sch.Region || sch.Conference || '').toLowerCase().includes('north')).sort((a,b) => String(a.Name).localeCompare(b.Name));
       const southSchools = validSchools.filter(sch => String(sch.Region || sch.Conference || '').toLowerCase().includes('south')).sort((a,b) => String(a.Name).localeCompare(b.Name));
       const unassigned = validSchools.filter(sch => !String(sch.Region || sch.Conference || '').toLowerCase().includes('north') && !String(sch.Region || sch.Conference || '').toLowerCase().includes('south')).sort((a,b) => String(a.Name).localeCompare(b.Name));
 
       let html = includeAllOption ? '<option value="All">All Schools</option>' : '';
-      
-      if(northSchools.length > 0) {
-        html += `<optgroup label="North Conference">`;
-        northSchools.forEach(s => html += `<option value="${s.SchoolID}">${s.Name}</option>`);
-        html += `</optgroup>`;
-      }
-      if(southSchools.length > 0) {
-        html += `<optgroup label="South Conference">`;
-        southSchools.forEach(s => html += `<option value="${s.SchoolID}">${s.Name}</option>`);
-        html += `</optgroup>`;
-      }
-      if(unassigned.length > 0) {
-        html += `<optgroup label="General / Unassigned">`;
-        unassigned.forEach(s => html += `<option value="${s.SchoolID}">${s.Name}</option>`);
-        html += `</optgroup>`;
-      }
+      if(northSchools.length > 0) { html += `<optgroup label="North Conference">`; northSchools.forEach(s => html += `<option value="${s.SchoolID}">${s.Name}</option>`); html += `</optgroup>`; }
+      if(southSchools.length > 0) { html += `<optgroup label="South Conference">`; southSchools.forEach(s => html += `<option value="${s.SchoolID}">${s.Name}</option>`); html += `</optgroup>`; }
+      if(unassigned.length > 0) { html += `<optgroup label="General / Unassigned">`; unassigned.forEach(s => html += `<option value="${s.SchoolID}">${s.Name}</option>`); html += `</optgroup>`; }
       return html;
     }
 
@@ -626,7 +676,6 @@
       const sportSelect = document.getElementById('filterSport');
       const schoolSelect = document.getElementById('filterSchool');
       const standingSport = document.getElementById('standingsSport');
-
       const savedSport = sportSelect.value;
       const savedSchool = schoolSelect.value;
       const savedStandSport = standingSport.value;
@@ -699,16 +748,9 @@
       }
     }
 
-    function onSportFilterChange() {
-      updateDivisionFilterOptions();
-      renderFixtures();
-    }
+    function onSportFilterChange() { updateDivisionFilterOptions(); renderFixtures(); }
+    function applyFilters() { renderFixtures(); }
 
-    function applyFilters() {
-      renderFixtures();
-    }
-
-    // --- FIXTURES SUB-VIEW TOGGLE ---
     function toggleFixturesView(mode) {
       activeFixturesSubView = mode;
       const listBtn = document.getElementById('subtab-list');
@@ -719,18 +761,15 @@
       if (mode === 'list') {
         listBtn.className = "px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm";
         calBtn.className = "px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen";
-        listContainer.classList.remove('hidden');
-        calContainer.classList.add('hidden');
+        listContainer.classList.remove('hidden'); calContainer.classList.add('hidden');
       } else {
         calBtn.className = "px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm";
         listBtn.className = "px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen";
-        listContainer.classList.add('hidden');
-        calContainer.classList.remove('hidden');
+        listContainer.classList.add('hidden'); calContainer.classList.remove('hidden');
         buildCalendarView();
       }
     }
 
-    // Wrap ID matching logic securely to prevent Google Sheets Number/String mismatches
     function getActiveFilteredFixtures() {
       const sportVal = document.getElementById('filterSport').value;
       const divVal = document.getElementById('filterDivision').value;
@@ -741,7 +780,6 @@
       return fixtures.filter(game => {
         if (sportVal !== 'All' && String(game.SportID).trim() !== sportVal) return false;
         if (divVal !== 'All' && String(game.DivisionID).trim() !== divVal) return false;
-        
         if (schoolVal !== 'All') {
           const homeTeam = approvedTeams.find(t => String(t.TeamID).trim() === String(game.HomeTeamID).trim());
           const awayTeam = approvedTeams.find(t => String(t.TeamID).trim() === String(game.AwayTeamID).trim());
@@ -760,22 +798,14 @@
       const filtered = getActiveFilteredFixtures();
 
       if (filtered.length === 0) {
-        container.innerHTML = `
-          <div class="bg-white p-12 rounded-xl text-center border border-slate-200">
-            <i class="fa-solid fa-magnifying-glass text-slate-300 text-4xl mb-3"></i>
-            <p class="text-slate-500 font-semibold">No scheduled games match your chosen filters.</p>
-          </div>`;
+        container.innerHTML = `<div class="bg-white p-12 rounded-xl text-center border border-slate-200"><i class="fa-solid fa-magnifying-glass text-slate-300 text-4xl mb-3"></i><p class="text-slate-500 font-semibold">No scheduled games match your chosen filters.</p></div>`;
         if(activeFixturesSubView === 'calendar') buildCalendarView();
         return;
       }
 
       filtered.sort((a,b) => new Date(a.Date + ' ' + a.Time) - new Date(b.Date + ' ' + b.Time));
       const approvedTeams = getApprovedTeams();
-
-      filtered.forEach(game => {
-        container.innerHTML += buildFixtureCardMarkup(game, approvedTeams);
-      });
-
+      filtered.forEach(game => container.innerHTML += buildFixtureCardMarkup(game, approvedTeams));
       if(activeFixturesSubView === 'calendar') buildCalendarView();
     }
 
@@ -797,25 +827,17 @@
         <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm hover:shadow-md transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div class="space-y-1.5 flex-grow">
             <div class="flex flex-wrap items-center gap-2">
-              <span class="bg-athleticos-porcelain text-athleticos-evergreen text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded border border-slate-200">
-                ${sport ? sport.Name : "Sport"}
-              </span>
+              <span class="bg-athleticos-porcelain text-athleticos-evergreen text-[10px] font-extrabold uppercase tracking-widest px-2 py-0.5 rounded border border-slate-200">${sport ? sport.Name : "Sport"}</span>
               <span class="text-xs text-slate-400 font-medium">${division ? `${division.Age_Limit} (${division.Gender})` : ""}</span>
             </div>
             <div class="flex items-center space-x-6 py-2">
-              <div class="flex flex-col">
-                <span class="text-base font-extrabold text-athleticos-carbon">${homeName}</span>
-                <span class="text-xs text-slate-400 uppercase font-semibold">Home</span>
-              </div>
+              <div class="flex flex-col"><span class="text-base font-extrabold text-athleticos-carbon">${homeName}</span><span class="text-xs text-slate-400 uppercase font-semibold">Home</span></div>
               <div class="flex items-center space-x-3 bg-athleticos-porcelain px-4 py-2 rounded-lg border border-slate-100">
                 <span class="text-lg font-black ${isCompleted && Number(game.HomeScore) > Number(game.AwayScore) ? 'text-athleticos-green' : 'text-athleticos-carbon'}">${isCompleted || isLive ? game.HomeScore : '-'}</span>
                 <span class="text-xs font-black text-slate-300">VS</span>
                 <span class="text-lg font-black ${isCompleted && Number(game.AwayScore) > Number(game.HomeScore) ? 'text-athleticos-green' : 'text-athleticos-carbon'}">${isCompleted || isLive ? game.AwayScore : '-'}</span>
               </div>
-              <div class="flex flex-col">
-                <span class="text-base font-extrabold text-athleticos-carbon">${awayName}</span>
-                <span class="text-xs text-slate-400 uppercase font-semibold">Away</span>
-              </div>
+              <div class="flex flex-col"><span class="text-base font-extrabold text-athleticos-carbon">${awayName}</span><span class="text-xs text-slate-400 uppercase font-semibold">Away</span></div>
             </div>
             <div class="flex flex-wrap items-center gap-x-4 gap-y-1 text-xs font-semibold text-slate-500">
               <span class="flex items-center space-x-1.5"><i class="fa-regular fa-calendar text-slate-400"></i><span>${game.Date}</span></span>
@@ -829,10 +851,7 @@
         </div>`;
     }
 
-    function navigateCalendarMonth(direction) {
-      calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + direction);
-      buildCalendarView();
-    }
+    function navigateCalendarMonth(direction) { calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + direction); buildCalendarView(); }
 
     function buildCalendarView() {
       const grid = document.getElementById('calendarGrid');
@@ -847,28 +866,22 @@
 
       const firstDayIdx = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
-
       const activeFixtures = getActiveFilteredFixtures();
       const gameDatesMap = {};
       
       activeFixtures.forEach(f => {
         if (f.Date) {
           const parsed = new Date(f.Date);
-          if (!isNaN(parsed)) {
-            const key = `${parsed.getFullYear()}-${parsed.getMonth()}-${parsed.getDate()}`;
-            gameDatesMap[key] = (gameDatesMap[key] || 0) + 1;
-          }
+          if (!isNaN(parsed)) gameDatesMap[`${parsed.getFullYear()}-${parsed.getMonth()}-${parsed.getDate()}`] = (gameDatesMap[`${parsed.getFullYear()}-${parsed.getMonth()}-${parsed.getDate()}`] || 0) + 1;
         }
       });
 
       for (let i = 0; i < firstDayIdx; i++) grid.innerHTML += `<div class="bg-slate-50/40 rounded-lg h-14 md:h-20 border border-slate-100"></div>`;
-
       for (let day = 1; day <= totalDays; day++) {
         const cellDateKey = `${year}-${month}-${day}`;
         const matchCount = gameDatesMap[cellDateKey] || 0;
         const lookupDateStr = new Date(year, month, day).toDateString();
         const isSelected = calendarSelectedDateStr === lookupDateStr;
-
         let dayHighlightClass = matchCount > 0 ? 'bg-athleticos-green/10 border-athleticos-green/40 hover:bg-athleticos-green/20 cursor-pointer' : 'bg-slate-50 hover:bg-slate-100 border-slate-200 cursor-pointer';
         if (isSelected) dayHighlightClass = 'bg-athleticos-evergreen text-white border-athleticos-green ring-2 ring-athleticos-green';
 
@@ -886,17 +899,14 @@
       renderCalendarSelectedDayFixtures();
     }
 
-    function selectCalendarDay(dateStr) {
-      calendarSelectedDateStr = dateStr;
-      buildCalendarView();
-    }
+    function selectCalendarDay(dateStr) { calendarSelectedDateStr = dateStr; buildCalendarView(); }
 
     function renderCalendarSelectedDayFixtures() {
       const container = document.getElementById('calendarDayFixturesContainer');
       const header = document.getElementById('calendarDaySelectionHeader');
       if (!container) return;
-
       container.innerHTML = '';
+
       if (!calendarSelectedDateStr) {
         header.innerText = "No Day Highlighted";
         container.innerHTML = `<p class="text-xs text-slate-400 italic">Select any highlight day container within the matrix above to stream targeted matchups.</p>`;
@@ -908,10 +918,7 @@
       const targetDayGames = activeFixtures.filter(f => f.Date && new Date(f.Date).toDateString() === calendarSelectedDateStr);
 
       if (targetDayGames.length === 0) {
-        container.innerHTML = `
-          <div class="bg-slate-50 border border-dashed border-slate-200 rounded-xl p-6 text-center text-slate-400 text-xs font-semibold">
-            No dynamic conference activities mapped on this direct calendar layout coordinate.
-          </div>`;
+        container.innerHTML = `<div class="bg-slate-50 border border-dashed border-slate-200 rounded-xl p-6 text-center text-slate-400 text-xs font-semibold">No dynamic conference activities mapped on this direct calendar layout coordinate.</div>`;
         return;
       }
 
@@ -919,7 +926,6 @@
       targetDayGames.forEach(game => container.innerHTML += buildFixtureCardMarkup(game, approvedTeams));
     }
 
-    // --- LEAGUE STANDINGS W/ NORTH & SOUTH SPLIT ---
     function setConferenceStandingsFilter(conf) {
       currentStandingsConference = conf;
       ['Overall', 'North', 'South'].forEach(c => {
@@ -935,12 +941,8 @@
       const divVal = document.getElementById('standingsDivision').value;
       const tbody = document.getElementById('standingsBody');
       if (!tbody) return;
-
       tbody.innerHTML = '';
-      if (!sportVal || !divVal) {
-        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 font-medium">Select a sport bracket above to display ranking tallies.</td></tr>`;
-        return;
-      }
+      if (!sportVal || !divVal) { tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 font-medium">Select a sport bracket above to display ranking tallies.</td></tr>`; return; }
 
       const approvedTeams = getApprovedTeams();
       let targetTeams = approvedTeams.filter(t => String(t.SportID).trim() === sportVal && String(t.DivisionID).trim() === divVal);
@@ -949,17 +951,11 @@
       targetTeams.forEach(team => {
         const school = activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(team.SchoolID).trim());
         const schoolRegion = school ? String(school.Region || school.Conference || '').toLowerCase() : '';
-        
         let regionMatch = true;
         if (currentStandingsConference === 'North' && !schoolRegion.includes('north')) regionMatch = false;
         if (currentStandingsConference === 'South' && !schoolRegion.includes('south')) regionMatch = false;
 
-        if (regionMatch) {
-          teamStats[String(team.TeamID).trim()] = {
-            name: school ? school.Name : 'Team Name',
-            played: 0, won: 0, lost: 0, pointsFor: 0, pointsAgainst: 0
-          };
-        }
+        if (regionMatch) teamStats[String(team.TeamID).trim()] = { name: school ? school.Name : 'Team Name', played: 0, won: 0, lost: 0, pointsFor: 0, pointsAgainst: 0 };
       });
 
       const fixtures = activeDatabase.Fixtures || [];
@@ -967,15 +963,12 @@
         if (String(game.SportID).trim() === sportVal && String(game.DivisionID).trim() === divVal && (game.MatchStatus === 'Completed' || game.MatchStatus === 'Finished')) {
           const hId = String(game.HomeTeamID).trim();
           const aId = String(game.AwayTeamID).trim();
-
           if (teamStats[hId] && teamStats[aId]) {
             const hScore = Number(game.HomeScore) || 0;
             const aScore = Number(game.AwayScore) || 0;
-
             teamStats[hId].played++; teamStats[aId].played++;
             teamStats[hId].pointsFor += hScore; teamStats[hId].pointsAgainst += aScore;
             teamStats[aId].pointsFor += aScore; teamStats[aId].pointsAgainst += hScore;
-
             if (hScore > aScore) { teamStats[hId].won++; teamStats[aId].lost++; }
             else if (aScore > hScore) { teamStats[aId].won++; teamStats[hId].lost++; }
           }
@@ -991,10 +984,7 @@
         return b.pointsFor - a.pointsFor;
       });
 
-      if (statsList.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 font-medium">No registered teams found for this selection bracket or region context.</td></tr>`;
-        return;
-      }
+      if (statsList.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 font-medium">No registered teams found for this selection bracket or region context.</td></tr>`; return; }
 
       statsList.forEach((stat, idx) => {
         const diff = stat.pointsFor - stat.pointsAgainst;
@@ -1015,13 +1005,8 @@
     function renderAnnouncements() {
       const container = document.getElementById('bulletinsContainer');
       container.innerHTML = '';
-      const messages = activeDatabase.Messages || [];
-      const publicMessages = messages.filter(msg => msg.Category === 'Public' || msg.Category === 'Public Bulletin');
-
-      if (publicMessages.length === 0) {
-        container.innerHTML = `<div class="col-span-full bg-white p-8 rounded-xl text-center border border-slate-200"><i class="fa-solid fa-folder-open text-slate-300 text-4xl mb-3"></i><p class="text-slate-500 font-medium">No bulletins are published at the moment.</p></div>`;
-        return;
-      }
+      const publicMessages = (activeDatabase.Messages || []).filter(msg => msg.Category === 'Public' || msg.Category === 'Public Bulletin');
+      if (publicMessages.length === 0) { container.innerHTML = `<div class="col-span-full bg-white p-8 rounded-xl text-center border border-slate-200"><i class="fa-solid fa-folder-open text-slate-300 text-4xl mb-3"></i><p class="text-slate-500 font-medium">No bulletins are published at the moment.</p></div>`; return; }
       publicMessages.sort((a,b) => new Date(b.Timestamp) - new Date(a.Timestamp));
       publicMessages.forEach(msg => {
         container.innerHTML += `
@@ -1041,19 +1026,14 @@
       if(!container) return;
       container.innerHTML = '';
       const rawSchools = activeDatabase.Schools || [];
-      if (rawSchools.length === 0) {
-        container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400">Loading directory...</div>`;
-        return;
-      }
+      if (rawSchools.length === 0) { container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400">Loading directory...</div>`; return; }
 
       const sortedSchools = [...rawSchools].filter(s => s.SchoolID && s.Name && String(s.SchoolID).toLowerCase() !== 'schoolid').sort((a, b) => String(a.Name).localeCompare(b.Name));
 
       sortedSchools.forEach(sch => {
         const schoolColor = getSchoolColor(sch.Name);
         const acronym = sch.Acronym || sch.Name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase();
-        const yearJoined = sch["Year Joined"] || sch.YearJoined || "2024";
         const logoUrl = getSchoolLogo(sch);
-
         const logoHtml = logoUrl ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />` : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
 
         container.innerHTML += `
@@ -1067,17 +1047,65 @@
             </div>
             <div class="space-y-2 text-xs border-t border-slate-100 pt-3 text-slate-600 font-medium">
               <div class="flex justify-between"><span class="text-slate-400">Athletic Contact:</span><span class="font-bold text-slate-800">${sch.PrimaryContact || 'Staff Coordinator'}</span></div>
-              <div class="flex justify-between"><span class="text-slate-400">Member Since:</span><span class="font-bold text-athleticos-green">${yearJoined}</span></div>
+              <div class="flex justify-between"><span class="text-slate-400">Member Since:</span><span class="font-bold text-athleticos-green">${sch["Year Joined"] || sch.YearJoined || "2024"}</span></div>
             </div>
           </div>`;
+      });
+      if(typeof google !== 'undefined' && !mapEngineInitialized) initDynamicMap();
+    }
+
+    // --- GOOGLE MAPS DYNAMIC ENGINE INIT ---
+    function initDynamicMap() {
+      const mapEl = document.getElementById('googleMapElement');
+      const overlay = document.getElementById('mapOverlay');
+      if(typeof google === 'undefined' || !google.maps) return; // Wait for API key injection
+
+      mapEngineInitialized = true;
+      overlay.style.display = 'none'; // Hide the offline warning
+
+      // Initialize map (Centered broadly on Bangkok/Thailand region default)
+      const map = new google.maps.Map(mapEl, {
+        center: { lat: 13.7563, lng: 100.5018 },
+        zoom: 11,
+        styles: [
+          { "featureType": "poi", "elementType": "labels.text.fill", "stylers": [{ "color": "#747474" }] },
+          { "featureType": "poi.business", "stylers": [{ "visibility": "off" }] },
+          { "featureType": "road", "stylers": [{ "saturation": -70 }, { "lightness": 45 }] }
+        ]
+      });
+
+      const bounds = new google.maps.LatLngBounds();
+      const geocoder = new google.maps.Geocoder();
+      const schools = (activeDatabase.Schools || []).filter(s => s.SchoolID && s.Name && String(s.SchoolID).toLowerCase() !== 'schoolid');
+
+      schools.forEach(sch => {
+        // Attempt to find explicit Lat/Lng, otherwise fallback to geocoding the address/name
+        const lat = parseFloat(sch.Latitude || sch.Lat);
+        const lng = parseFloat(sch.Longitude || sch.Lng);
+        const searchAddress = sch.Address || `${sch.Name}, Bangkok, Thailand`;
+
+        if (!isNaN(lat) && !isNaN(lng)) {
+          const position = { lat, lng };
+          new google.maps.Marker({ position, map, title: sch.Name });
+          bounds.extend(position);
+          map.fitBounds(bounds);
+        } else {
+          // Geocode fallback if no explicit coordinates in Google Sheet
+          geocoder.geocode({ address: searchAddress }, (results, status) => {
+            if (status === 'OK' && results[0]) {
+              new google.maps.Marker({ map, position: results[0].geometry.location, title: sch.Name });
+              bounds.extend(results[0].geometry.location);
+              map.fitBounds(bounds);
+            }
+          });
+        }
       });
     }
 
     function openSchoolProfileModal(schoolId) {
       const school = activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(schoolId).trim());
       if (!school) return;
-      const approvedTeams = getApprovedTeams();
-      const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
+      const schoolTeams = getApprovedTeams().filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
       const teamIDs = schoolTeams.map(t => String(t.TeamID).trim());
       const uniqueAthleteCount = (activeDatabase.Roster || []).filter(player => teamIDs.includes(String(player.TeamID).trim())).length;
 
@@ -1102,10 +1130,8 @@
           teamsPort.innerHTML += `<span class="bg-slate-100 border border-slate-200 text-slate-700 text-xs px-2.5 py-1 rounded-lg font-semibold">🏆 ${sport ? sport.Name : "Sport"} • ${div ? `${div.Age_Limit} (${div.Gender})` : ""}</span>`;
         });
       }
-
-      // Google Maps Direct Route Fix
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `https://www.google.com/maps/search/?api=1&query=${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/2${mapSearchQuery}`;
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
 
@@ -1125,11 +1151,7 @@
       teamSelector.innerHTML = '';
       const schoolTeams = getApprovedTeams().filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
 
-      if (schoolTeams.length === 0) {
-        teamSelector.innerHTML = '<option value="">No registered squads</option>';
-        renderRoster();
-        return;
-      }
+      if (schoolTeams.length === 0) { teamSelector.innerHTML = '<option value="">No registered squads</option>'; renderRoster(); return; }
       schoolTeams.forEach(team => {
         const sport = activeDatabase.Sports.find(s => String(s.SportID).trim() === String(team.SportID).trim());
         const div = activeDatabase.Divisions.find(d => String(d.DivisionID).trim() === String(team.DivisionID).trim());
@@ -1148,7 +1170,6 @@
 
       const players = (activeDatabase.Roster || []).filter(p => String(p.TeamID).trim() === String(teamId).trim());
       if (players.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No verified athletes found on this squad's official registry ledger.</td></tr>`; return; }
-
       players.forEach(p => {
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 transition-all font-medium text-slate-600 text-xs sm:text-sm">
@@ -1161,32 +1182,9 @@
       });
     }
 
-    function getSchoolColor(name) {
-      const colors = [{ bg: 'bg-blue-900 text-white' }, { bg: 'bg-emerald-900 text-white' }, { bg: 'bg-rose-900 text-white' }, { bg: 'bg-indigo-900 text-white' }, { bg: 'bg-amber-900 text-white' }];
-      let hash = 0; const cleanName = name || "";
-      for (let i = 0; i < cleanName.length; i++) hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
-      return colors[Math.abs(hash) % colors.length];
-    }
-
-    function getSchoolLogo(sch) {
-      if (!sch) return '';
-      const directKeys = ['Website_Logo', 'Website Logo', 'Logo', 'logo', 'LogoURL'];
-      for (const key of directKeys) if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) return convertDriveLink(sch[key].trim());
-      return '';
-    }
-
-    function convertDriveLink(url) {
-      if (url && url.includes('drive.google.com')) {
-        const match = url.match(/[-\w]{25,}/);
-        if (match && match[0]) return `https://lh3.googleusercontent.com/d/${match[0]}=s200`;
-      }
-      return url;
-    }
-
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
       try {
-        // Cache Buster Added to force fresh payload
         const response = await fetch(apiUrl + "?t=" + new Date().getTime(), { cache: 'no-store' });
         if (!response.ok) throw new Error("Network data exchange failure");
         const data = await response.json();
@@ -1208,5 +1206,6 @@
       }
     }
   </script>
-</body>
+
+  </body>
 </html>
