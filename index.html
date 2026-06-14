@@ -66,37 +66,194 @@
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex space-x-8 overflow-x-auto py-4 custom-scrollbar whitespace-nowrap">
-        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex items-center space-x-2 border-b-2 border-athleticos-green text-athleticos-evergreen px-1 pb-2 text-sm font-bold transition-all">
-          <i class="fa-solid fa-satellite-dish text-athleticos-green"></i><span>League Intel</span>
+        
+        <button onclick="switchTab('standings')" id="tab-standings" class="tab-btn flex items-center space-x-2 border-b-2 border-athleticos-green text-athleticos-evergreen px-1 pb-2 text-sm font-bold transition-all">
+          <i class="fa-solid fa-trophy text-athleticos-green"></i><span>Standings</span>
         </button>
-        <button onclick="switchTab('bulletins')" id="tab-bulletins" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-bullhorn"></i><span>League Announcements</span>
-        </button>
+
         <button onclick="switchTab('fixtures')" id="tab-fixtures" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-calendar-days"></i><span>Schedules & Results</span>
         </button>
-        <button onclick="switchTab('standings')" id="tab-standings" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-trophy"></i><span>Standings</span>
-        </button>
+
         <button onclick="switchTab('schools')" id="tab-schools" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-school"></i><span>School Directory</span>
         </button>
+
         <button onclick="switchTab('rosters')" id="tab-rosters" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-users-rectangle"></i><span>Rosters</span>
         </button>
+
+        <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
+          <i class="fa-solid fa-satellite-dish"></i><span>League Intel</span>
+        </button>
+
+        <button onclick="switchTab('bulletins')" id="tab-bulletins" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
+          <i class="fa-solid fa-bullhorn"></i><span>League Announcements</span>
+        </button>
+
         <button onclick="switchTab('conduct')" id="tab-conduct" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-scale-balanced"></i><span>Conduct</span>
         </button>
+
         <button onclick="switchTab('join')" id="tab-join" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-file-signature"></i><span>Join the League</span>
         </button>
+
       </div>
     </div>
   </nav>
 
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
-    <section id="view-dashboard" class="tab-view space-y-8 animate-in fade-in duration-500">
+    <section id="view-standings" class="tab-view space-y-6 animate-in fade-in duration-500">
+      <div class="border-b border-slate-200 pb-4 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">League Standings</h2>
+          <p class="text-slate-500 text-sm">Live calculated ranks, wins, losses, and point spreads.</p>
+          
+          <div class="flex space-x-1 mt-4 bg-slate-200/60 p-1 rounded-lg w-fit">
+            <button onclick="setConferenceStandingsFilter('Overall')" id="conf-Overall" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm">Overall League</button>
+            <button onclick="setConferenceStandingsFilter('North')" id="conf-North" class="px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen">North Region</button>
+            <button onclick="setConferenceStandingsFilter('South')" id="conf-South" class="px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen">South Region</button>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
+          </select>
+          <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
+          </select>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto custom-scrollbar">
+          <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <thead class="bg-slate-50 font-bold text-slate-700">
+              <tr>
+                <th scope="col" class="px-6 py-4 text-left">Rank</th>
+                <th scope="col" class="px-6 py-4 text-left">School / Team</th>
+                <th scope="col" class="px-6 py-4 text-center">Played</th>
+                <th scope="col" class="px-6 py-4 text-center">Won</th>
+                <th scope="col" class="px-6 py-4 text-center">Lost</th>
+                <th scope="col" class="px-6 py-4 text-center">Points For</th>
+                <th scope="col" class="px-6 py-4 text-center">Points Against</th>
+                <th scope="col" class="px-6 py-4 text-center">Difference</th>
+              </tr>
+            </thead>
+            <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-fixtures" class="tab-view hidden space-y-6">
+      <div class="border-b border-slate-200 pb-4 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Schedules & Scores</h2>
+          <p class="text-slate-500 text-sm">Review kickoff times, game locations, and official score summaries.</p>
+          
+          <div class="flex space-x-2 mt-4 bg-slate-200/60 p-1 rounded-lg w-fit">
+            <button onclick="toggleFixturesView('list')" id="subtab-list" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm">
+              <i class="fa-solid fa-list-ul mr-1.5"></i>Searchable List
+            </button>
+            <button onclick="toggleFixturesView('calendar')" id="subtab-calendar" class="px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen">
+              <i class="fa-solid fa-calendar text-mr-1.5"></i>Calendar Month View
+            </button>
+          </div>
+        </div>
+        
+        <div class="flex flex-wrap gap-2">
+          <select id="filterSport" onchange="onSportFilterChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[160px]">
+            <option value="All">All Sports</option>
+          </select>
+          <select id="filterDivision" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[160px]">
+            <option value="All">All Divisions</option>
+          </select>
+          <select id="filterSchool" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[200px]">
+            <option value="All">All Schools</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="fixturesListMode" class="space-y-4">
+        <div id="fixturesContainer" class="grid gap-4"></div>
+      </div>
+
+      <div id="fixturesCalendarMode" class="hidden space-y-6 bg-white border border-slate-200 rounded-xl p-4 md:p-6 shadow-sm">
+        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+          <div class="flex items-center space-x-2">
+            <button onclick="navigateCalendarMonth(-1)" class="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all">
+              <i class="fa-solid fa-chevron-left text-xs"></i>
+            </button>
+            <h3 id="calendarMonthHeader" class="text-base font-black text-athleticos-carbon tracking-tight min-w-[130px] text-center">Month Year</h3>
+            <button onclick="navigateCalendarMonth(1)" class="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all">
+              <i class="fa-solid fa-chevron-right text-xs"></i>
+            </button>
+          </div>
+          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider hidden sm:block">Click active day to filter results</span>
+        </div>
+        <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-500 bg-slate-50 py-2 rounded-lg">
+          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+        </div>
+        <div id="calendarGrid" class="grid grid-cols-7 gap-1.5"></div>
+        <div class="border-t border-slate-100 pt-4">
+          <h4 id="calendarDaySelectionHeader" class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Games Scheduled For Day</h4>
+          <div id="calendarDayFixturesContainer" class="grid gap-4"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-schools" class="tab-view hidden space-y-6">
+      <div class="border-b border-slate-200 pb-4">
+        <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">School Directory</h2>
+        <p class="text-slate-500 text-sm">Geographic mapping and directory of all league schools. Click any profile card to view operational teams and rosters.</p>
+      </div>
+      
+      <div class="w-full h-64 md:h-96 bg-slate-200 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center border border-slate-300 shadow-inner">
+        <div id="googleMapElement" class="absolute inset-0 z-0"></div>
+        <div id="mapOverlay" class="z-10 text-center pointer-events-none bg-white/90 p-6 rounded-2xl shadow-lg backdrop-blur-sm border border-slate-200">
+          <i class="fa-solid fa-map-location-dot text-4xl text-athleticos-green mb-3"></i>
+          <p class="text-sm font-black text-athleticos-carbon uppercase tracking-widest">Dynamic Map Engine Offline</p>
+          <p class="text-xs text-slate-500 mt-1">Awaiting Google Cloud API Key Injection</p>
+        </div>
+      </div>
+
+      <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
+    </section>
+
+    <section id="view-rosters" class="tab-view hidden space-y-6">
+      <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Official Rosters</h2>
+          <p class="text-slate-500 text-sm">Verify registered school athletes and squad eligibility rosters.</p>
+        </div>
+        <div class="flex gap-2">
+          <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[200px]">
+          </select>
+          <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
+          </select>
+        </div>
+      </div>
+      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+        <div class="overflow-x-auto">
+          <table class="min-w-full divide-y divide-slate-200 text-sm">
+            <thead class="bg-slate-50 font-bold text-slate-700">
+              <tr>
+                <th scope="col" class="px-6 py-4 text-center">Jersey</th>
+                <th scope="col" class="px-6 py-4 text-left">Athlete Nickname</th>
+                <th scope="col" class="px-6 py-4 text-center">Birthdate</th>
+                <th scope="col" class="px-6 py-4 text-center">Status</th>
+                <th scope="col" class="px-6 py-4 text-center">Date Registered</th>
+              </tr>
+            </thead>
+            <tbody id="rosterBody" class="divide-y divide-slate-200 text-slate-600">
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="view-dashboard" class="tab-view hidden space-y-8">
       <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
         <div>
           <h2 class="text-2xl md:text-3xl font-extrabold text-athleticos-carbon tracking-tight">League Intelligence Engine</h2>
@@ -217,154 +374,6 @@
         <p class="text-slate-500 text-sm">Real-time alerts, league-wide news, and operational details for parents and fans.</p>
       </div>
       <div id="bulletinsContainer" class="grid gap-6 md:grid-cols-2"></div>
-    </section>
-
-    <section id="view-fixtures" class="tab-view hidden space-y-6">
-      <div class="border-b border-slate-200 pb-4 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-        <div>
-          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Schedules & Scores</h2>
-          <p class="text-slate-500 text-sm">Review kickoff times, game locations, and official score summaries.</p>
-          
-          <div class="flex space-x-2 mt-4 bg-slate-200/60 p-1 rounded-lg w-fit">
-            <button onclick="toggleFixturesView('list')" id="subtab-list" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm">
-              <i class="fa-solid fa-list-ul mr-1.5"></i>Searchable List
-            </button>
-            <button onclick="toggleFixturesView('calendar')" id="subtab-calendar" class="px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen">
-              <i class="fa-solid fa-calendar text-mr-1.5"></i>Calendar Month View
-            </button>
-          </div>
-        </div>
-        
-        <div class="flex flex-wrap gap-2">
-          <select id="filterSport" onchange="onSportFilterChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[160px]">
-            <option value="All">All Sports</option>
-          </select>
-          <select id="filterDivision" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[160px]">
-            <option value="All">All Divisions</option>
-          </select>
-          <select id="filterSchool" onchange="applyFilters()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[200px]">
-            <option value="All">All Schools</option>
-          </select>
-        </div>
-      </div>
-
-      <div id="fixturesListMode" class="space-y-4">
-        <div id="fixturesContainer" class="grid gap-4"></div>
-      </div>
-
-      <div id="fixturesCalendarMode" class="hidden space-y-6 bg-white border border-slate-200 rounded-xl p-4 md:p-6 shadow-sm">
-        <div class="flex items-center justify-between border-b border-slate-100 pb-4">
-          <div class="flex items-center space-x-2">
-            <button onclick="navigateCalendarMonth(-1)" class="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all">
-              <i class="fa-solid fa-chevron-left text-xs"></i>
-            </button>
-            <h3 id="calendarMonthHeader" class="text-base font-black text-athleticos-carbon tracking-tight min-w-[130px] text-center">Month Year</h3>
-            <button onclick="navigateCalendarMonth(1)" class="h-8 w-8 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 flex items-center justify-center transition-all">
-              <i class="fa-solid fa-chevron-right text-xs"></i>
-            </button>
-          </div>
-          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider hidden sm:block">Click active day to filter results</span>
-        </div>
-        <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-500 bg-slate-50 py-2 rounded-lg">
-          <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
-        </div>
-        <div id="calendarGrid" class="grid grid-cols-7 gap-1.5"></div>
-        <div class="border-t border-slate-100 pt-4">
-          <h4 id="calendarDaySelectionHeader" class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Games Scheduled For Day</h4>
-          <div id="calendarDayFixturesContainer" class="grid gap-4"></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-standings" class="tab-view hidden space-y-6">
-      <div class="border-b border-slate-200 pb-4 flex flex-col lg:flex-row lg:items-end justify-between gap-4">
-        <div>
-          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">League Standings</h2>
-          <p class="text-slate-500 text-sm">Live calculated ranks, wins, losses, and point spreads.</p>
-          
-          <div class="flex space-x-1 mt-4 bg-slate-200/60 p-1 rounded-lg w-fit">
-            <button onclick="setConferenceStandingsFilter('Overall')" id="conf-Overall" class="px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm">Overall League</button>
-            <button onclick="setConferenceStandingsFilter('North')" id="conf-North" class="px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen">North Region</button>
-            <button onclick="setConferenceStandingsFilter('South')" id="conf-South" class="px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen">South Region</button>
-          </div>
-        </div>
-        <div class="flex gap-2">
-          <select id="standingsSport" onchange="onStandingsSportChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-          </select>
-          <select id="standingsDivision" onchange="calculateStandings()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-          </select>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto custom-scrollbar">
-          <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 font-bold text-slate-700">
-              <tr>
-                <th scope="col" class="px-6 py-4 text-left">Rank</th>
-                <th scope="col" class="px-6 py-4 text-left">School / Team</th>
-                <th scope="col" class="px-6 py-4 text-center">Played</th>
-                <th scope="col" class="px-6 py-4 text-center">Won</th>
-                <th scope="col" class="px-6 py-4 text-center">Lost</th>
-                <th scope="col" class="px-6 py-4 text-center">Points For</th>
-                <th scope="col" class="px-6 py-4 text-center">Points Against</th>
-                <th scope="col" class="px-6 py-4 text-center">Difference</th>
-              </tr>
-            </thead>
-            <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600">
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-schools" class="tab-view hidden space-y-6">
-      <div class="border-b border-slate-200 pb-4">
-        <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">School Directory</h2>
-        <p class="text-slate-500 text-sm">Geographic mapping and directory of all league schools. Click any profile card to view operational teams and rosters.</p>
-      </div>
-      
-      <div class="w-full h-64 md:h-96 bg-slate-200 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center border border-slate-300 shadow-inner">
-        <div id="googleMapElement" class="absolute inset-0 z-0"></div>
-        <div id="mapOverlay" class="z-10 text-center pointer-events-none bg-white/90 p-6 rounded-2xl shadow-lg backdrop-blur-sm border border-slate-200">
-          <i class="fa-solid fa-map-location-dot text-4xl text-athleticos-green mb-3"></i>
-          <p class="text-sm font-black text-athleticos-carbon uppercase tracking-widest">Dynamic Map Engine Offline</p>
-          <p class="text-xs text-slate-500 mt-1">Awaiting Google Cloud API Key Injection</p>
-        </div>
-      </div>
-
-      <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
-    </section>
-
-    <section id="view-rosters" class="tab-view hidden space-y-6">
-      <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Official Rosters</h2>
-          <p class="text-slate-500 text-sm">Verify registered school athletes and squad eligibility rosters.</p>
-        </div>
-        <div class="flex gap-2">
-          <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[200px]">
-          </select>
-          <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-          </select>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 font-bold text-slate-700">
-              <tr>
-                <th scope="col" class="px-6 py-4 text-center">Jersey</th>
-                <th scope="col" class="px-6 py-4 text-left">Athlete Nickname</th>
-                <th scope="col" class="px-6 py-4 text-center">Birthdate</th>
-                <th scope="col" class="px-6 py-4 text-center">Status</th>
-                <th scope="col" class="px-6 py-4 text-center">Date Registered</th>
-              </tr>
-            </thead>
-            <tbody id="rosterBody" class="divide-y divide-slate-200 text-slate-600">
-            </tbody>
-          </table>
-        </div>
-      </div>
     </section>
 
     <section id="view-conduct" class="tab-view hidden space-y-6">
@@ -488,7 +497,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.1.0</p>
+        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.2.0</p>
       </div>
     </div>
   </footer>
@@ -534,6 +543,9 @@
       renderRosterSelectors();
       renderSettings();
       initDynamicMap();
+      
+      // Force Standings tab as default on load
+      switchTab('standings');
     }
 
     function populateDashboardFilter() {
@@ -582,12 +594,10 @@
       const upcoming = filteredFixtures.length - (completed + live);
       let pct = filteredFixtures.length > 0 ? Math.round((completed / filteredFixtures.length) * 100) : 0;
 
-      // Calculate Average Roster Size
       const avgRoster = filteredTeams.length > 0 ? (filteredRosters.length / filteredTeams.length).toFixed(1) : "0.0";
 
-      // Calculate Age Demographics
       let ageU14 = 0, age1516 = 0, age17plus = 0;
-      const currentYear = new Date().getFullYear(); // Standardizing to current machine year dynamically
+      const currentYear = new Date().getFullYear(); 
       filteredRosters.forEach(p => {
         if(p.DateOfBirth) {
           const dob = new Date(p.DateOfBirth);
@@ -644,7 +654,9 @@
         const icon = btn.querySelector('i');
         if (icon) icon.classList.remove('text-athleticos-green');
       });
-      document.getElementById('view-' + tabId).classList.remove('hidden');
+      const selectedView = document.getElementById('view-' + tabId);
+      if(selectedView) selectedView.classList.remove('hidden');
+      
       const activeBtn = document.getElementById('tab-' + tabId);
       if (activeBtn) {
         activeBtn.classList.remove('border-transparent', 'text-slate-500');
@@ -653,7 +665,6 @@
         if (activeIcon) activeIcon.classList.add('text-athleticos-green');
       }
 
-      // If switching to schools tab, refresh map to prevent blank grey box glitch from hidden containers
       if(tabId === 'schools' && mapEngineInitialized && typeof google !== 'undefined') {
          initDynamicMap(); 
       }
@@ -1054,16 +1065,14 @@
       if(typeof google !== 'undefined' && !mapEngineInitialized) initDynamicMap();
     }
 
-    // --- GOOGLE MAPS DYNAMIC ENGINE INIT ---
     function initDynamicMap() {
       const mapEl = document.getElementById('googleMapElement');
       const overlay = document.getElementById('mapOverlay');
-      if(typeof google === 'undefined' || !google.maps) return; // Wait for API key injection
+      if(typeof google === 'undefined' || !google.maps) return; 
 
       mapEngineInitialized = true;
-      overlay.style.display = 'none'; // Hide the offline warning
+      overlay.style.display = 'none'; 
 
-      // Initialize map (Centered broadly on Bangkok/Thailand region default)
       const map = new google.maps.Map(mapEl, {
         center: { lat: 13.7563, lng: 100.5018 },
         zoom: 11,
@@ -1079,7 +1088,6 @@
       const schools = (activeDatabase.Schools || []).filter(s => s.SchoolID && s.Name && String(s.SchoolID).toLowerCase() !== 'schoolid');
 
       schools.forEach(sch => {
-        // Attempt to find explicit Lat/Lng, otherwise fallback to geocoding the address/name
         const lat = parseFloat(sch.Latitude || sch.Lat);
         const lng = parseFloat(sch.Longitude || sch.Lng);
         const searchAddress = sch.Address || `${sch.Name}, Bangkok, Thailand`;
@@ -1090,7 +1098,6 @@
           bounds.extend(position);
           map.fitBounds(bounds);
         } else {
-          // Geocode fallback if no explicit coordinates in Google Sheet
           geocoder.geocode({ address: searchAddress }, (results, status) => {
             if (status === 'OK' && results[0]) {
               new google.maps.Marker({ map, position: results[0].geometry.location, title: sch.Name });
@@ -1131,7 +1138,7 @@
         });
       }
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/2${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `https://maps.google.com/?q=$${mapSearchQuery}`;
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
 
