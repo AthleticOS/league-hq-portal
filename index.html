@@ -497,7 +497,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.2.0</p>
+        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.2.1</p>
       </div>
     </div>
   </footer>
@@ -544,7 +544,6 @@
       renderSettings();
       initDynamicMap();
       
-      // Force Standings tab as default on load
       switchTab('standings');
     }
 
@@ -1138,7 +1137,7 @@
         });
       }
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `https://maps.google.com/?q=$${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/7${mapSearchQuery}`;
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
 
@@ -1192,7 +1191,7 @@
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
       try {
-        const response = await fetch(apiUrl + "?t=" + new Date().getTime(), { cache: 'no-store' });
+        const response = await fetch(apiUrl + "?t=" + new Date().getTime());
         if (!response.ok) throw new Error("Network data exchange failure");
         const data = await response.json();
         if (data.Fixtures && data.Schools && data.Teams && data.Roster) {
