@@ -525,7 +525,7 @@
       fetchLiveSheetData(GOOGLE_API_ENDPOINT);
     };
 
-    // --- HELPER FUNCTIONS RESTORED ---
+    // --- LOGO & IMAGE RESTORATION FUNCTIONS ---
     function getSchoolColor(name) {
       const colors = [{ bg: 'bg-blue-900 text-white' }, { bg: 'bg-emerald-900 text-white' }, { bg: 'bg-rose-900 text-white' }, { bg: 'bg-indigo-900 text-white' }, { bg: 'bg-amber-900 text-white' }];
       let hash = 0; const cleanName = name || "";
@@ -535,10 +535,23 @@
 
     function getSchoolLogo(sch) {
       if (!sch) return '';
-      const directKeys = ['Website_Logo', 'Website Logo', 'Logo', 'logo', 'LogoURL'];
+      
+      // Pass 1: Check standard explicit column names
+      const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
       for (const key of directKeys) {
         if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) {
           return convertDriveLink(sch[key].trim());
+        }
+      }
+      
+      // Pass 2: Fuzzy search restored (Looks for ANY column with 'logo', 'image', or 'pic' in its name)
+      for (const rawKey in sch) {
+        const cleanKey = String(rawKey).toLowerCase().replace(/[^a-z]/g, '');
+        if (cleanKey.includes('logo') || cleanKey.includes('image') || cleanKey.includes('pic')) {
+          const val = String(sch[rawKey]).trim();
+          if (val.startsWith('http')) {
+            return convertDriveLink(val);
+          }
         }
       }
       return '';
@@ -547,7 +560,8 @@
     function convertDriveLink(url) {
       if (url && url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
-        if (match && match[0]) return `https://drive.google.com/uc?id=${match[0]}`;
+        // Uses export=view so cross-origin restrictions don't block images
+        if (match && match[0]) return `https://drive.google.com/uc?export=view&id=${match[0]}`;
       }
       return url;
     }
@@ -1164,7 +1178,7 @@
         });
       }
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/8${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/9${mapSearchQuery}`;
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
 
