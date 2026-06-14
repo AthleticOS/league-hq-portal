@@ -12,12 +12,12 @@
         extend: {
           colors: {
             athleticos: {
-              green: '#52C920',      // Lime Green
-              yellow: '#F9FF00',     // Neon Yellow
-              evergreen: '#012300',  // Evergreen
-              carbon: '#1A1A1A',     // Carbon Black
-              teal: '#A6CCBA',       // Muted Teal
-              porcelain: '#F5F8F1'   // Porcelain
+              green: '#52C920',      
+              yellow: '#F9FF00',     
+              evergreen: '#012300',  
+              carbon: '#1A1A1A',     
+              teal: '#A6CCBA',       
+              porcelain: '#F5F8F1'   
             }
           }
         }
@@ -67,36 +67,28 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex space-x-8 overflow-x-auto py-4 custom-scrollbar whitespace-nowrap">
         <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex items-center space-x-2 border-b-2 border-athleticos-green text-athleticos-evergreen px-1 pb-2 text-sm font-bold transition-all">
-          <i class="fa-solid fa-satellite-dish text-athleticos-green"></i>
-          <span>League Intel</span>
+          <i class="fa-solid fa-satellite-dish text-athleticos-green"></i><span>League Intel</span>
         </button>
         <button onclick="switchTab('bulletins')" id="tab-bulletins" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-bullhorn"></i>
-          <span>League Announcements</span>
+          <i class="fa-solid fa-bullhorn"></i><span>League Announcements</span>
         </button>
         <button onclick="switchTab('fixtures')" id="tab-fixtures" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-calendar-days"></i>
-          <span>Schedules & Results</span>
+          <i class="fa-solid fa-calendar-days"></i><span>Schedules & Results</span>
         </button>
         <button onclick="switchTab('standings')" id="tab-standings" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-trophy"></i>
-          <span>Standings</span>
+          <i class="fa-solid fa-trophy"></i><span>Standings</span>
         </button>
         <button onclick="switchTab('schools')" id="tab-schools" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-school"></i>
-          <span>School Directory</span>
+          <i class="fa-solid fa-school"></i><span>School Directory</span>
         </button>
         <button onclick="switchTab('rosters')" id="tab-rosters" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-users-rectangle"></i>
-          <span>Rosters</span>
+          <i class="fa-solid fa-users-rectangle"></i><span>Rosters</span>
         </button>
         <button onclick="switchTab('conduct')" id="tab-conduct" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-scale-balanced"></i>
-          <span>Conduct</span>
+          <i class="fa-solid fa-scale-balanced"></i><span>Conduct</span>
         </button>
         <button onclick="switchTab('join')" id="tab-join" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-file-signature"></i>
-          <span>Join the League</span>
+          <i class="fa-solid fa-file-signature"></i><span>Join the League</span>
         </button>
       </div>
     </div>
@@ -147,10 +139,14 @@
           <div class="relative w-full h-4 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
             <div id="dash-progress-bar" class="absolute top-0 left-0 h-full bg-athleticos-green transition-all duration-1000 w-0"></div>
           </div>
-          <div class="grid grid-cols-3 gap-4 pt-2">
+          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
             <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
               <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-total">0</span>
-              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Fixtures Mapped</span>
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Total Mapped</span>
+            </div>
+            <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
+              <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-upcoming">0</span>
+              <span class="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Upcoming</span>
             </div>
             <div class="text-center bg-slate-50 p-3 rounded-lg border border-slate-100">
               <span class="block text-xl font-black text-athleticos-carbon" id="dash-fixtures-completed">0</span>
@@ -167,18 +163,22 @@
           <h3 class="text-lg font-black text-athleticos-carbon flex items-center gap-2 mb-4 border-b border-slate-100 pb-4">
             <i class="fa-solid fa-chart-pie text-athleticos-yellow"></i> Infrastructure Breakdown
           </h3>
-          <div class="space-y-4">
-            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
-              <span class="text-sm font-bold text-slate-600">Total Governed Sports</span>
-              <span id="dash-sports-total" class="text-lg font-black text-athleticos-evergreen bg-slate-100 px-3 py-1 rounded-md">0</span>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <span class="text-sm font-bold text-slate-600">Governed Sports</span>
+              <span id="dash-sports-total" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
               <span class="text-sm font-bold text-slate-600">Boys' Divisions</span>
-              <span id="dash-sports-boys" class="text-lg font-black text-athleticos-evergreen bg-slate-100 px-3 py-1 rounded-md">0</span>
+              <span id="dash-sports-boys" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
             </div>
-            <div class="flex items-center justify-between p-3 hover:bg-slate-50 rounded-lg transition-colors border border-transparent hover:border-slate-100">
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
               <span class="text-sm font-bold text-slate-600">Girls' Divisions</span>
-              <span id="dash-sports-girls" class="text-lg font-black text-athleticos-evergreen bg-slate-100 px-3 py-1 rounded-md">0</span>
+              <span id="dash-sports-girls" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
+            </div>
+            <div class="flex items-center justify-between p-3 bg-slate-50 rounded-lg border border-slate-100">
+              <span class="text-sm font-bold text-slate-600">Co-Ed Divisions</span>
+              <span id="dash-sports-coed" class="text-lg font-black text-athleticos-evergreen bg-white shadow-sm border border-slate-200 px-3 py-1 rounded-md">0</span>
             </div>
           </div>
         </div>
@@ -237,14 +237,12 @@
               <i class="fa-solid fa-chevron-right text-xs"></i>
             </button>
           </div>
-          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider">Click active day to filter results</span>
+          <span class="text-slate-400 text-[10px] font-bold uppercase tracking-wider hidden sm:block">Click active day to filter results</span>
         </div>
-
         <div class="grid grid-cols-7 gap-1 text-center font-bold text-xs text-slate-500 bg-slate-50 py-2 rounded-lg">
           <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
         </div>
         <div id="calendarGrid" class="grid grid-cols-7 gap-1.5"></div>
-        
         <div class="border-t border-slate-100 pt-4">
           <h4 id="calendarDaySelectionHeader" class="text-xs font-black text-slate-400 uppercase tracking-widest mb-3">Games Scheduled For Day</h4>
           <div id="calendarDayFixturesContainer" class="grid gap-4"></div>
@@ -308,7 +306,7 @@
           <p class="text-slate-500 text-sm">Verify registered school athletes and squad eligibility rosters.</p>
         </div>
         <div class="flex gap-2">
-          <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
+          <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[200px]">
           </select>
           <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
           </select>
@@ -364,9 +362,7 @@
       </div>
       <div class="bg-white rounded-xl border border-slate-200 p-6 md:p-10 shadow-sm max-w-3xl mx-auto space-y-6">
         <div class="flex items-center space-x-4 bg-athleticos-porcelain p-4 rounded-xl border border-slate-100">
-          <div class="h-12 w-12 bg-athleticos-evergreen rounded-lg flex items-center justify-center text-white shrink-0 text-xl shadow-sm">
-            <i class="fa-solid fa-landmark-flag"></i>
-          </div>
+          <div class="h-12 w-12 bg-athleticos-evergreen rounded-lg flex items-center justify-center text-white shrink-0 text-xl shadow-sm"><i class="fa-solid fa-landmark-flag"></i></div>
           <div>
             <h3 class="text-base font-black text-athleticos-carbon">New School Admissions Gateway</h3>
             <p class="text-xs text-slate-500">Applications must align with core athletic facilities frameworks.</p>
@@ -456,7 +452,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V12.5.0</p>
+        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.0.0</p>
       </div>
     </div>
   </footer>
@@ -468,20 +464,13 @@
       Messages: [{ MessageID: "L-1", Timestamp: "2026-05-20", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Term 2 Kickoff & Protocols", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
       Sports: [{ SportID: "SPT-1", Name: "Basketball", Season: "Term 1" }],
       Divisions: [{ DivisionID: "DIV-1", Age_Limit: "Under 18", Gender: "Boys", SportID: "SPT-1" }],
-      Schools: [], 
-      Teams: [], 
-      Roster: [], 
-      Fixtures: [],
+      Schools: [], Teams: [], Roster: [], Fixtures: [],
       Settings: [{ CoC_Coaches: "Loading...", CoC_Players: "Loading...", CoC_Spectators: "Loading..." }]
     };
 
     let activeDatabase = LOADING_DATABASE;
-    
-    // UI Global Control States
     let activeFixturesSubView = 'list'; 
     let currentStandingsConference = 'Overall'; 
-    
-    // Calendar Tracking States (Initializes to Current Date Context)
     let calendarCurrentDate = new Date();
     let calendarSelectedDateStr = ''; 
 
@@ -515,12 +504,10 @@
       const currentVal = select.value || 'All';
       
       const sports = activeDatabase.Sports || [];
-      const seasons = [...new Set(sports.map(s => (s.Season || '').trim()).filter(Boolean))];
+      const seasons = [...new Set(sports.map(s => String(s.Season || '').trim()).filter(Boolean))];
       
       select.innerHTML = '<option value="All">Overall Season (All Terms)</option>';
-      seasons.sort().forEach(season => {
-        select.innerHTML += `<option value="${season}">${season} Metrics</option>`;
-      });
+      seasons.sort().forEach(season => { select.innerHTML += `<option value="${season}">${season} Metrics</option>`; });
       select.value = [...select.options].some(opt => opt.value === currentVal) ? currentVal : 'All';
     }
 
@@ -528,48 +515,53 @@
       const seasonFilter = document.getElementById('dashSeasonFilter') ? document.getElementById('dashSeasonFilter').value : 'All';
 
       const allSports = activeDatabase.Sports || [];
-      const filteredSports = seasonFilter === 'All' ? allSports : allSports.filter(s => (s.Season || '').trim() === seasonFilter);
-      const sportIDs = filteredSports.map(s => s.SportID);
+      const filteredSports = seasonFilter === 'All' ? allSports : allSports.filter(s => String(s.Season || '').trim() === seasonFilter);
+      const sportIDs = filteredSports.map(s => String(s.SportID).trim());
 
       const allDivisions = activeDatabase.Divisions || [];
-      const filteredDivisions = allDivisions.filter(d => sportIDs.includes(d.SportID));
+      const filteredDivisions = allDivisions.filter(d => sportIDs.includes(String(d.SportID).trim()));
 
       const approvedTeams = getApprovedTeams();
-      const filteredTeams = approvedTeams.filter(t => sportIDs.includes(t.SportID));
-      const teamIDs = filteredTeams.map(t => t.TeamID);
+      const filteredTeams = approvedTeams.filter(t => sportIDs.includes(String(t.SportID).trim()));
+      const teamIDs = filteredTeams.map(t => String(t.TeamID).trim());
 
       const allRosters = activeDatabase.Roster || [];
-      const filteredRosters = allRosters.filter(r => teamIDs.includes(r.TeamID));
+      const filteredRosters = allRosters.filter(r => teamIDs.includes(String(r.TeamID).trim()));
 
       const allSchools = activeDatabase.Schools || [];
-      const activeSchoolIDs = [...new Set(filteredTeams.map(t => t.SchoolID))];
-      const filteredSchools = seasonFilter === 'All' ? allSchools : allSchools.filter(s => activeSchoolIDs.includes(s.SchoolID));
+      const activeSchoolIDs = [...new Set(filteredTeams.map(t => String(t.SchoolID).trim()))];
+      const filteredSchools = seasonFilter === 'All' ? allSchools : allSchools.filter(s => activeSchoolIDs.includes(String(s.SchoolID).trim()));
 
       const allFixtures = activeDatabase.Fixtures || [];
-      const filteredFixtures = allFixtures.filter(f => sportIDs.includes(f.SportID));
+      const filteredFixtures = allFixtures.filter(f => sportIDs.includes(String(f.SportID).trim()));
 
-      let boysDivs = 0, girlsDivs = 0;
+      let boysDivs = 0, girlsDivs = 0, coedDivs = 0;
       filteredDivisions.forEach(d => {
-        const gen = (d.Gender || '').toLowerCase();
-        if(gen.includes('boy')) boysDivs++; else if(gen.includes('girl')) girlsDivs++;
+        const gen = String(d.Gender || '').toLowerCase();
+        if(gen.includes('boy')) boysDivs++; else if(gen.includes('girl')) girlsDivs++; else coedDivs++;
       });
 
       const completed = filteredFixtures.filter(f => f.MatchStatus === 'Completed' || f.MatchStatus === 'Finished').length;
       const live = filteredFixtures.filter(f => f.MatchStatus === 'In Progress' || f.MatchStatus === 'Live').length;
+      const upcoming = filteredFixtures.length - (completed + live);
       let pct = filteredFixtures.length > 0 ? Math.round((completed / filteredFixtures.length) * 100) : 0;
 
       document.getElementById('dash-schools').innerText = filteredSchools.length;
       document.getElementById('dash-athletes').innerText = filteredRosters.length;
       document.getElementById('dash-teams').innerText = filteredTeams.length;
       document.getElementById('dash-divisions').innerText = filteredDivisions.length;
+      
       document.getElementById('dash-fixtures-total').innerText = filteredFixtures.length;
       document.getElementById('dash-fixtures-completed').innerText = completed;
       document.getElementById('dash-fixtures-live').innerText = live;
+      document.getElementById('dash-fixtures-upcoming').innerText = upcoming < 0 ? 0 : upcoming;
       document.getElementById('dash-progress-text').innerText = pct + '%';
       document.getElementById('dash-progress-bar').style.width = pct + '%';
+      
       document.getElementById('dash-sports-total').innerText = filteredSports.length;
       document.getElementById('dash-sports-boys').innerText = boysDivs;
       document.getElementById('dash-sports-girls').innerText = girlsDivs;
+      document.getElementById('dash-sports-coed').innerText = coedDivs;
     }
 
     function renderSettings() {
@@ -603,7 +595,6 @@
       }
     }
 
-    // --- ALPHABETICAL CONFIGURATION BY REGION ON DROPDOWNS ---
     function buildConferenceGroupedOptions(schoolsArray, includeAllOption = true) {
       const validSchools = schoolsArray.filter(sch => sch.SchoolID && sch.Name && String(sch.SchoolID).toLowerCase() !== 'schoolid');
       
@@ -644,19 +635,18 @@
       standingSport.innerHTML = '';
 
       const approvedTeams = getApprovedTeams();
-      const activeSportIDs = [...new Set(approvedTeams.map(t => t.SportID))];
+      const activeSportIDs = [...new Set(approvedTeams.map(t => String(t.SportID).trim()))];
       const sports = activeDatabase.Sports || [];
       const schools = activeDatabase.Schools || [];
 
       sports.forEach(sport => {
-        if (activeSportIDs.includes(sport.SportID)) {
+        if (activeSportIDs.includes(String(sport.SportID).trim())) {
           const label = sport.Season ? `${sport.Name} (${sport.Season})` : sport.Name;
           sportSelect.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
           standingSport.innerHTML += `<option value="${sport.SportID}">${label}</option>`;
         }
       });
 
-      // Split into alphabetical conference optgroups
       schoolSelect.innerHTML = buildConferenceGroupedOptions(schools, true);
 
       if (savedSport) sportSelect.value = savedSport;
@@ -676,9 +666,10 @@
       divSelect.innerHTML = '<option value="All">All Divisions</option>';
       const approvedTeams = getApprovedTeams();
       const divisions = activeDatabase.Divisions || [];
-      const activeDivIDs = [...new Set(approvedTeams.filter(t => selectedSportID === 'All' || t.SportID === selectedSportID).map(t => t.DivisionID))];
+      
+      const activeDivIDs = [...new Set(approvedTeams.filter(t => selectedSportID === 'All' || String(t.SportID).trim() === selectedSportID).map(t => String(t.DivisionID).trim()))];
 
-      divisions.filter(div => activeDivIDs.includes(div.DivisionID) && (selectedSportID === 'All' || div.SportID === selectedSportID)).forEach(div => {
+      divisions.filter(div => activeDivIDs.includes(String(div.DivisionID).trim()) && (selectedSportID === 'All' || String(div.SportID).trim() === selectedSportID)).forEach(div => {
         divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
       });
       divSelect.value = [...divSelect.options].some(opt => opt.value === savedDivValue) ? savedDivValue : 'All';
@@ -695,9 +686,9 @@
 
       const approvedTeams = getApprovedTeams();
       const divisions = activeDatabase.Divisions || [];
-      const activeDivIDs = [...new Set(approvedTeams.filter(t => t.SportID === selectedSportID).map(t => t.DivisionID))];
+      const activeDivIDs = [...new Set(approvedTeams.filter(t => String(t.SportID).trim() === selectedSportID).map(t => String(t.DivisionID).trim()))];
 
-      divisions.filter(div => div.SportID === selectedSportID && activeDivIDs.includes(div.DivisionID)).forEach(div => {
+      divisions.filter(div => String(div.SportID).trim() === selectedSportID && activeDivIDs.includes(String(div.DivisionID).trim())).forEach(div => {
         divSelect.innerHTML += `<option value="${div.DivisionID}">${div.Age_Limit} (${div.Gender})</option>`;
       });
 
@@ -717,7 +708,7 @@
       renderFixtures();
     }
 
-    // --- FIXTURES SUB-VIEW TOGGLE: LIST VS CALENDAR ---
+    // --- FIXTURES SUB-VIEW TOGGLE ---
     function toggleFixturesView(mode) {
       activeFixturesSubView = mode;
       const listBtn = document.getElementById('subtab-list');
@@ -739,7 +730,7 @@
       }
     }
 
-    // Get filtered list of games based on dropdown configurations
+    // Wrap ID matching logic securely to prevent Google Sheets Number/String mismatches
     function getActiveFilteredFixtures() {
       const sportVal = document.getElementById('filterSport').value;
       const divVal = document.getElementById('filterDivision').value;
@@ -748,13 +739,14 @@
       const fixtures = activeDatabase.Fixtures || [];
 
       return fixtures.filter(game => {
-        if (sportVal !== 'All' && game.SportID !== sportVal) return false;
-        if (divVal !== 'All' && game.DivisionID !== divVal) return false;
+        if (sportVal !== 'All' && String(game.SportID).trim() !== sportVal) return false;
+        if (divVal !== 'All' && String(game.DivisionID).trim() !== divVal) return false;
+        
         if (schoolVal !== 'All') {
-          const homeTeam = approvedTeams.find(t => t.TeamID === game.HomeTeamID);
-          const awayTeam = approvedTeams.find(t => t.TeamID === game.AwayTeamID);
-          const hSchool = homeTeam ? homeTeam.SchoolID : '';
-          const aSchool = awayTeam ? awayTeam.SchoolID : '';
+          const homeTeam = approvedTeams.find(t => String(t.TeamID).trim() === String(game.HomeTeamID).trim());
+          const awayTeam = approvedTeams.find(t => String(t.TeamID).trim() === String(game.AwayTeamID).trim());
+          const hSchool = homeTeam ? String(homeTeam.SchoolID).trim() : '';
+          const aSchool = awayTeam ? String(awayTeam.SchoolID).trim() : '';
           if (hSchool !== schoolVal && aSchool !== schoolVal) return false;
         }
         return true;
@@ -763,6 +755,7 @@
 
     function renderFixtures() {
       const container = document.getElementById('fixturesContainer');
+      if(!container) return;
       container.innerHTML = '';
       const filtered = getActiveFilteredFixtures();
 
@@ -787,15 +780,15 @@
     }
 
     function buildFixtureCardMarkup(game, approvedTeams) {
-      const homeTeam = approvedTeams.find(t => t.TeamID === game.HomeTeamID);
-      const awayTeam = approvedTeams.find(t => t.TeamID === game.AwayTeamID);
-      const homeSchool = homeTeam ? activeDatabase.Schools.find(s => s.SchoolID === homeTeam.SchoolID) : null;
-      const awaySchool = awayTeam ? activeDatabase.Schools.find(s => s.SchoolID === awayTeam.SchoolID) : null;
+      const homeTeam = approvedTeams.find(t => String(t.TeamID).trim() === String(game.HomeTeamID).trim());
+      const awayTeam = approvedTeams.find(t => String(t.TeamID).trim() === String(game.AwayTeamID).trim());
+      const homeSchool = homeTeam ? activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(homeTeam.SchoolID).trim()) : null;
+      const awaySchool = awayTeam ? activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(awayTeam.SchoolID).trim()) : null;
 
       const homeName = homeSchool ? homeSchool.Name : "Home Team";
       const awayName = awaySchool ? awaySchool.Name : "Away Team";
-      const sport = activeDatabase.Sports.find(s => s.SportID === game.SportID);
-      const division = activeDatabase.Divisions.find(d => d.DivisionID === game.DivisionID);
+      const sport = activeDatabase.Sports.find(s => String(s.SportID).trim() === String(game.SportID).trim());
+      const division = activeDatabase.Divisions.find(d => String(d.DivisionID).trim() === String(game.DivisionID).trim());
 
       const isCompleted = game.MatchStatus === 'Completed' || game.MatchStatus === 'Finished';
       const isLive = game.MatchStatus === 'In Progress' || game.MatchStatus === 'Live';
@@ -836,7 +829,6 @@
         </div>`;
     }
 
-    // --- SECONDARY VIEW MONTHLY CALENDAR IMPLEMENTATION ---
     function navigateCalendarMonth(direction) {
       calendarCurrentDate.setMonth(calendarCurrentDate.getMonth() + direction);
       buildCalendarView();
@@ -848,19 +840,17 @@
       if (!grid || !monthHeader) return;
 
       grid.innerHTML = '';
-      
       const year = calendarCurrentDate.getFullYear();
       const month = calendarCurrentDate.getMonth();
-      
       const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
       monthHeader.innerText = `${monthNames[month]} ${year}`;
 
       const firstDayIdx = new Date(year, month, 1).getDay();
       const totalDays = new Date(year, month + 1, 0).getDate();
 
-      // Correlate active dropdown-filtered fixtures with dates
       const activeFixtures = getActiveFilteredFixtures();
       const gameDatesMap = {};
+      
       activeFixtures.forEach(f => {
         if (f.Date) {
           const parsed = new Date(f.Date);
@@ -871,19 +861,15 @@
         }
       });
 
-      // Padding for empty start blocks
-      for (let i = 0; i < firstDayIdx; i++) {
-        grid.innerHTML += `<div class="bg-slate-50/40 rounded-lg h-14 md:h-20 border border-slate-100"></div>`;
-      }
+      for (let i = 0; i < firstDayIdx; i++) grid.innerHTML += `<div class="bg-slate-50/40 rounded-lg h-14 md:h-20 border border-slate-100"></div>`;
 
-      // Generate accurate calendar day layouts
       for (let day = 1; day <= totalDays; day++) {
         const cellDateKey = `${year}-${month}-${day}`;
         const matchCount = gameDatesMap[cellDateKey] || 0;
         const lookupDateStr = new Date(year, month, day).toDateString();
         const isSelected = calendarSelectedDateStr === lookupDateStr;
 
-        let dayHighlightClass = matchCount > 0 ? 'bg-athleticos-green/10 border-athleticos-green/40 hover:bg-athleticos-green/20' : 'bg-slate-50 hover:bg-slate-100 border-slate-200';
+        let dayHighlightClass = matchCount > 0 ? 'bg-athleticos-green/10 border-athleticos-green/40 hover:bg-athleticos-green/20 cursor-pointer' : 'bg-slate-50 hover:bg-slate-100 border-slate-200 cursor-pointer';
         if (isSelected) dayHighlightClass = 'bg-athleticos-evergreen text-white border-athleticos-green ring-2 ring-athleticos-green';
 
         grid.innerHTML += `
@@ -893,12 +879,9 @@
           </button>`;
       }
 
-      // Default load selection to track layout context
       if (!calendarSelectedDateStr && activeFixtures.length > 0) {
         const firstGameDate = new Date(activeFixtures[0].Date);
-        if (!isNaN(firstGameDate)) {
-          calendarSelectedDateStr = firstGameDate.toDateString();
-        }
+        if (!isNaN(firstGameDate)) calendarSelectedDateStr = firstGameDate.toDateString();
       }
       renderCalendarSelectedDayFixtures();
     }
@@ -933,21 +916,16 @@
       }
 
       const approvedTeams = getApprovedTeams();
-      targetDayGames.forEach(game => {
-        container.innerHTML += buildFixtureCardMarkup(game, approvedTeams);
-      });
+      targetDayGames.forEach(game => container.innerHTML += buildFixtureCardMarkup(game, approvedTeams));
     }
 
-    // --- LEAGUE STANDINGS WITH NORTH & SOUTH REGION BREAKDOWN ---
+    // --- LEAGUE STANDINGS W/ NORTH & SOUTH SPLIT ---
     function setConferenceStandingsFilter(conf) {
       currentStandingsConference = conf;
       ['Overall', 'North', 'South'].forEach(c => {
         const btn = document.getElementById('conf-' + c);
-        if (c === conf) {
-          btn.className = "px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm";
-        } else {
-          btn.className = "px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen";
-        }
+        if (c === conf) btn.className = "px-4 py-1.5 rounded-md text-xs font-bold transition-all bg-white text-athleticos-evergreen shadow-sm";
+        else btn.className = "px-4 py-1.5 rounded-md text-xs font-semibold transition-all text-slate-600 hover:text-athleticos-evergreen";
       });
       calculateStandings();
     }
@@ -965,20 +943,19 @@
       }
 
       const approvedTeams = getApprovedTeams();
-      let targetTeams = approvedTeams.filter(t => t.SportID === sportVal && t.DivisionID === divVal);
+      let targetTeams = approvedTeams.filter(t => String(t.SportID).trim() === sportVal && String(t.DivisionID).trim() === divVal);
       const teamStats = {};
 
       targetTeams.forEach(team => {
-        const school = activeDatabase.Schools.find(s => s.SchoolID === team.SchoolID);
+        const school = activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(team.SchoolID).trim());
         const schoolRegion = school ? String(school.Region || school.Conference || '').toLowerCase() : '';
         
-        // Dynamic Check against selected region toggle context
         let regionMatch = true;
         if (currentStandingsConference === 'North' && !schoolRegion.includes('north')) regionMatch = false;
         if (currentStandingsConference === 'South' && !schoolRegion.includes('south')) regionMatch = false;
 
         if (regionMatch) {
-          teamStats[team.TeamID] = {
+          teamStats[String(team.TeamID).trim()] = {
             name: school ? school.Name : 'Team Name',
             played: 0, won: 0, lost: 0, pointsFor: 0, pointsAgainst: 0
           };
@@ -987,20 +964,17 @@
 
       const fixtures = activeDatabase.Fixtures || [];
       fixtures.forEach(game => {
-        if (game.SportID === sportVal && game.DivisionID === divVal && (game.MatchStatus === 'Completed' || game.MatchStatus === 'Finished')) {
-          const hId = game.HomeTeamID;
-          const aId = game.AwayTeamID;
+        if (String(game.SportID).trim() === sportVal && String(game.DivisionID).trim() === divVal && (game.MatchStatus === 'Completed' || game.MatchStatus === 'Finished')) {
+          const hId = String(game.HomeTeamID).trim();
+          const aId = String(game.AwayTeamID).trim();
 
           if (teamStats[hId] && teamStats[aId]) {
             const hScore = Number(game.HomeScore) || 0;
             const aScore = Number(game.AwayScore) || 0;
 
-            teamStats[hId].played++;
-            teamStats[aId].played++;
-            teamStats[hId].pointsFor += hScore;
-            teamStats[hId].pointsAgainst += aScore;
-            teamStats[aId].pointsFor += aScore;
-            teamStats[aId].pointsAgainst += hScore;
+            teamStats[hId].played++; teamStats[aId].played++;
+            teamStats[hId].pointsFor += hScore; teamStats[hId].pointsAgainst += aScore;
+            teamStats[aId].pointsFor += aScore; teamStats[aId].pointsAgainst += hScore;
 
             if (hScore > aScore) { teamStats[hId].won++; teamStats[aId].lost++; }
             else if (aScore > hScore) { teamStats[aId].won++; teamStats[hId].lost++; }
@@ -1038,37 +1012,34 @@
       });
     }
 
-    function getSchoolColor(name) {
-      const colors = [{ bg: 'bg-blue-900 text-white' }, { bg: 'bg-emerald-900 text-white' }, { bg: 'bg-rose-900 text-white' }, { bg: 'bg-indigo-900 text-white' }, { bg: 'bg-amber-900 text-white' }];
-      let hash = 0; const cleanName = name || "";
-      for (let i = 0; i < cleanName.length; i++) hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
-      return colors[Math.abs(hash) % colors.length];
-    }
+    function renderAnnouncements() {
+      const container = document.getElementById('bulletinsContainer');
+      container.innerHTML = '';
+      const messages = activeDatabase.Messages || [];
+      const publicMessages = messages.filter(msg => msg.Category === 'Public' || msg.Category === 'Public Bulletin');
 
-    function getSchoolLogo(sch) {
-      if (!sch) return '';
-      const directKeys = ['Website_Logo', 'Website Logo', 'Logo', 'logo', 'LogoURL'];
-      for (const key of directKeys) {
-        if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) {
-          return convertDriveLink(sch[key].trim());
-        }
+      if (publicMessages.length === 0) {
+        container.innerHTML = `<div class="col-span-full bg-white p-8 rounded-xl text-center border border-slate-200"><i class="fa-solid fa-folder-open text-slate-300 text-4xl mb-3"></i><p class="text-slate-500 font-medium">No bulletins are published at the moment.</p></div>`;
+        return;
       }
-      return '';
-    }
-
-    function convertDriveLink(url) {
-      if (url && url.includes('drive.google.com')) {
-        const match = url.match(/[-\w]{25,}/);
-        if (match && match[0]) return `http://googleusercontent.com/profile/picture/3${match[0]}`;
-      }
-      return url;
+      publicMessages.sort((a,b) => new Date(b.Timestamp) - new Date(a.Timestamp));
+      publicMessages.forEach(msg => {
+        container.innerHTML += `
+          <div class="bg-white rounded-xl shadow-sm border border-slate-200 p-6 space-y-4 hover:shadow-md transition-all">
+            <div class="flex items-start justify-between">
+              <span class="bg-athleticos-porcelain text-athleticos-evergreen border border-athleticos-teal/30 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider">Official Announcement</span>
+              <span class="text-xs text-slate-400 font-mono font-medium">${msg.Timestamp}</span>
+            </div>
+            <div><h3 class="text-base font-bold text-athleticos-carbon mb-1">${msg.TopicSubject}</h3><p class="text-slate-500 text-xs font-semibold">Posted by: Management</p></div>
+            <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">${msg.Content}</p>
+          </div>`;
+      });
     }
 
     function renderSchools() {
       const container = document.getElementById('schoolsContainer');
       if(!container) return;
       container.innerHTML = '';
-
       const rawSchools = activeDatabase.Schools || [];
       if (rawSchools.length === 0) {
         container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400">Loading directory...</div>`;
@@ -1083,12 +1054,10 @@
         const yearJoined = sch["Year Joined"] || sch.YearJoined || "2024";
         const logoUrl = getSchoolLogo(sch);
 
-        const logoHtml = logoUrl 
-          ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />`
-          : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
+        const logoHtml = logoUrl ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />` : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
 
         container.innerHTML += `
-          <div onclick="openSchoolProfileModal('${sch.SchoolID}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-athleticos-green/40 cursor-pointer transition-all">
+          <div onclick="openSchoolProfileModal('${String(sch.SchoolID).trim()}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-athleticos-green/40 cursor-pointer transition-all">
             <div class="flex items-center space-x-4">
               ${logoHtml}
               <div>
@@ -1098,12 +1067,7 @@
             </div>
             <div class="space-y-2 text-xs border-t border-slate-100 pt-3 text-slate-600 font-medium">
               <div class="flex justify-between"><span class="text-slate-400">Athletic Contact:</span><span class="font-bold text-slate-800">${sch.PrimaryContact || 'Staff Coordinator'}</span></div>
-              <div class="flex justify-between"><span class="text-slate-400">Member Classification:</span><span>Active Member</span></div>
               <div class="flex justify-between"><span class="text-slate-400">Member Since:</span><span class="font-bold text-athleticos-green">${yearJoined}</span></div>
-            </div>
-            <div class="bg-slate-50 p-3 rounded-lg border border-slate-100 flex items-center justify-between text-[11px] font-bold text-slate-500">
-              <span>View Full Dashboard Profile</span>
-              <i class="fa-solid fa-circle-arrow-right text-slate-300"></i>
             </div>
           </div>`;
       });
@@ -1112,12 +1076,10 @@
     function openSchoolProfileModal(schoolId) {
       const school = activeDatabase.Schools.find(s => String(s.SchoolID).trim() === String(schoolId).trim());
       if (!school) return;
-
       const approvedTeams = getApprovedTeams();
       const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
-      const rosterList = activeDatabase.Roster || [];
-      const teamIDs = schoolTeams.map(t => t.TeamID);
-      const uniqueAthleteCount = rosterList.filter(player => teamIDs.includes(player.TeamID)).length;
+      const teamIDs = schoolTeams.map(t => String(t.TeamID).trim());
+      const uniqueAthleteCount = (activeDatabase.Roster || []).filter(player => teamIDs.includes(String(player.TeamID).trim())).length;
 
       document.getElementById('modalSchoolName').innerText = school.Name;
       document.getElementById('modalRegionBadge').innerText = school.Region || "Conference";
@@ -1127,13 +1089,7 @@
 
       const logoPort = document.getElementById('modalLogoPort');
       const logoUrl = getSchoolLogo(school);
-      if (logoUrl) {
-        logoPort.innerHTML = `<img src="${logoUrl}" class="h-full w-full object-contain" />`;
-      } else {
-        const schoolColor = getSchoolColor(school.Name);
-        const acronym = school.Acronym || "SCH";
-        logoPort.innerHTML = `<div class="h-full w-full rounded-lg flex items-center justify-center font-bold text-lg ${schoolColor.bg}">${acronym}</div>`;
-      }
+      logoPort.innerHTML = logoUrl ? `<img src="${logoUrl}" class="h-full w-full object-contain" />` : `<div class="h-full w-full rounded-lg flex items-center justify-center font-bold text-lg ${getSchoolColor(school.Name).bg}">${school.Acronym || "SCH"}</div>`;
 
       const teamsPort = document.getElementById('modalTeamsContainer');
       teamsPort.innerHTML = '';
@@ -1141,28 +1097,24 @@
         teamsPort.innerHTML = `<span class="text-xs text-slate-400 italic">No operational teams registered for current seasons.</span>`;
       } else {
         schoolTeams.forEach(team => {
-          const sport = activeDatabase.Sports.find(s => s.SportID === team.SportID);
-          const div = activeDatabase.Divisions.find(d => d.DivisionID === team.DivisionID);
+          const sport = activeDatabase.Sports.find(s => String(s.SportID).trim() === String(team.SportID).trim());
+          const div = activeDatabase.Divisions.find(d => String(d.DivisionID).trim() === String(team.DivisionID).trim());
           teamsPort.innerHTML += `<span class="bg-slate-100 border border-slate-200 text-slate-700 text-xs px-2.5 py-1 rounded-lg font-semibold">🏆 ${sport ? sport.Name : "Sport"} • ${div ? `${div.Age_Limit} (${div.Gender})` : ""}</span>`;
         });
       }
 
+      // Google Maps Direct Route Fix
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/4${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `https://www.google.com/maps/search/?api=1&query=${mapSearchQuery}`;
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
 
-    function closeSchoolProfileModal() {
-      document.getElementById('schoolProfileModal').classList.add('hidden');
-    }
+    function closeSchoolProfileModal() { document.getElementById('schoolProfileModal').classList.add('hidden'); }
 
     function renderRosterSelectors() {
       const schoolSelector = document.getElementById('rosterSchoolFilter');
       if(!schoolSelector) return;
-      
-      const schools = activeDatabase.Schools || [];
-      schoolSelector.innerHTML = buildConferenceGroupedOptions(schools, false);
-
+      schoolSelector.innerHTML = buildConferenceGroupedOptions(activeDatabase.Schools || [], false);
       onRosterSelectionChange();
     }
 
@@ -1171,23 +1123,19 @@
       const teamSelector = document.getElementById('rosterTeamFilter');
       if(!teamSelector) return;
       teamSelector.innerHTML = '';
-
-      const approvedTeams = getApprovedTeams();
-      const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
+      const schoolTeams = getApprovedTeams().filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
 
       if (schoolTeams.length === 0) {
         teamSelector.innerHTML = '<option value="">No registered squads</option>';
         renderRoster();
         return;
       }
-
       schoolTeams.forEach(team => {
-        const sport = activeDatabase.Sports.find(s => s.SportID === team.SportID);
-        const div = activeDatabase.Divisions.find(d => d.DivisionID === team.DivisionID);
+        const sport = activeDatabase.Sports.find(s => String(s.SportID).trim() === String(team.SportID).trim());
+        const div = activeDatabase.Divisions.find(d => String(d.DivisionID).trim() === String(team.DivisionID).trim());
         const sportLabel = sport ? (sport.Season ? `${sport.Name} (${sport.Season})` : sport.Name) : "Sport";
-        teamSelector.innerHTML += `<option value="${team.TeamID}">${sportLabel} - ${div ? `${div.Age_Limit} (${div.Gender})` : "Bracket"}</option>`;
+        teamSelector.innerHTML += `<option value="${String(team.TeamID).trim()}">${sportLabel} - ${div ? `${div.Age_Limit} (${div.Gender})` : "Bracket"}</option>`;
       });
-
       renderRoster();
     }
 
@@ -1196,19 +1144,10 @@
       const tbody = document.getElementById('rosterBody');
       if(!tbody) return;
       tbody.innerHTML = '';
+      if (!teamId) { tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No active squad roster selected.</td></tr>`; return; }
 
-      if (!teamId) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No active squad roster selected.</td></tr>`;
-        return;
-      }
-
-      const rosters = activeDatabase.Roster || [];
-      const players = rosters.filter(p => String(p.TeamID).trim() === String(teamId).trim());
-
-      if (players.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No verified athletes found on this squad's official registry ledger.</td></tr>`;
-        return;
-      }
+      const players = (activeDatabase.Roster || []).filter(p => String(p.TeamID).trim() === String(teamId).trim());
+      if (players.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No verified athletes found on this squad's official registry ledger.</td></tr>`; return; }
 
       players.forEach(p => {
         tbody.innerHTML += `
@@ -1222,15 +1161,33 @@
       });
     }
 
-    function onStandingsSportChange() {
-      updateStandingsDivisionOptions();
-      calculateStandings();
+    function getSchoolColor(name) {
+      const colors = [{ bg: 'bg-blue-900 text-white' }, { bg: 'bg-emerald-900 text-white' }, { bg: 'bg-rose-900 text-white' }, { bg: 'bg-indigo-900 text-white' }, { bg: 'bg-amber-900 text-white' }];
+      let hash = 0; const cleanName = name || "";
+      for (let i = 0; i < cleanName.length; i++) hash = cleanName.charCodeAt(i) + ((hash << 5) - hash);
+      return colors[Math.abs(hash) % colors.length];
+    }
+
+    function getSchoolLogo(sch) {
+      if (!sch) return '';
+      const directKeys = ['Website_Logo', 'Website Logo', 'Logo', 'logo', 'LogoURL'];
+      for (const key of directKeys) if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) return convertDriveLink(sch[key].trim());
+      return '';
+    }
+
+    function convertDriveLink(url) {
+      if (url && url.includes('drive.google.com')) {
+        const match = url.match(/[-\w]{25,}/);
+        if (match && match[0]) return `https://lh3.googleusercontent.com/d/${match[0]}=s200`;
+      }
+      return url;
     }
 
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
       try {
-        const response = await fetch(apiUrl);
+        // Cache Buster Added to force fresh payload
+        const response = await fetch(apiUrl + "?t=" + new Date().getTime(), { cache: 'no-store' });
         if (!response.ok) throw new Error("Network data exchange failure");
         const data = await response.json();
         if (data.Fixtures && data.Schools && data.Teams && data.Roster) {
