@@ -398,6 +398,11 @@
           <p id="public-coc-spectators" class="text-sm text-slate-600 leading-relaxed">Loading...</p>
         </div>
       </div>
+      <div class="pt-4 flex justify-center">
+        <a href="https://bisal.athleticos.net/handbook.html" target="_blank" class="inline-flex items-center bg-athleticos-evergreen hover:bg-athleticos-carbon text-white font-black py-3 px-8 rounded-xl border-b-4 border-athleticos-green transition-all tracking-wide text-sm uppercase shadow-sm">
+          <i class="fa-solid fa-book-open mr-2 text-athleticos-yellow"></i> Read Full League Handbook
+        </a>
+      </div>
     </section>
 
     <section id="view-join" class="tab-view hidden space-y-6">
@@ -497,7 +502,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.2.1</p>
+        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.3.0</p>
       </div>
     </div>
   </footer>
@@ -525,7 +530,6 @@
       fetchLiveSheetData(GOOGLE_API_ENDPOINT);
     };
 
-    // --- LOGO & IMAGE RESTORATION FUNCTIONS ---
     function getSchoolColor(name) {
       const colors = [{ bg: 'bg-blue-900 text-white' }, { bg: 'bg-emerald-900 text-white' }, { bg: 'bg-rose-900 text-white' }, { bg: 'bg-indigo-900 text-white' }, { bg: 'bg-amber-900 text-white' }];
       let hash = 0; const cleanName = name || "";
@@ -535,16 +539,12 @@
 
     function getSchoolLogo(sch) {
       if (!sch) return '';
-      
-      // Pass 1: Check standard explicit column names
-      const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
+      const directKeys = ['Website_Logo', 'Website Logo', 'Logo', 'logo', 'LogoURL'];
       for (const key of directKeys) {
         if (sch[key] && typeof sch[key] === 'string' && sch[key].trim().startsWith('http')) {
           return convertDriveLink(sch[key].trim());
         }
       }
-      
-      // Pass 2: Fuzzy search restored (Looks for ANY column with 'logo', 'image', or 'pic' in its name)
       for (const rawKey in sch) {
         const cleanKey = String(rawKey).toLowerCase().replace(/[^a-z]/g, '');
         if (cleanKey.includes('logo') || cleanKey.includes('image') || cleanKey.includes('pic')) {
@@ -560,7 +560,6 @@
     function convertDriveLink(url) {
       if (url && url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
-        // Uses export=view so cross-origin restrictions don't block images
         if (match && match[0]) return `https://drive.google.com/uc?export=view&id=${match[0]}`;
       }
       return url;
@@ -1178,7 +1177,7 @@
         });
       }
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/9${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `https://www.google.com/maps/search/?api=1&query=$0${mapSearchQuery}`;
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
 
