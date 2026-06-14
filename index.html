@@ -105,9 +105,16 @@
   <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
 
     <section id="view-dashboard" class="tab-view space-y-8 animate-in fade-in duration-500">
-      <div class="border-b border-slate-200 pb-4">
-        <h2 class="text-2xl md:text-3xl font-extrabold text-athleticos-carbon tracking-tight">League Intelligence Engine</h2>
-        <p class="text-slate-500 text-sm md:text-base mt-1">Cumulative real-time telemetry tracking active ecosystem scale and seasonal execution.</p>
+      <div class="border-b border-slate-200 pb-4 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+        <div>
+          <h2 class="text-2xl md:text-3xl font-extrabold text-athleticos-carbon tracking-tight">League Intelligence Engine</h2>
+          <p class="text-slate-500 text-sm md:text-base mt-1">Cumulative real-time telemetry tracking active ecosystem scale and seasonal execution.</p>
+        </div>
+        <div class="shrink-0">
+          <select id="dashSeasonFilter" onchange="renderDashboard()" class="bg-white border border-slate-300 rounded-lg px-4 py-2.5 text-sm font-black focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none text-athleticos-evergreen shadow-sm cursor-pointer">
+            <option value="All">Overall Season (All Terms)</option>
+          </select>
+        </div>
       </div>
 
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
@@ -447,7 +454,7 @@
 
     const LOADING_DATABASE = {
       Messages: [{ MessageID: "L-1", Timestamp: "2026-05-20", SenderEmail: "director@hq.org", Category: "Public", TargetID: "Public Bulletin", TopicSubject: "Term 2 Kickoff & Protocols", Content: "Fetching dynamic schedules, announcements, and results straight from the Google Sheets database." }],
-      Sports: [{ SportID: "SPT-1", Name: "Basketball" }],
+      Sports: [{ SportID: "SPT-1", Name: "Basketball", Season: "Term 1" }],
       Divisions: [{ DivisionID: "DIV-1", Age_Limit: "Under 18", Gender: "Boys", SportID: "SPT-1" }],
       Schools: [], 
       Teams: [], 
@@ -471,6 +478,7 @@
     }
 
     function processAppInit() {
+      populateDashboardFilter();
       renderDashboard();
       populateFilterSelections();
       renderAnnouncements();
@@ -481,47 +489,97 @@
       renderSettings();
     }
 
-    // --- NEW LEAGUE INTEL DASHBOARD LOGIC ---
-    function renderDashboard() {
-      const approvedTeams = getApprovedTeams();
-      const totalSchools = activeDatabase.Schools ? activeDatabase.Schools.length : 0;
-      const totalAthletes = activeDatabase.Roster ? activeDatabase.Roster.length : 0;
-      const totalTeams = approvedTeams.length;
-      const totalDivisions = activeDatabase.Divisions ? activeDatabase.Divisions.length : 0;
-      const totalSports = activeDatabase.Sports ? activeDatabase.Sports.length : 0;
+    // --- LEAGUE INTEL FILTER INJECTION ---
+    function populateDashboardFilter() {
+      const select = document.getElementById('dashSeasonFilter');
+      if (!select) return;
+      const currentVal = select.value || 'All';
+      
+      const sports = activeDatabase.Sports || [];
+      const seasons = [...new Set(sports.map(s => (s.Season || '').trim()).filter(Boolean))];
+      
+      select.innerHTML = '<option value="All">Overall Season (All Terms)</option>';
+      seasons.sort().forEach(season => {
+        select.innerHTML += `<option value="${season}">${season} Metrics</option>`;
+      });
+      
+      if ([...select.options].some(opt => opt.value === currentVal)) {
+        select.value = currentVal;
+      } else {
+        select.value = 'All';
+      }
+    }
 
-      const fixtures = activeDatabase.Fixtures || [];
-      const totalFixtures = fixtures.length;
-      const completedFixtures = fixtures.filter(f => f.MatchStatus === 'Completed' || f.MatchStatus === 'Finished').length;
-      const liveFixtures = fixtures.filter(f => f.MatchStatus === 'In Progress' || f.MatchStatus === 'Live').length;
+    // --- LEAGUE INTEL CALCULATIONS W/ TERM FILTERING ---
+    function renderDashboard() {
+      const seasonFilter = document.getElementById('dashSeasonFilter') ? document.getElementById('dashSeasonFilter').value : 'All';
+
+      // 1. Filter Sports
+      const allSports = activeDatabase.Sports || [];
+      const filteredSports = seasonFilter === 'All' 
+        ? allSports 
+        : allSports.filter(s => (s.Season || '').trim() === seasonFilter);
+      const sportIDs = filteredSports.map(s => s.SportID);
+
+      // 2. Filter Divisions
+      const allDivisions = activeDatabase.Divisions || [];
+      const filteredDivisions = allDivisions.filter(d => sportIDs.includes(d.SportID));
+      const divisionIDs = filteredDivisions.map(d => d.DivisionID);
+
+      // 3. Filter Teams
+      const approvedTeams = getApprovedTeams();
+      const filteredTeams = approvedTeams.filter(t => sportIDs.includes(t.SportID));
+      const teamIDs = filteredTeams.map(t => t.TeamID);
+
+      // 4. Filter Rosters (Only athletes playing in these specific teams)
+      const allRosters = activeDatabase.Roster || [];
+      const filteredRosters = allRosters.filter(r => teamIDs.includes(r.TeamID));
+
+      // 5. Filter Schools (Schools fielding at least one team in this term)
+      const allSchools = activeDatabase.Schools || [];
+      const activeSchoolIDs = [...new Set(filteredTeams.map(t => t.SchoolID))];
+      const filteredSchools = seasonFilter === 'All' 
+        ? allSchools 
+        : allSchools.filter(s => activeSchoolIDs.includes(s.SchoolID));
+
+      // 6. Filter Fixtures
+      const allFixtures = activeDatabase.Fixtures || [];
+      const filteredFixtures = allFixtures.filter(f => sportIDs.includes(f.SportID));
+
+      // Execute Calculations
+      const totalSchools = filteredSchools.length;
+      const totalAthletes = filteredRosters.length;
+      const totalTeams = filteredTeams.length;
+      const totalDivisions = filteredDivisions.length;
+      const totalSportsNum = filteredSports.length;
+
+      const totalFixtures = filteredFixtures.length;
+      const completedFixtures = filteredFixtures.filter(f => f.MatchStatus === 'Completed' || f.MatchStatus === 'Finished').length;
+      const liveFixtures = filteredFixtures.filter(f => f.MatchStatus === 'In Progress' || f.MatchStatus === 'Live').length;
 
       let completionPercent = totalFixtures > 0 ? Math.round((completedFixtures / totalFixtures) * 100) : 0;
 
       let boysDivs = 0, girlsDivs = 0, coedDivs = 0;
-      if(activeDatabase.Divisions) {
-        activeDatabase.Divisions.forEach(d => {
-          const gender = (d.Gender || '').toLowerCase();
-          if(gender.includes('boy')) boysDivs++;
-          else if(gender.includes('girl')) girlsDivs++;
-          else coedDivs++;
-        });
-      }
+      filteredDivisions.forEach(d => {
+        const gender = (d.Gender || '').toLowerCase();
+        if(gender.includes('boy')) boysDivs++;
+        else if(gender.includes('girl')) girlsDivs++;
+        else coedDivs++;
+      });
 
-      // Update High-Impact Counters
+      // Update DOM
       document.getElementById('dash-schools').innerText = totalSchools;
       document.getElementById('dash-athletes').innerText = totalAthletes;
       document.getElementById('dash-teams').innerText = totalTeams;
       document.getElementById('dash-divisions').innerText = totalDivisions;
 
-      // Update Season Execution Trackers
       document.getElementById('dash-fixtures-total').innerText = totalFixtures;
       document.getElementById('dash-fixtures-completed').innerText = completedFixtures;
       document.getElementById('dash-fixtures-live').innerText = liveFixtures;
       document.getElementById('dash-progress-text').innerText = completionPercent + '%';
       document.getElementById('dash-progress-bar').style.width = completionPercent + '%';
 
-      // Update Sports Breakdown
-      document.getElementById('dash-sports-total').innerText = totalSports;
+      document.getElementById('dash-sports-total').innerText = totalSportsNum;
       document.getElementById('dash-sports-boys').innerText = boysDivs;
       document.getElementById('dash-sports-girls').innerText = girlsDivs;
     }
@@ -544,31 +602,24 @@
       );
     }
 
-    // --- UPDATED DYNAMIC TAB SWITCHING ---
     function switchTab(tabId) {
       document.querySelectorAll('.tab-view').forEach(view => view.classList.add('hidden'));
       
-      // Reset all buttons and icons to default grey state
       document.querySelectorAll('.tab-btn').forEach(btn => {
         btn.classList.remove('border-b-2', 'border-athleticos-green', 'text-athleticos-evergreen', 'font-bold');
         btn.classList.add('border-b-2', 'border-transparent', 'text-slate-500');
         const icon = btn.querySelector('i');
-        if (icon) {
-          icon.classList.remove('text-athleticos-green');
-        }
+        if (icon) icon.classList.remove('text-athleticos-green');
       });
 
       document.getElementById('view-' + tabId).classList.remove('hidden');
       
-      // Apply active green styling to the clicked button and its icon
       const activeBtn = document.getElementById('tab-' + tabId);
       if (activeBtn) {
         activeBtn.classList.remove('border-transparent', 'text-slate-500');
         activeBtn.classList.add('border-athleticos-green', 'text-athleticos-evergreen', 'font-bold');
         const activeIcon = activeBtn.querySelector('i');
-        if (activeIcon) {
-          activeIcon.classList.add('text-athleticos-green');
-        }
+        if (activeIcon) activeIcon.classList.add('text-athleticos-green');
       }
     }
 
@@ -630,7 +681,7 @@
       if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
         if (match && match[0]) {
-          return `https://lh3.googleusercontent.com/d/$${match[0]}`;
+          return `http://googleusercontent.com/profile/picture/3{match[0]}`;
         }
       }
       return url;
@@ -1102,7 +1153,7 @@
       }
 
       const mapSearchQuery = encodeURIComponent(`${school.Name}, Bangkok`);
-      document.getElementById('modalMapsLink').href = `https://maps.google.com/?q=${mapSearchQuery}`;
+      document.getElementById('modalMapsLink').href = `http://googleusercontent.com/maps.google.com/4{mapSearchQuery}`;
 
       document.getElementById('schoolProfileModal').classList.remove('hidden');
     }
