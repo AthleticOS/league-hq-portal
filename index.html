@@ -508,7 +508,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.4.0</p>
+        <p class="font-mono bg-athleticos-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.4.1</p>
       </div>
     </div>
   </footer>
@@ -536,7 +536,7 @@
       fetchLiveSheetData(GOOGLE_API_ENDPOINT);
     };
 
-    // --- AGGRESSIVE LOGO HUNTING ENGINE RESTORED ---
+    // --- AGGRESSIVE LOGO HUNTING ENGINE WITH GOOGLE CDN BYPASS ---
     function getSchoolColor(name) {
       const colors = [{ bg: 'bg-blue-900 text-white' }, { bg: 'bg-emerald-900 text-white' }, { bg: 'bg-rose-900 text-white' }, { bg: 'bg-indigo-900 text-white' }, { bg: 'bg-amber-900 text-white' }];
       let hash = 0; const cleanName = name || "";
@@ -552,14 +552,16 @@
         const cleanKey = String(key).toLowerCase().replace(/[^a-z]/g, '');
         if (cleanKey.includes('logo') || cleanKey.includes('image') || cleanKey.includes('pic') || cleanKey.includes('crest') || cleanKey === 'icon') {
           const val = String(sch[key]).trim();
-          if (val.includes('http') || val.includes('drive.google.com')) return convertDriveLink(val);
+          if (val.includes('http') || val.includes('www.') || val.includes('drive.google.com')) {
+            return convertDriveLink(val);
+          }
         }
       }
       
       // Pass 2: Search every single cell for an image URL if column wasn't named properly
       for (const key in sch) {
         const val = String(sch[key]).trim();
-        if (val.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i) || val.includes('drive.google.com/')) {
+        if (val.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i) || val.includes('drive.google.com/') || val.match(/^https?:\/\//i)) {
           return convertDriveLink(val);
         }
       }
@@ -567,10 +569,20 @@
     }
 
     function convertDriveLink(url) {
-      if (url && url.includes('drive.google.com')) {
+      if (!url) return '';
+      
+      // Extract Google Drive ID and bypass standard redirect block
+      if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
-        if (match && match[0]) return `https://drive.google.com/uc?export=view&id=${match[0]}`;
+        if (match && match[0]) {
+          // Use Google's direct user content CDN to bypass strict CORS policies on img tags
+          return `https://lh3.googleusercontent.com/d/${match[0]}`;
+        }
       }
+      
+      // Patch links missing the http protocol
+      if (url.startsWith('www.')) return 'https://' + url;
+      
       return url;
     }
 
