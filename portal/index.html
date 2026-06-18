@@ -1270,15 +1270,15 @@
             
             if (limitMatch) {
               const limit = parseInt(limitMatch[0]);
-              const dobDate = new Date(dob);
-              const cutoff = new Date(leagueYear, cutoffMonth - 1, cutoffDay);
               
-              let age = cutoff.getFullYear() - dobDate.getFullYear();
-              if (cutoff.getMonth() < dobDate.getMonth() || (cutoff.getMonth() === dobDate.getMonth() && cutoff.getDate() < dobDate.getDate())) {
-                age--;
-              }
+              // Prevent Timezone Drift by parsing the YYYY-MM-DD manually into local time
+              const dobParts = dob.split('-');
+              const dobDate = new Date(parseInt(dobParts[0], 10), parseInt(dobParts[1], 10) - 1, parseInt(dobParts[2], 10));
               
-              if (age >= limit) {
+              // Calculate exact minimum birth date allowed (e.g., 2026 - 15 = 2011, June 1)
+              const minEligibleDob = new Date(leagueYear - limit, cutoffMonth - 1, cutoffDay);
+              
+              if (dobDate < minEligibleDob) {
                 isTooOld = true;
                 
                 // Temporarily unlock button so they can click it again if they hit cancel
@@ -1286,7 +1286,7 @@
                 btn.style.opacity = "1";
                 btn.style.pointerEvents = "auto";
                 
-                if (!confirm(`🛑 AGE WARNING: This player will be ${age} years old on the league cutoff date, which exceeds the ${ageLimitStr} limit.\n\nThey will be flagged as '❌ TOO OLD' in the database.\n\nDo you still want to proceed with registering them?`)) {
+                if (!confirm(`🛑 AGE WARNING: This player is too old for the ${ageLimitStr} age cutoff bracket.\n\nThey will be flagged as '❌ TOO OLD' in the database.\n\nDo you still want to proceed with registering them?`)) {
                   return; // Stops submission completely if they click Cancel
                 }
                 
