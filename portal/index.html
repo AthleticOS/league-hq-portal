@@ -6,7 +6,7 @@
   <title>AthleticOS | Coach Portal</title>
   <link rel="icon" type="image/png" href="../favicon.png">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
     :root {
       --primary: #012300;
       --accent: #52C920;
@@ -56,8 +56,8 @@
     header .header-text {
       text-align: left;
     }
-    header h1 { margin: 0; font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
-    header p { margin: 4px 0 0 0; font-size: 0.8rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    header .header-text h1 { margin: 0; font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
+    header .header-text p { margin: 4px 0 0 0; font-size: 0.8rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     
     /* SCALED SCHOOL LOGO STYLING */
     .header-school-logo {
@@ -74,7 +74,7 @@
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
     #loader { text-align: center; padding: 50px; font-weight: 600; color: var(--text-muted); display: none; word-break: break-word; }
     
-    /* SECURITY PIN SCREEN */
+    /* SECURITY IDENTITY SCREEN */
     #pin-screen { display: none; padding: 40px 20px; text-align: center; }
     .pin-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 350px; margin: 0 auto; }
     .pin-box h2 { margin-top: 0; font-size: 1.3rem; }
@@ -98,9 +98,10 @@
     
     .btn-submit { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
     .btn-submit:active { background-color: var(--accent); color: var(--primary); }
+    .btn-submit:disabled { background-color: #94A3B8; cursor: not-allowed; opacity: 0.6; }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
 
-    /* RESPONSIVE GRID FOR HELP TAB */
+    /* RESPONSIVE GRID FOR HELP & ADMIN TABS */
     .action-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
     @media (min-width: 768px) {
       .action-grid { grid-template-columns: repeat(3, 1fr); }
@@ -160,7 +161,8 @@
     .status-badge.pending { background: #FEF08A; color: #854D0E; }
     .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
 
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; }
+    /* DYNAMIC NAVIGATION MATRIX */
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; z-index: 200; }
     .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
 
@@ -181,7 +183,7 @@
       <img src="https://github.com/AthleticOS/league-hq-portal/blob/main/Logo%20Icon.png?raw=true" alt="AthleticOS Logo" class="header-logo">
       <div class="header-text">
         <h1>AthleticOS Hub</h1>
-        <p id="school-title">Secure Login</p>
+        <p id="school-title">Identity Verification Required</p>
       </div>
     </div>
     <div id="dynamic-school-logo-container"></div>
@@ -199,12 +201,23 @@
 
   <div id="loader">Syncing Database...</div>
 
+  <!-- AIRTIGHT IDENTITY MATRIX LOGIN GATE -->
   <div id="pin-screen">
     <div class="pin-box">
-      <h2>School Verification</h2>
-      <p>Please enter the access PIN provided by your Athletic Director.</p>
+      <h2 id="login-box-title">School Portal Access</h2>
+      <p id="login-box-desc">Please verify your authenticated credentials to open your athletic department workspace.</p>
+      
+      <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; text-align:left; margin-bottom:4px; text-transform:uppercase;">Registered User Email</label>
+      <input type="email" id="auth-email" class="text-input" placeholder="e.g. coach@school.edu" style="text-align: center; font-weight:600; margin-bottom:15px; outline:none; border-width:2px;">
+      
+      <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; text-align:left; margin-bottom:4px; text-transform:uppercase;">6-Digit Account Secure PIN</label>
       <input type="password" id="auth-pin" class="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="••••••">
-      <button class="btn-submit" id="btn-unlock" onclick="verifyPin()">Unlock Portal</button>
+      
+      <button class="btn-submit" id="btn-unlock" onclick="verifyPin()">Unlock Matrix Workspace</button>
+      
+      <div id="backdoor-indicator" style="margin-top: 15px; font-size: 0.7rem; color: var(--text-muted); font-weight:600; cursor:pointer;" onclick="toggleBackdoorMode()">
+        💡 Direct Staff Backdoor Channel Enabled
+      </div>
     </div>
   </div>
 
@@ -248,7 +261,6 @@
     </div>
 
     <div id="tab-registration" class="tab-content">
-      
       <div class="card">
         <div class="card-header">Bulk Import Roster (CSV)</div>
         <div class="explainer-box info">
@@ -282,15 +294,12 @@
       <div class="card">
         <div class="card-header">Manage Existing Roster</div>
         <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
-        
         <div id="dynamic-roster-compliance" class="explainer-box" style="display: none; border-left-color: #C2410C; background-color: #FFF7ED; color: #9A3412;"></div>
-        
         <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
       </div>
     </div>
 
     <div id="tab-availability" class="tab-content">
-      
       <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
         <div class="explainer-box info">
@@ -330,8 +339,7 @@
         </div>
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE TOURNEY CARRIER CAPACITIES</label>
-        <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
-          </div>
+        <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;"></div>
 
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
           <div>
@@ -359,18 +367,16 @@
 
       <div class="card">
         <div class="card-header">⏰ Modify Existing Facility Windows</div>
-        
         <div class="explainer-box">
           <strong>Usage Profile:</strong>
           Select an engineered playable court below to alter its absolute hourly boundaries for weekday or weekend loops.
         </div>
-
         <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
           <option value="">Select Mapped Facility...</option>
         </select>
         
         <div id="venue-hours-form" style="display:none;" class="space-y-2">
-           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
             <div>
               <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
               <input type="time" class="text-input" id="hours-v-wkd-start">
@@ -396,18 +402,15 @@
 
       <div class="card">
         <div class="card-header">📅 Interactive Availability Calendar</div>
-        
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
           <button onclick="navigateCalendarMonth(-1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">◀</button>
           <span id="cal-month-title" style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">June 2026</span>
           <button onclick="navigateCalendarMonth(1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">▶</button>
         </div>
-
         <div class="cal-header-row">
           <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
         </div>
         <div class="cal-grid-mesh" id="calendar-days-mesh"></div>
-        
         <div style="margin-top:12px; display:flex; gap:12px; font-size:0.65rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">
           <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FEE2E2; border-radius:3px;"></span>Blackout / Holiday</div>
           <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FFEDD5; border-radius:3px;"></span>Travel Only</div>
@@ -416,24 +419,20 @@
 
       <div class="card" id="exemption-form-card" style="border-color:var(--border);">
         <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
-        
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">1. EXEMPTION SCOPE</label>
         <select class="status-select" id="ex-scope" onchange="toggleExemptionScope(this.value)" style="margin-bottom:10px;">
           <option value="school">Global School Blackout (Applies to all fields & teams)</option>
           <option value="venue">Specific Mapped Venue / Field Only</option>
           <option value="division">Specific Age Group / Team Only</option>
         </select>
-
         <div id="ex-venue-container" style="display:none; margin-bottom:10px;">
           <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET VENUE</label>
           <select class="status-select" id="ex-venue-id" style="margin-bottom:0;"></select>
         </div>
-
         <div id="ex-division-container" style="display:none; margin-bottom:10px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
           <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET TEAM / DIVISION</label>
           <select class="status-select" id="ex-div-id" style="margin-bottom:0;"></select>
         </div>
-
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">2. AVAILABILITY CONSTRAINT</label>
         <select class="status-select" id="ex-constraint" style="margin-bottom:10px;">
           <option value="Not Available">Not Available (Total Blackout)</option>
@@ -441,7 +440,6 @@
           <option value="Available to Travel Only">Available to Travel Only (No Hosting Allowed)</option>
           <option value="Available to Host Only">Available to Host Only</option>
         </select>
-
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">3. DATE WINDOW</label>
         <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
           <div>
@@ -453,7 +451,6 @@
             <input type="date" class="text-input" id="ex-end-date" style="margin-bottom:0;">
           </div>
         </div>
-
         <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
       </div>
 
@@ -472,8 +469,50 @@
       <div id="messages-list"></div>
     </div>
 
+    <!-- HIDDEN "GOD MODE" LEAGUE ADMINISTRATIVE ENGINE TAB -->
+    <div id="tab-admin" class="tab-content">
+      <div class="card" style="border-color: #BFDBFE; background-color: #EFF6FF;">
+        <div class="card-header" style="color: #1E40AF;">🛡️ Sovereign League Governance Command Console</div>
+        <div class="explainer-box" style="border-left-color: #1E40AF; background-color: #FFFFFF;">
+          <strong>Security Protocol Level: Elevated Staff Session</strong>
+          Welcome, <span id="admin-staff-name" style="font-weight:700;">System Administrator</span>. You have passed the database identity handshake loop. The engine parameters below execute directly against the active spreadsheet workspace.
+        </div>
+      </div>
+
+      <div class="action-grid">
+        <div class="card" style="border-color: var(--primary);">
+          <div class="card-header">📅 Seasonal Round-Robin Engine</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Triggers the dynamic matrix pairing loop to populate empty division slots with home/away fixtures.</p>
+          <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; margin-bottom:4px; display:block;">TARGET BRACKET LEAGUE</label>
+          <select class="status-select" id="admin-schedule-division" style="padding:8px; margin-bottom:12px; font-size:0.8rem;"></select>
+          <div style="margin-top: auto;">
+            <button class="btn-submit" id="btn-master-schedule" onclick="triggerSeasonalScheduleGeneration()">Run Dynamic Allocation</button>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">📊 Ledger Integrity Metrics</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
+          <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
+            <div class="flex justify-between border-b pb-1"><span>Total Registered Athletes:</span><b id="meta-stat-players" class="font-mono">-</b></div>
+            <div class="flex justify-between border-b py-1"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" class="font-mono">-</b></div>
+            <div class="flex justify-between border-b py-1"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" class="font-mono">-</b></div>
+            <div class="flex justify-between py-1"><span>School Affiliates:</span><b id="meta-stat-schools" class="font-mono">-</b></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">🛠️ Engineering Toolbelt</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute global administrative transactions and master batch tasks directly.</p>
+          <div style="margin-top: auto;" class="space-y-2">
+            <button class="btn-submit btn-small" style="background-color:#1E293B;" onclick="triggerGlobalScoreAudit()">Force Conflict Watchdog Re-Audit</button>
+            <button class="btn-submit btn-small" style="background-color:#64748B;" onclick="window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID, '_blank')">📂 Open Google Sheet Ledger</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="tab-help" class="tab-content">
-      
       <div class="action-grid">
         <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
           <div class="card-header" style="color: var(--primary);">League Resources</div>
@@ -505,7 +544,6 @@
 
       <div class="card">
         <div class="card-header">Frequently Asked Questions</div>
-        
         <div class="faq-category">📅 Games & Scoring</div>
         <details class="faq-item">
           <summary>How do I report a final score?</summary>
@@ -559,7 +597,6 @@
         </div>
         <a href="https://athleticos.net" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); margin-top: 15px;">Visit AthleticOS.net</a>
       </div>
-
     </div>
   </div>
 
@@ -569,14 +606,16 @@
     <div class="nav-item" onclick="switchTab('registration')">Rosters</div>
     <div class="nav-item" onclick="switchTab('availability')">Availability</div>
     <div class="nav-item" onclick="switchTab('messages')">Messages</div>
+    <div class="nav-item" id="nav-admin-link" style="display:none;" onclick="switchTab('admin')">Admin</div>
     <div class="nav-item" onclick="switchTab('help')">Help</div>
   </div>
 
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
+    const SHEET_ID = "1HwgLjambTNhiXJ4GB6lzbgJa2aUWC845WKcjQai6yhA"; // Consolidated ID string tracking anchor
    
     const urlParams = new URLSearchParams(window.location.search);
-    const targetSchoolID = urlParams.get('school') || '';
+    let targetSchoolID = urlParams.get('school') || '';
     let targetSchoolName = targetSchoolID; 
     let targetSchoolRegion = ''; 
     
@@ -593,6 +632,7 @@
       document.getElementById('crash-log-text').innerText = `${message}\nLine: ${lineno} | Col: ${colno}`;
       return false;
     };
+
     function readFlexibleObjectValue(obj, targetKeyString) {
       if (!obj) return '';
       const matchKey = String(targetKeyString).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -600,7 +640,6 @@
       return accurateKey ? obj[accurateKey] : '';
     }
 
-    // --- NEW LOGO FETCH HELPERS ---
     function getSchoolLogo(sch) {
       if (!sch) return '';
       const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
@@ -632,20 +671,63 @@
       return url;
     }
 
+    // IDENTITY MATRIX TRIPLE-CHECK VERIFICATION HANDSHAKE
+    function toggleBackdoorMode() {
+      const boxTitle = document.getElementById('login-box-title');
+      const boxDesc = document.getElementById('login-box-desc');
+      if(targetSchoolID) {
+        targetSchoolID = ""; // Clear constraint
+        boxTitle.innerText = "Sovereign Backdoor Active";
+        boxDesc.innerText = "Direct access link activated. Authenticating directly against your global database user profile mapping envelope.";
+        document.getElementById('backdoor-indicator').innerText = "🔄 Re-link School Traversal Hook";
+      } else {
+        targetSchoolID = urlParams.get('school') || '';
+        boxTitle.innerText = "School Portal Access";
+        boxDesc.innerText = "Please verify your authenticated credentials to open your athletic department workspace.";
+        document.getElementById('backdoor-indicator').innerText = "💡 Direct Staff Backdoor Channel Enabled";
+      }
+    }
+
     async function verifyPin() {
-      const pinInput = document.getElementById('auth-pin').value;
+      const emailInput = document.getElementById('auth-email').value.trim();
+      const pinInput = document.getElementById('auth-pin').value.trim();
       const btn = document.getElementById('btn-unlock');
-      if(!pinInput) return;
-      btn.innerText = "Verifying..."; btn.style.backgroundColor = "#64748B";
+      
+      if(!emailInput || !pinInput) {
+        alert("Authentication Error:\n\nYou must provide both your registered email address and secure 6-digit PIN.");
+        return;
+      }
+      
+      btn.innerText = "Verifying Identity Matrix..."; btn.style.backgroundColor = "#64748B"; btn.disabled = true;
       try {
-        const response = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "verifyPIN", schoolId: targetSchoolID, pin: pinInput }) });
+        const response = await fetch(API_URL, { 
+          method: "POST", 
+          body: JSON.stringify({ 
+            action: "verifyPIN", 
+            schoolId: targetSchoolID, 
+            email: emailInput, 
+            pin: pinInput 
+          }) 
+        });
         const result = await response.json();
-        if (result.status === "success") { sessionStorage.setItem(`auth_${targetSchoolID}`, "true"); document.getElementById('pin-screen').style.display = 'none'; initApp();
-        } 
-        else { alert("Security Rejection:\n\n" + result.message); btn.innerText = "Unlock Portal";
-        btn.style.backgroundColor = "var(--primary)"; document.getElementById('auth-pin').value = ''; }
-      } catch (err) { alert("Network transaction dropped.");
-      btn.innerText = "Unlock Portal"; btn.style.backgroundColor = "var(--primary)"; }
+
+        if (result.status === "success") {
+          // Commit context state keys to secure storage vectors
+          sessionStorage.setItem(`auth_active_user`, "true");
+          sessionStorage.setItem(`auth_email`, emailInput);
+          sessionStorage.setItem(`auth_pin`, pinInput);
+          
+          document.getElementById('pin-screen').style.display = 'none';
+          initApp();
+        } else {
+          alert("Security Matrix Rejection:\n\n" + result.message);
+          btn.innerText = "Unlock Matrix Workspace"; btn.style.backgroundColor = "var(--primary)"; btn.disabled = false;
+          document.getElementById('auth-pin').value = '';
+        }
+      } catch (err) {
+        alert("Network transaction dropped during authentication sequence loop.");
+        btn.innerText = "Unlock Matrix Workspace"; btn.style.backgroundColor = "var(--primary)"; btn.disabled = false;
+      }
     }
 
     async function initApp() {
@@ -658,25 +740,40 @@
         const data = await response.json();
         if (data && data.status === "error") throw new Error(data.message);
 
-        globalRosterData = data.Roster || []; globalTeamsData = data.Teams || [];
-        globalDivisionsData = data.Divisions || [];
+        globalRosterData = data.Roster || []; globalTeamsData = data.Teams || []; globalDivisionsData = data.Divisions || [];
         globalVenuesData = data.Venues || []; globalAvailabilityData = data.School_Availability || []; globalSportsData = data.Sports || [];
+        
+        // Dynamic Extraction of Roles from Local Context State
+        const savedEmail = sessionStorage.getItem(`auth_email`);
+        let userRole = "Coach";
+        let staffDisplayName = "System Administrator";
+
+        if(data.Users && data.Users.length > 0 && savedEmail) {
+          const userObj = data.Users.find(u => String(readFlexibleObjectValue(u, "UserEmail")).trim().toLowerCase() === savedEmail.toLowerCase());
+          if (userObj) {
+            userRole = readFlexibleObjectValue(userObj, "Role") || readFlexibleObjectValue(userObj, "LeagueRole") || "Coach";
+            staffDisplayName = readFlexibleObjectValue(userObj, "UserName") || staffDisplayName;
+            if(!targetSchoolID) {
+              targetSchoolID = readFlexibleObjectValue(userObj, "SchoolID");
+            }
+          }
+        }
+
         if (data.Settings && data.Settings.length > 0) {
           globalSettingsData = data.Settings[0];
           leagueYear = parseInt(readFlexibleObjectValue(globalSettingsData, "Season_Year")) || 2026;
           cutoffMonth = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Month")) || 1;
           cutoffDay = parseInt(readFlexibleObjectValue(globalSettingsData, "Cutoff_Day")) || 1;
-          document.getElementById('coc-coaches-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Coaches") || "Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in league events.";
-          document.getElementById('coc-players-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Players") || "Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.";
+          
+          document.getElementById('coc-coaches-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Coaches") || "Public criticism of officials is strictly prohibited.";
+          document.getElementById('coc-players-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Players") || "Players must follow the referee's instructions.";
         }
 
-        if (data.Schools && data.Schools.length > 0) {
+        if (data.Schools && data.Schools.length > 0 && targetSchoolID) {
           const schoolData = data.Schools.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() || String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase());
           if (schoolData) {
             targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
             targetSchoolRegion = readFlexibleObjectValue(schoolData, "Region") || ''; 
-            
-            // DYNAMICALLY INJECT SCHOOL LOGO INTO HEADER
             const logoUrl = getSchoolLogo(schoolData);
             const logoContainer = document.getElementById('dynamic-school-logo-container');
             if (logoUrl) {
@@ -698,10 +795,28 @@
         renderChatLaunchers();
         renderMessages(data.Messages || []);
         
+        // UNLOCK ADMINISTRATIVE PRIVILEGE GATEWAYS
+        if(userRole === "Admin" || userRole === "League Manager" || userRole.toLowerCase().includes("manager")) {
+          document.getElementById('nav-admin-link').style.display = "flex";
+          document.getElementById('admin-staff-name').innerText = staffDisplayName;
+          
+          // Hydrate Administrative metrics panel objects
+          document.getElementById('meta-stat-players').innerText = globalRosterData.length;
+          document.getElementById('meta-stat-venues').innerText = globalVenuesData.length;
+          document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
+          document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
+          
+          // Populate scheduler dropdown elements
+          const adminSchedSelect = document.getElementById('admin-schedule-division');
+          adminSchedSelect.innerHTML = "";
+          globalDivisionsData.forEach(div => {
+            const label = getTeamDisplayName(readFlexibleObjectValue(div, "SportID"), readFlexibleObjectValue(div, "DivisionID"), globalSportsData, globalDivisionsData);
+            adminSchedSelect.innerHTML += `<option value="${readFlexibleObjectValue(div, "DivisionID")}">${label}</option>`;
+          });
+        }
+        
         loaderElement.style.display = 'none'; document.getElementById('app-container').style.display = 'block'; document.getElementById('bottom-nav').style.display = 'flex';
-      } catch (error) { loaderElement.style.color = "red";
-        loaderElement.innerHTML = `<h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4><p style="font-size:0.8rem;">${error.message}</p>`;
-      }
+      } catch (error) { loaderElement.style.color = "red"; loaderElement.innerHTML = `<h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4><p style="font-size:0.8rem;">${error.message}</p>`; }
     }
 
     function getSchoolName(id, schoolsData) {
@@ -717,16 +832,13 @@
       
       const gender = div ? readFlexibleObjectValue(div, "Gender") : '';
       const ageLimit = div ? readFlexibleObjectValue(div, "Age_Limit") : (divisionId || 'Unknown Div');
-      return gender ?
-      `${sportName} - ${gender} - ${ageLimit}` : `${sportName} - ${ageLimit}`;
+      return gender ? `${sportName} - ${gender} - ${ageLimit}` : `${sportName} - ${ageLimit}`;
     }
 
     function renderGames(fixtures, schoolsData, sportsData, divisionsData) {
-      const container = document.getElementById('games-list');
-      container.innerHTML = '';
+      const container = document.getElementById('games-list'); container.innerHTML = '';
       const schoolGames = fixtures.filter(game => String(readFlexibleObjectValue(game, "HomeTeamID")).includes(targetSchoolID) || String(readFlexibleObjectValue(game, "AwayTeamID")).includes(targetSchoolID));
-      if (schoolGames.length === 0) { container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`; return;
-      }
+      if (schoolGames.length === 0) { container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`; return; }
 
       schoolGames.forEach(game => {
         const card = document.createElement('div'); card.className = 'card';
@@ -736,8 +848,7 @@
         const gId = readFlexibleObjectValue(game, "GameID");
         const sId = readFlexibleObjectValue(game, "SportID");
         const dId = readFlexibleObjectValue(game, "DivisionID");
-        const hTeam = 
-        readFlexibleObjectValue(game, "HomeTeamID");
+        const hTeam = readFlexibleObjectValue(game, "HomeTeamID");
         const aTeam = readFlexibleObjectValue(game, "AwayTeamID");
 
         statusOptions.forEach(status => { optionsHtml += `<option value="${status}" ${(mStatus === status) ? 'selected' : ''}>${status}</option>`; });
@@ -747,14 +858,10 @@
 
         if (mStatus === "Pending Verification") {
           isScoreLocked = true;
-          if (readFlexibleObjectValue(game, "Score_Submitter") === currentSide) { scoreBadgeHtml = `<div class="prop-status-text waiting" style="text-align:center; margin-bottom:12px;">Scores Logged. Waiting on opponent verification.</div>`;
-          scoreActionButtonsHtml = ""; } 
-          else { scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px;">Opponent logged scores.
-          Verify accuracy below.</div>`; scoreActionButtonsHtml = `<div style="display:flex; gap:10px;"><button class="btn-submit" style="background-color:#166534;" onclick="submitScoreVerification('${gId}', 'confirm')">✓ Confirm Score</button><button class="btn-submit" style="background-color:#991B1B;" onclick="submitScoreVerification('${gId}', 'dispute')">❌ Dispute Score</button></div>`;
-          }
+          if (readFlexibleObjectValue(game, "Score_Submitter") === currentSide) { scoreBadgeHtml = `<div class="prop-status-text waiting" style="text-align:center; margin-bottom:12px;">Scores Logged. Waiting on opponent verification.</div>`; scoreActionButtonsHtml = ""; } 
+          else { scoreBadgeHtml = `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px;">Opponent logged scores. Verify accuracy below.</div>`; scoreActionButtonsHtml = `<div style="display:flex; gap:10px;"><button class="btn-submit" style="background-color:#166534;" onclick="submitScoreVerification('${gId}', 'confirm')">✓ Confirm Score</button><button class="btn-submit" style="background-color:#991B1B;" onclick="submitScoreVerification('${gId}', 'dispute')">❌ Dispute Score</button></div>`; }
         } else if (mStatus === "Completed" || mStatus === "Disputed") {
-          isScoreLocked = true;
-          scoreActionButtonsHtml = "";
+          isScoreLocked = true; scoreActionButtonsHtml = "";
           scoreBadgeHtml = mStatus === "Disputed" ? `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px; background-color:#FEE2E2; color:#991B1B; border-color:#FCA5A5;">⚠️ DISPUTED</div>` : `<div class="prop-status-text approved" style="text-align:center; margin-bottom:12px;">✓ Verified</div>`;
         }
 
@@ -762,12 +869,14 @@
         const prop1 = readFlexibleObjectValue(game, "ProposedDate1");
         const prop2 = readFlexibleObjectValue(game, "ProposedDate2");
         const prop3 = readFlexibleObjectValue(game, "ProposedDate3");
+        
         if (mStatus === "Postponed" && (prop1 || prop2 || prop3)) {
           proposalsHtml += `<div class="proposal-box"><div class="proposal-title">⏱ Mutual Rescheduling Requested</div>`;
           for (let pNum = 1; pNum <= 3; pNum++) {
             let pDate = readFlexibleObjectValue(game, `ProposedDate${pNum}`);
             let pTime = readFlexibleObjectValue(game, `ProposedTime${pNum}`);
             let pStatus = readFlexibleObjectValue(game, `Prop${pNum}_Status`);
+            
             if (pDate && pDate !== "") {
               proposalsHtml += `<div class="proposal-row"><span>Option ${pNum}: <b>${pDate}</b> @ ${pTime}</span>`;
               if (!pStatus || pStatus === "" || pStatus === "null") {
@@ -775,7 +884,6 @@
                   <div class="prop-actions">
                     <button class="btn-prop-accept" onclick="submitProposalVote('${gId}', ${pNum}, 'accept')">Accept</button>
                     <button class="btn-prop-decline" onclick="submitProposalVote('${gId}', ${pNum}, 'decline')">Decline</button>
-     
                   </div>`;
               } else if (pStatus === currentSide) {
                 proposalsHtml += `<span class="prop-status-text waiting">Waiting on Opponent</span>`;
@@ -784,7 +892,6 @@
                   <div class="prop-actions">
                     <span class="prop-status-text action-needed" style="margin-right:5px;">Opponent Agreed!</span>
                     <button class="btn-prop-accept" onclick="submitProposalVote('${gId}', ${pNum}, 'accept')">Agree & Finalize</button>
-           
                   </div>`;
               }
               proposalsHtml += `</div>`;
@@ -793,18 +900,13 @@
           proposalsHtml += `</div>`;
         }
         
-        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") ||
-        'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hTeam, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aTeam, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ?
-        'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ?
-        'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ?
-        'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
+        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hTeam, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aTeam, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
         container.appendChild(card);
       });
     }
 
     function renderLeagueDivisions(divisions, sports) {
-      const select = document.getElementById('new-team-division');
-      select.innerHTML = '<option value="">Select Division...</option>';
+      const select = document.getElementById('new-team-division'); select.innerHTML = '<option value="">Select Division...</option>';
       const groups = {};
       divisions.forEach(div => {
         const seasonName = sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(readFlexibleObjectValue(div, "SportID")).trim().toLowerCase()) ? readFlexibleObjectValue(sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(readFlexibleObjectValue(div, "SportID")).trim().toLowerCase()), "Season") : "General Calendar";
@@ -821,10 +923,11 @@
     }
 
     function renderTeamsData(teams, sportsData, divisionsData) {
-      document.getElementById('reg-team').innerHTML = '<option value="">Select Team...</option>';
+      document.getElementById('reg-team').innerHTML = '<option value="">Select Team...</option>'; 
       document.getElementById('bulk-reg-team').innerHTML = '<option value="">1. Select Target Team...</option>'; 
       document.getElementById('manage-team').innerHTML = '<option value="">Select Team to View Roster...</option>'; 
       document.getElementById('current-teams-list').innerHTML = '';
+      
       const schoolTeams = teams.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       schoolTeams.forEach(team => {
         const displayName = getTeamDisplayName(readFlexibleObjectValue(team, "SportID"), readFlexibleObjectValue(team, "DivisionID"), sportsData, divisionsData);
@@ -838,8 +941,9 @@
     function renderRosterList(teamId) {
       const container = document.getElementById('roster-list');
       const complianceBox = document.getElementById('dynamic-roster-compliance');
+
       if (!teamId) { 
-        container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>';
+        container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; 
         complianceBox.style.display = 'none';
         return; 
       }
@@ -849,6 +953,7 @@
         const sportId = readFlexibleObjectValue(team, "SportID");
         const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
         const sportName = sport ? String(readFlexibleObjectValue(sport, "Name")).toLowerCase() : '';
+
         let ruleText = "<strong>Kit & Safety Protocol</strong><br>Ensure proper athletic footwear and matching school kits.";
         if (sportName.includes('football') || sportName.includes('soccer') || sportName.includes('futsal')) {
           ruleText = "<strong>Kit & Safety Protocol</strong><br>Mandatory: All players must wear shin pads. Swapping is prohibited. Visiting teams must bring contrasting bibs.";
@@ -864,6 +969,7 @@
 
       const teamRoster = globalRosterData.filter(p => String(readFlexibleObjectValue(p, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
       container.innerHTML = '';
+      
       if (teamRoster.length === 0) {
         container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No players registered for this squad yet.</p>';
         return;
@@ -878,13 +984,11 @@
     }
 
     function evaluateOnboardingViewTrack(type) {
-      document.getElementById('complex-split-wizard-gate').style.display = type === 'standalone' ?
-      'none' : 'block';
+      document.getElementById('complex-split-wizard-gate').style.display = type === 'standalone' ? 'none' : 'block';
       document.getElementById('label-primary-venue-title').innerText = type === 'standalone' ? "FIELD / PITCH IDENTIFIER NAME" : "PARENT COMPLEX SHELL IDENTIFIER";
       document.getElementById('new-venue-unit-count').value = type === 'standalone' ? "1" : document.getElementById('complex-layout-style').value;
     }
-    function calculateComplexUnitCapacity(value) { document.getElementById('new-venue-unit-count').value = value;
-    }
+    function calculateComplexUnitCapacity(value) { document.getElementById('new-venue-unit-count').value = value; }
 
     function populateSportsMenu(sports) {
       const container = document.getElementById('new-venue-sports-checkboxes'); container.innerHTML = '';
@@ -897,30 +1001,24 @@
       document.getElementById('ex-venue-id').innerHTML = '<option value="">Select Target Facility...</option>';
       const schoolVenues = venues.filter(v => String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       schoolVenues.filter(v => String(readFlexibleObjectValue(v, "Capacity_Type")).trim().toLowerCase() !== 'parent').forEach(v => {
-        const 
-        textLabel = `${readFlexibleObjectValue(v, "VenueName") || readFlexibleObjectValue(v, "VenueID")} • ${readFlexibleObjectValue(sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(readFlexibleObjectValue(v, "SportID")).trim().toLowerCase()), "Name") || 'Field'}`;
+        const textLabel = `${readFlexibleObjectValue(v, "VenueName") || readFlexibleObjectValue(v, "VenueID")} • ${readFlexibleObjectValue(sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(readFlexibleObjectValue(v, "SportID")).trim().toLowerCase()), "Name") || 'Field'}`;
         document.getElementById('avail-venue-select').innerHTML += `<option value="${readFlexibleObjectValue(v, "VenueID")}">${textLabel}</option>`;
-        document.getElementById('ex-venue-id').innerHTML += `<option value="${readFlexibleObjectValue(v, "VenueID")}">${textLabel}</option>`;
+        document.getElementById('ex-venue-id').innerHTML += `<option value="${readFlexibleObjectValue(v, "VenueID")}">${textLabel}</option>';`;
       });
       renderAvailabilityExceptionLogs();
     }
 
     function populateBlackoutDivisions() {
-      const divSelect = document.getElementById('ex-div-id');
-      divSelect.innerHTML = '<option value="">Select Target Team...</option>';
-      
+      const divSelect = document.getElementById('ex-div-id'); divSelect.innerHTML = '<option value="">Select Target Team...</option>';
       const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       schoolTeams.forEach(team => {
-        const sId = readFlexibleObjectValue(team, "SportID");
-        const dId = readFlexibleObjectValue(team, "DivisionID");
-        const displayName = getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData);
-        divSelect.innerHTML += `<option value="${dId}">${displayName}</option>`;
+        const displayName = getTeamDisplayName(readFlexibleObjectValue(team, "SportID"), readFlexibleObjectValue(team, "DivisionID"), globalSportsData, globalDivisionsData);
+        divSelect.innerHTML += `<option value="${readFlexibleObjectValue(team, "DivisionID")}">${displayName}</option>`;
       });
     }
 
     function toggleExemptionScope(scopeValue) {
-      document.getElementById('ex-venue-container').style.display = (scopeValue === 'venue') ?
-      'block' : 'none';
+      document.getElementById('ex-venue-container').style.display = (scopeValue === 'venue') ? 'block' : 'none';
       document.getElementById('ex-division-container').style.display = (scopeValue === 'division') ? 'block' : 'none';
     }
 
@@ -928,33 +1026,30 @@
       const form = document.getElementById('venue-hours-form');
       const venue = globalVenuesData.find(v => String(readFlexibleObjectValue(v, "VenueID")).trim().toLowerCase() === String(venueId).trim().toLowerCase());
       if(venue) {
-        document.getElementById('hours-v-wkd-start').value = readFlexibleObjectValue(venue, "Weekday_Start_Time") ||
-        ''; document.getElementById('hours-v-wkd-end').value = readFlexibleObjectValue(venue, "Weekday_End_Time") || ''; document.getElementById('hours-v-wnd-start').value = readFlexibleObjectValue(venue, "Weekend_Start_Time") || ''; document.getElementById('hours-v-wnd-end').value = readFlexibleObjectValue(venue, "Weekend_End_Time") || '';
+        document.getElementById('hours-v-wkd-start').value = readFlexibleObjectValue(venue, "Weekday_Start_Time") || ''; document.getElementById('hours-v-wkd-end').value = readFlexibleObjectValue(venue, "Weekday_End_Time") || ''; document.getElementById('hours-v-wnd-start').value = readFlexibleObjectValue(venue, "Weekend_Start_Time") || ''; document.getElementById('hours-v-wnd-end').value = readFlexibleObjectValue(venue, "Weekend_End_Time") || '';
         form.style.display = 'block';
       } else form.style.display = 'none';
     }
 
-    function navigateCalendarMonth(direction) { calFocusDate.setMonth(calFocusDate.getMonth() + direction); buildInteractiveCalendarMesh();
-    }
+    function navigateCalendarMonth(direction) { calFocusDate.setMonth(calFocusDate.getMonth() + direction); buildInteractiveCalendarMesh(); }
 
     function buildInteractiveCalendarMesh() {
       const mesh = document.getElementById('calendar-days-mesh'); mesh.innerHTML = '';
       const year = calFocusDate.getFullYear(); const month = calFocusDate.getMonth();
       document.getElementById('cal-month-title').innerText = `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][month]} ${year}`;
+      
       const firstDayIdx = new Date(year, month, 1).getDay(); const totalDays = new Date(year, month + 1, 0).getDate();
       for (let i = 0; i < firstDayIdx; i++) mesh.innerHTML += `<div class="cal-day-node empty-spacer"></div>`;
+
       for (let day = 1; day <= totalDays; day++) {
         const loopDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
         let dayClass = "cal-day-node";
         
         const activeBlocks = globalAvailabilityData.filter(a => {
           if(String(readFlexibleObjectValue(a, "SchoolID")).trim().toLowerCase() !== String(targetSchoolID).trim().toLowerCase()) return false;
-          
-          const sDate = readFlexibleObjectValue(a, "StartDate");
-          const eDate = readFlexibleObjectValue(a, "EndDate");
+          const sDate = readFlexibleObjectValue(a, "StartDate"); const eDate = readFlexibleObjectValue(a, "EndDate");
           if (!sDate || !eDate) return false;
           return loopDateStr >= sDate && loopDateStr <= eDate;
-      
         });
         
         if (activeBlocks.length > 0) {
@@ -970,8 +1065,7 @@
     }
 
     function handleCalendarDayClick(element, dateString) {
-      document.querySelectorAll('.cal-day-node').forEach(n => n.classList.remove('active-selected'));
-      element.classList.add('active-selected');
+      document.querySelectorAll('.cal-day-node').forEach(n => n.classList.remove('active-selected')); element.classList.add('active-selected');
       document.getElementById('ex-start-date').value = dateString; document.getElementById('ex-end-date').value = dateString;
       document.getElementById('exemption-form-card').scrollIntoView({ behavior: 'smooth' });
     }
@@ -981,15 +1075,13 @@
       const vName = document.getElementById('new-venue-name').value;
       const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
       if (!vName || checkedBoxes.length === 0) return alert("Please provide a facility name and toggle at least one sport.");
+
       btn.innerText = "Syncing Matrix Rows...";
       const payload = { action: "addVenue", schoolId: targetSchoolID, facilityType: document.getElementById('facility-architecture-type').value, venueName: vName, unitCount: document.getElementById('new-venue-unit-count').value, sportIds: Array.from(checkedBoxes).map(cb => readFlexibleObjectValue(globalSportsData.find(s => String(readFlexibleObjectValue(s, "Name")).includes(cb.value)), "SportID")), weekdayStart: document.getElementById('new-v-wkd-start').value, weekdayEnd: document.getElementById('new-v-wkd-end').value, weekendStart: document.getElementById('new-v-wnd-start').value, weekendEnd: document.getElementById('new-v-wnd-end').value };
       try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-        const result = await res.json();
-        if(result.status === "success") { btn.innerText = "Facility Saved ✓"; setTimeout(() => initApp(), 1000);
-        } else alert("Error: " + result.message);
-      } catch(e) { alert("Network exception."); btn.innerText = "➕ Register Facility Matrix";
-      }
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }); const result = await res.json();
+        if(result.status === "success") { btn.innerText = "Facility Saved ✓"; setTimeout(() => initApp(), 1000); } else alert("Error: " + result.message);
+      } catch(e) { alert("Network exception."); btn.innerText = "➕ Register Facility Matrix"; }
     }
 
     async function submitVenueHoursUpdate() {
@@ -998,10 +1090,8 @@
       btn.innerText = "Saving Profile...";
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-        if((await res.json()).status === "success") { btn.innerText = "Hours Locked ✓"; setTimeout(() => initApp(), 1000);
-        }
-      } catch(e) { alert("Network drop."); btn.innerText = "Update Operational Bounds";
-      }
+        if((await res.json()).status === "success") { btn.innerText = "Hours Locked ✓"; setTimeout(() => initApp(), 1000); }
+      } catch(e) { alert("Network drop."); btn.innerText = "Update Operational Bounds"; }
     }
 
     async function submitAvailabilityException() {
@@ -1016,13 +1106,12 @@
         constraint: document.getElementById('ex-constraint').value, 
         startDate: document.getElementById('ex-start-date').value, endDate: document.getElementById('ex-end-date').value 
       };
+      
       btn.innerText = "Transmitting...";
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-        if((await res.json()).status === "success") { btn.innerText = "Logged Sync ✓"; setTimeout(() => initApp(), 1000);
-        }
-      } catch(e) { alert("Network dropped."); btn.innerText = "+ Log Availability Change";
-      }
+        if((await res.json()).status === "success") { btn.innerText = "Logged Sync ✓"; setTimeout(() => initApp(), 1000); }
+      } catch(e) { alert("Network dropped."); btn.innerText = "+ Log Availability Change"; }
     }
 
     async function deleteAvailability(availId) {
@@ -1030,15 +1119,14 @@
       try {
         const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteAvailability", availId: availId }) });
         if((await res.json()).status === "success") initApp();
-      } catch(e) { alert("Network drop.");
-      }
+      } catch(e) { alert("Network drop."); }
     }
 
     function renderAvailabilityExceptionLogs() {
-      const container = document.getElementById('active-exceptions-list');
-      container.innerHTML = '';
+      const container = document.getElementById('active-exceptions-list'); container.innerHTML = '';
       const elements = globalAvailabilityData.filter(a => String(readFlexibleObjectValue(a, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       if(elements.length === 0) return container.innerHTML = '<p style="text-align:center; color:var(--text-muted); font-size:0.8rem;">No calendar blackouts filed.</p>';
+
       elements.forEach(item => {
         const availId = readFlexibleObjectValue(item, "AvailabilityID");
         const badgeClass = readFlexibleObjectValue(item, "IsAvailable") === false || String(readFlexibleObjectValue(item, "IsAvailable")).toLowerCase() === "false" ? "prop-status-text too-old" : "prop-status-text approved";
@@ -1046,48 +1134,40 @@
         
         if (readFlexibleObjectValue(item, "DivisionID")) {
           title = `Team: ${getTeamDisplayName(readFlexibleObjectValue(globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") === readFlexibleObjectValue(item, "DivisionID")), "SportID"), readFlexibleObjectValue(item, "DivisionID"), globalSportsData, globalDivisionsData)}`;
-     
         } else if (readFlexibleObjectValue(item, "VenueID")) {
           const venObj = globalVenuesData.find(v => readFlexibleObjectValue(v, "VenueID") === readFlexibleObjectValue(item, "VenueID"));
           title = `Venue: ${venObj ? readFlexibleObjectValue(venObj, "VenueName") : readFlexibleObjectValue(item, "VenueID")}`;
         }
 
         const reasonText = readFlexibleObjectValue(item, "Reason") || "Constraint Applied";
+        
         container.innerHTML += `
-          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC; margin-bottom: 8px;"
-          class="flex justify-between items-center">
+          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC; margin-bottom: 8px;" class="flex justify-between items-center">
             <div>
               <span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${title}</span>
               <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${readFlexibleObjectValue(item, "StartDate")} to ${readFlexibleObjectValue(item, "EndDate")}</div>
               <div style="font-size:0.7rem; color:var(--primary); font-weight:600; margin-top:2px;">Reason: ${reasonText}</div>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
- 
               <span class="${badgeClass}" style="font-size:0.65rem;">Logged</span>
-              <button onclick="deleteAvailability('${availId}')" style="background:none; border:none; cursor:pointer; color:#991B1B;"
-              title="Delete Blackout">🗑️</button>
+              <button onclick="deleteAvailability('${availId}')" style="background:none; border:none; cursor:pointer; color:#991B1B;" title="Delete Blackout">🗑️</button>
             </div>
           </div>`;
       });
     }
 
     function renderChatLaunchers() {
-      const container = document.getElementById('chat-launchers-container');
-      if(!container) return;
+      const container = document.getElementById('chat-launchers-container'); if(!container) return;
       container.innerHTML = '';
       
       const leagueLink = readFlexibleObjectValue(globalSettingsData, "League_Chat_Link") || '#';
       const publicLink = readFlexibleObjectValue(globalSettingsData, "Public_Chat_Link") || '#';
-      let confLink = '#';
-      let confName = 'Conference';
+      
+      let confLink = '#'; let confName = 'Conference';
       if (targetSchoolRegion.toLowerCase().includes('north')) {
-        confLink = readFlexibleObjectValue(globalSettingsData, "North_Conf_Chat_Link") ||
-        '#';
-        confName = 'North Conference';
+        confLink = readFlexibleObjectValue(globalSettingsData, "North_Conf_Chat_Link") || '#'; confName = 'North Conference';
       } else if (targetSchoolRegion.toLowerCase().includes('south')) {
-        confLink = readFlexibleObjectValue(globalSettingsData, "South_Conf_Chat_Link") ||
-        '#';
-        confName = 'South Conference';
+        confLink = readFlexibleObjectValue(globalSettingsData, "South_Conf_Chat_Link") || '#'; confName = 'South Conference';
       }
 
       container.innerHTML += `<a href="${leagueLink}" target="_blank" class="btn-submit btn-small" style="background-color:var(--primary); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">🌍 League Chat</a>`;
@@ -1098,259 +1178,156 @@
       container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#334155; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
       const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       const activeSportIds = [...new Set(schoolTeams.map(t => readFlexibleObjectValue(t, "SportID")).filter(Boolean))];
+
       if(activeSportIds.length > 0) {
         activeSportIds.forEach(sId => {
           const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
           if(sport) {
-            const sportName = readFlexibleObjectValue(sport, "Name") || sId;
-            const chatUrl = readFlexibleObjectValue(sport, "ChatSpaceLink") || '#';
-            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; 
-            width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
+            const sportName = readFlexibleObjectValue(sport, "Name") || sId; const chatUrl = readFlexibleObjectValue(sport, "ChatSpaceLink") || '#';
+            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
           }
         });
       }
     }
 
     function renderMessages(messages) {
-      const container = document.getElementById('messages-list');
-      container.innerHTML = '';
-
+      const container = document.getElementById('messages-list'); container.innerHTML = '';
       if (!messages || messages.length === 0) {
-        container.innerHTML = '<div class="card"><p style="font-size: 0.9rem; text-align:center; color: var(--text-muted);">No new messages.</p></div>';
-        return;
+        container.innerHTML = '<div class="card"><p style="font-size: 0.9rem; text-align:center; color: var(--text-muted);">No new messages.</p></div>'; return;
       }
 
       const grouped = {};
       messages.forEach(msg => {
         const cat = readFlexibleObjectValue(msg, "Category") || "General";
-        if(!grouped[cat]) grouped[cat] = [];
-        grouped[cat].push(msg);
+        if(!grouped[cat]) grouped[cat] = []; grouped[cat].push(msg);
       });
-      const categoryOrder = ["League", "Conference", "Sport", "Public"];
-      
+
       const sortedCategories = Object.keys(grouped).sort((a, b) => {
-        let indexA = categoryOrder.indexOf(a);
-        let indexB = categoryOrder.indexOf(b);
-        if (indexA === -1) indexA = 999;
-        if (indexB === -1) indexB = 999;
-        return indexA - indexB;
+        const priority = ["League", "Conference", "Sport", "Public"];
+        let indexA = priority.indexOf(a); let indexB = priority.indexOf(b);
+        return (indexA === -1 ? 999 : indexA) - (indexB === -1 ? 999 : indexB);
       });
+
       sortedCategories.forEach(category => {
-         const msgs = grouped[category];
-         let groupHtml = `<div class="faq-category">${category} Announcements</div>`;
+         const msgs = grouped[category]; let groupHtml = `<div class="faq-category">${category} Announcements</div>`;
          msgs.forEach(msg => {
            const topic = readFlexibleObjectValue(msg, "TopicSubject") || readFlexibleObjectValue(msg, "Topic_Subject") || 'Announcement';
-           const stamp = readFlexibleObjectValue(msg, "Timestamp") || 'Recent';
            const body = readFlexibleObjectValue(msg, "Content") || '';
-       
-           const target = readFlexibleObjectValue(msg, "TargetID") || '';
-           let targetBadge = target ? `<span style="font-size:0.65rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:800; color:var(--text-muted);">🎯 ${target}</span>` : '';
-
-           groupHtml += `
-             <div class="message-item">
-               <div class="message-title" style="display:flex; justify-content:space-between; align-items:center;">
-                 
-                 <span>${topic} ${targetBadge}</span>
-               </div>
-               <div class="message-date">${stamp}</div>
-               <div class="message-body">${body}</div>
-             </div>`;
+           const targetBadge = readFlexibleObjectValue(msg, "TargetID") ? `<span style="font-size:0.65rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:800; color:var(--text-muted);">🎯 ${readFlexibleObjectValue(msg, "TargetID")}</span>` : '';
+           groupHtml += `<div class="message-item"><div class="message-title" style="display:flex; justify-content:space-between; align-items:center;"><span>${topic} ${targetBadge}</span></div><div class="message-date">${readFlexibleObjectValue(msg, "Timestamp") || 'Recent'}</div><div class="message-body">${body}</div></div>`;
          });
          container.innerHTML += `<div class="card" style="margin-bottom:15px; border-color:var(--accent);">${groupHtml}</div>`;
       });
     }
 
     function handleCSVUpload(event) {
-      const file = event.target.files[0];
-      const teamId = document.getElementById('bulk-reg-team').value;
-      
-      if (!teamId) {
-        alert("Please select a target team from the dropdown menu first.");
-        event.target.value = ''; 
-        return;
-      }
-      
+      const file = event.target.files[0]; const teamId = document.getElementById('bulk-reg-team').value;
+      if (!teamId) { alert("Please select a target team from the dropdown menu first."); event.target.value = ''; return; }
       if (!file) return;
+
       const reader = new FileReader();
       reader.onload = function(e) {
-        const text = e.target.result;
-        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
-        
-        if (lines.length < 2) {
-          alert("The CSV file appears to be empty or is missing player data rows.");
-          return;
-        }
+        const text = e.target.result; const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        if (lines.length < 2) return alert("The CSV file appears to be empty or is missing player data rows.");
 
         const players = [];
         for (let i = 1; i < lines.length; i++) {
           const cols = lines[i].split(',');
-          if (cols.length >= 2) {
-            players.push({
-              nickname: cols[0] ? cols[0].trim() : '',
-              dob: cols[1] ? cols[1].trim() : '',
-              jerseyNumber: cols[2] ? cols[2].trim() : ''
-            });
-          }
+          if (cols.length >= 2) players.push({ nickname: cols[0]?.trim(), dob: cols[1]?.trim(), jerseyNumber: cols[2]?.trim() });
         }
-
-        if(players.length === 0) {
-          alert("No valid player data found in the CSV file.");
-          return;
-        }
-
-        if(confirm(`Ready to import ${players.length} players into the selected squad?`)) {
-          submitBulkRoster(teamId, players);
-        }
+        if(players.length === 0) return alert("No valid player data found in the CSV file.");
+        if(confirm(`Ready to import ${players.length} players into the selected squad?`)) submitBulkRoster(teamId, players);
         event.target.value = ''; 
       };
       reader.readAsText(file);
     }
 
     async function submitBulkRoster(teamId, playersArray) {
-      document.getElementById('app-container').style.display = 'none';
-      document.getElementById('loader').style.display = 'block';
+      document.getElementById('app-container').style.display = 'none'; document.getElementById('loader').style.display = 'block';
       document.getElementById('loader').innerText = `Processing bulk import of ${playersArray.length} athletes. Please do not close this window...`;
-      const payload = {
-        action: "bulkImportRoster",
-        schoolId: targetSchoolID,
-        teamId: teamId,
-        players: playersArray
-      };
       try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
-        const result = await res.json();
-        if (result.status === "success") {
-          initApp();
-        } else {
-          alert("Bulk Import Failed: " + result.message);
-          initApp();
-        }
-      } catch (err) {
-        alert("Network transaction dropped during upload.");
+        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "bulkImportRoster", schoolId: targetSchoolID, teamId: teamId, players: playersArray }) });
         initApp();
+      } catch (err) { alert("Network transaction dropped during upload."); initApp(); }
+    }
+
+    // ADMINISTRATIVE TOURNAMENT OPERATION DISPATCHERS
+    async function triggerSeasonalScheduleGeneration() {
+      const divSelect = document.getElementById('admin-schedule-division');
+      if(divSelect.selectedIndex < 0 || !divSelect.value) return alert("Select an initialized league matrix row first.");
+      
+      const btn = document.getElementById('btn-master-schedule');
+      const originalText = btn.innerText;
+      btn.innerText = "Executing Round-Robin Loop..."; btn.disabled = true;
+
+      try {
+        const response = await fetch(API_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "generateSchedule", divisionId: divSelect.value })
+        });
+        const result = await response.json();
+        alert(`Core Operational Response:\n\n${result.message}`);
+        initApp();
+      } catch (e) {
+        alert("Automation engine link broken or timed out.");
+      } finally {
+        btn.innerText = originalText; btn.disabled = false;
       }
     }
 
-    async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp());
+    async function triggerGlobalScoreAudit() {
+      alert("Conflict Watchdog verification sweep initiated. This updates conflict status flags inside the sheet ledger.");
+      await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "auditScores" }) });
+      initApp();
     }
-    async function submitProposalVote(gameId, proposalNum, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "voteProposal", schoolId: targetSchoolID, gameId: gameId, proposalNum: proposalNum, vote: voteType }) }).then(() => initApp());
-    }
-    async function submitScore(gameId) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, homeScore: document.getElementById(`homeScore-${gameId}`).value, awayScore: document.getElementById(`awayScore-${gameId}`).value, status: document.getElementById(`status-${gameId}`).value }) }).then(() => initApp());
-    }
+
+    async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
+    async function submitProposalVote(gameId, proposalNum, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "voteProposal", schoolId: targetSchoolID, gameId: gameId, proposalNum: proposalNum, vote: voteType }) }).then(() => initApp()); }
+    async function submitScore(gameId) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, homeScore: document.getElementById(`homeScore-${gameId}`).value, awayScore: document.getElementById(`awayScore-${gameId}`).value, status: document.getElementById(`status-${gameId}`).value }) }).then(() => initApp()); }
+    async function updatePlayer(rosterId) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value }) }).then(() => initApp()); }
+    async function registerTeam() { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "registerTeam", schoolId: targetSchoolID, divisionId: document.getElementById('new-team-division').value, sportId: document.getElementById('new-team-division').options[document.getElementById('new-team-division').selectedIndex].getAttribute('data-sport') }) }).then(() => initApp()); }
     
     async function submitPlayer() { 
-      const btn = document.getElementById('btn-add-player');
-      const teamId = document.getElementById('reg-team').value;
-      const nickname = document.getElementById('reg-nickname').value;
-      const dob = document.getElementById('reg-dob').value;
+      const btn = document.getElementById('btn-add-player'); const teamId = document.getElementById('reg-team').value;
+      const nickname = document.getElementById('reg-nickname').value; const dob = document.getElementById('reg-dob').value;
       const jerseyNumber = document.getElementById('reg-jersey').value;
+      if (!teamId || !nickname || !dob) return alert("⚠️ Missing Data: Please select a team, and provide a name and Date of Birth.");
 
-      if (!teamId || !nickname || !dob) {
-        return alert("⚠️ Missing Data: Please select a team, and provide a name and Date of Birth.");
-      }
-
-      // 1. Lock UI immediately so we know the button was registered
-      btn.innerText = "Calculating...";
-      btn.style.opacity = "0.5";
-      btn.style.pointerEvents = "none";
-
+      btn.innerText = "Calculating..."; btn.style.opacity = "0.5"; btn.style.pointerEvents = "none";
       try {
-        // 2. Frontend Age Check Verification (Safeguarded)
         const team = globalTeamsData.find(t => readFlexibleObjectValue(t, "TeamID") == teamId);
         let isTooOld = false;
-        
         if (team) {
-          const divId = readFlexibleObjectValue(team, "DivisionID");
-          const div = globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") == divId);
-          
+          const div = globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") == readFlexibleObjectValue(team, "DivisionID"));
           if (div) {
-            // Force it to be a string to prevent .match() from crashing
-            const ageLimitStr = String(readFlexibleObjectValue(div, "Age_Limit") || "");
-            const limitMatch = ageLimitStr.match(/\d+/); 
-            
+            const limitMatch = String(readFlexibleObjectValue(div, "Age_Limit") || "").match(/\d+/); 
             if (limitMatch) {
-              const limit = parseInt(limitMatch[0]);
-              
-              // Prevent Timezone Drift by parsing the YYYY-MM-DD manually into local time
               const dobParts = dob.split('-');
               const dobDate = new Date(parseInt(dobParts[0], 10), parseInt(dobParts[1], 10) - 1, parseInt(dobParts[2], 10));
-              
-              // Calculate exact minimum birth date allowed (e.g., 2026 - 15 = 2011, June 1)
-              const minEligibleDob = new Date(leagueYear - limit, cutoffMonth - 1, cutoffDay);
-              
-              if (dobDate < minEligibleDob) {
-                isTooOld = true;
-                
-                // Temporarily unlock button so they can click it again if they hit cancel
-                btn.innerText = "+ Add Single Player";
-                btn.style.opacity = "1";
-                btn.style.pointerEvents = "auto";
-                
-                if (!confirm(`🛑 AGE WARNING: This player is too old for the ${ageLimitStr} age cutoff bracket.\n\nThey will be flagged as '❌ TOO OLD' in the database.\n\nDo you still want to proceed with registering them?`)) {
-                  return; // Stops submission completely if they click Cancel
-                }
-                
-                // Re-lock if they hit "OK" to proceed
-                btn.innerText = "Transmitting...";
-                btn.style.opacity = "0.5";
-                btn.style.pointerEvents = "none";
+              if (dobDate < new Date(leagueYear - parseInt(limitMatch[0]), cutoffMonth - 1, cutoffDay)) {
+                isTooOld = true; btn.innerText = "+ Add Single Player"; btn.style.opacity = "1"; btn.style.pointerEvents = "auto";
+                if (!confirm(`🛑 AGE WARNING: This player is born before the allowed cutoff date.\n\nThey will be registered as '❌ TOO OLD'.\n\nProceed anyway?`)) return;
+                btn.innerText = "Transmitting..."; btn.style.opacity = "0.5"; btn.style.pointerEvents = "none";
               }
             }
           }
         }
-
-        btn.innerText = "Transmitting...";
-
-        // 3. Fire to database
-        await fetch(API_URL, { 
-          method: "POST", 
-          body: JSON.stringify({ 
-            action: "addPlayer", 
-            teamId: teamId, 
-            nickname: nickname, 
-            dob: dob, 
-            jerseyNumber: jerseyNumber 
-          }) 
-        });
-
-        // 4. Success handling & UI feedback
-        if (isTooOld) {
-          alert("Player logged, but flagged as TOO OLD for this division.");
-        } else {
-          alert("✅ Player successfully registered and eligible!");
-        }
-
-        // 5. Clear fields for next entry
-        document.getElementById('reg-nickname').value = '';
-        document.getElementById('reg-dob').value = '';
-        document.getElementById('reg-jersey').value = '';
-        
-        initApp(); // Refresh the visual roster
-        
-      } catch (e) {
-        console.error("Submission Error: ", e);
-        alert("An error occurred during submission: " + e.message);
-      } finally {
-        // 6. Always Unlock UI at the end, even if it fails
-        btn.innerText = "+ Add Single Player";
-        btn.style.opacity = "1";
-        btn.style.pointerEvents = "auto";
-      }
-    }
-
-    async function updatePlayer(rosterId) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value }) }).then(() => initApp());
-    }
-    async function registerTeam() { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "registerTeam", schoolId: targetSchoolID, divisionId: document.getElementById('new-team-division').value, sportId: document.getElementById('new-team-division').options[document.getElementById('new-team-division').selectedIndex].getAttribute('data-sport') }) }).then(() => initApp());
+        await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "addPlayer", teamId: teamId, nickname: nickname, dob: dob, jerseyNumber: jerseyNumber }) });
+        alert(isTooOld ? "Player logged as TOO OLD." : "✅ Player successfully registered!");
+        document.getElementById('reg-nickname').value = ''; document.getElementById('reg-dob').value = ''; document.getElementById('reg-jersey').value = '';
+        initApp();
+      } catch (e) { alert("Submission failed: " + e.message); } finally { btn.innerText = "+ Add Single Player"; btn.style.opacity = "1"; btn.style.pointerEvents = "auto"; }
     }
 
     document.addEventListener("DOMContentLoaded", () => {
-      if (!targetSchoolID) document.getElementById('error-screen').style.display = 'block';
-      else if (sessionStorage.getItem(`auth_${targetSchoolID}`) === "true") initApp(); else document.getElementById('pin-screen').style.display = 'block'; 
+      if (sessionStorage.getItem(`auth_active_user`) === "true") initApp();
+      else document.getElementById('pin-screen').style.display = 'block'; 
     });
+
     function switchTab(tabId) {
       document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active')); document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById(`tab-${tabId}`).classList.add('active');
-      document.querySelectorAll('.nav-item').forEach(n => { if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(tabId)) n.classList.add('active'); });
+      const targetTab = document.getElementById(`tab-${tabId}`); if (targetTab) targetTab.classList.add('active');
+      document.querySelectorAll('.bottom-nav .nav-item').forEach(n => { if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(tabId)) n.classList.add('active'); });
     }
   </script>
 </body>
