@@ -204,8 +204,8 @@
   <!-- AIRTIGHT IDENTITY MATRIX LOGIN GATE -->
   <div id="pin-screen">
     <div class="pin-box">
-      <h2 id="login-box-title">School Portal Access</h2>
-      <p id="login-box-desc">Please verify your authenticated credentials to open your athletic department workspace.</p>
+      <h2 id="login-box-title">School Reps Access</h2>
+      <p id="login-box-desc">Please verify your email and PIN to open your school's athletic workspace.</p>
       
       <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; text-align:left; margin-bottom:4px; text-transform:uppercase;">Registered User Email</label>
       <input type="email" id="auth-email" class="text-input" placeholder="e.g. coach@school.edu" style="text-align: center; font-weight:600; margin-bottom:15px; outline:none; border-width:2px;">
@@ -213,10 +213,10 @@
       <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; text-align:left; margin-bottom:4px; text-transform:uppercase;">6-Digit Account Secure PIN</label>
       <input type="password" id="auth-pin" class="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="••••••">
       
-      <button class="btn-submit" id="btn-unlock" onclick="verifyPin()">Unlock Matrix Workspace</button>
+      <button class="btn-submit" id="btn-unlock" onclick="verifyPin()">Unlock Portal</button>
       
-      <div id="backdoor-indicator" style="margin-top: 15px; font-size: 0.7rem; color: var(--text-muted); font-weight:600; cursor:pointer;" onclick="toggleBackdoorMode()">
-        💡 Direct Staff Backdoor Channel Enabled
+      <div id="backdoor-indicator" style="margin-top: 15px; font-size: 0.75rem; color: var(--text-muted); font-weight:700; cursor:pointer;" onclick="toggleBackdoorMode()">
+        🛡️ Non-School League Admin Login
       </div>
     </div>
   </div>
@@ -671,20 +671,26 @@
       return url;
     }
 
-    // IDENTITY MATRIX TRIPLE-CHECK VERIFICATION HANDSHAKE
+    let isAdminMode = false;
     function toggleBackdoorMode() {
       const boxTitle = document.getElementById('login-box-title');
       const boxDesc = document.getElementById('login-box-desc');
-      if(targetSchoolID) {
+      isAdminMode = !isAdminMode;
+      
+      if(isAdminMode) {
         targetSchoolID = ""; // Clear constraint
-        boxTitle.innerText = "Sovereign Backdoor Active";
-        boxDesc.innerText = "Direct access link activated. Authenticating directly against your global database user profile mapping envelope.";
-        document.getElementById('backdoor-indicator').innerText = "🔄 Re-link School Traversal Hook";
+        boxTitle.innerText = "League Admin Access";
+        boxDesc.innerText = "Log in with your administrator email and PIN to access the global dashboard.";
+        document.getElementById('backdoor-indicator').innerText = "🔙 Return to School Reps Login";
+        window.history.pushState({}, document.title, window.location.pathname); // Clears the URL visually
       } else {
         targetSchoolID = urlParams.get('school') || '';
-        boxTitle.innerText = "School Portal Access";
-        boxDesc.innerText = "Please verify your authenticated credentials to open your athletic department workspace.";
-        document.getElementById('backdoor-indicator').innerText = "💡 Direct Staff Backdoor Channel Enabled";
+        boxTitle.innerText = "School Reps Access";
+        boxDesc.innerText = "Please verify your email and PIN to open your school's athletic workspace.";
+        document.getElementById('backdoor-indicator').innerText = "🛡️ Non-School League Admin Login";
+        if(targetSchoolID) {
+          window.history.pushState({}, document.title, window.location.pathname + "?school=" + targetSchoolID); // Restores URL
+        }
       }
     }
 
@@ -721,12 +727,12 @@
           initApp();
         } else {
           alert("Security Matrix Rejection:\n\n" + result.message);
-          btn.innerText = "Unlock Matrix Workspace"; btn.style.backgroundColor = "var(--primary)"; btn.disabled = false;
+          btn.innerText = "Unlock Portal"; btn.style.backgroundColor = "var(--primary)"; btn.disabled = false;
           document.getElementById('auth-pin').value = '';
         }
       } catch (err) {
         alert("Network transaction dropped during authentication sequence loop.");
-        btn.innerText = "Unlock Matrix Workspace"; btn.style.backgroundColor = "var(--primary)"; btn.disabled = false;
+        btn.innerText = "Unlock Portal"; btn.style.backgroundColor = "var(--primary)"; btn.disabled = false;
       }
     }
 
@@ -1003,7 +1009,7 @@
       schoolVenues.filter(v => String(readFlexibleObjectValue(v, "Capacity_Type")).trim().toLowerCase() !== 'parent').forEach(v => {
         const textLabel = `${readFlexibleObjectValue(v, "VenueName") || readFlexibleObjectValue(v, "VenueID")} • ${readFlexibleObjectValue(sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(readFlexibleObjectValue(v, "SportID")).trim().toLowerCase()), "Name") || 'Field'}`;
         document.getElementById('avail-venue-select').innerHTML += `<option value="${readFlexibleObjectValue(v, "VenueID")}">${textLabel}</option>`;
-        document.getElementById('ex-venue-id').innerHTML += `<option value="${readFlexibleObjectValue(v, "VenueID")}">${textLabel}</option>';`;
+        document.getElementById('ex-venue-id').innerHTML += `<option value="${readFlexibleObjectValue(v, "VenueID")}">${textLabel}</option>`;
       });
       renderAvailabilityExceptionLogs();
     }
@@ -1157,7 +1163,8 @@
     }
 
     function renderChatLaunchers() {
-      const container = document.getElementById('chat-launchers-container'); if(!container) return;
+      const container = document.getElementById('chat-launchers-container');
+      if(!container) return;
       container.innerHTML = '';
       
       const leagueLink = readFlexibleObjectValue(globalSettingsData, "League_Chat_Link") || '#';
@@ -1178,13 +1185,13 @@
       container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#334155; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
       const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       const activeSportIds = [...new Set(schoolTeams.map(t => readFlexibleObjectValue(t, "SportID")).filter(Boolean))];
-
       if(activeSportIds.length > 0) {
         activeSportIds.forEach(sId => {
           const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
           if(sport) {
             const sportName = readFlexibleObjectValue(sport, "Name") || sId; const chatUrl = readFlexibleObjectValue(sport, "ChatSpaceLink") || '#';
-            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
+            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; 
+            width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
           }
         });
       }
