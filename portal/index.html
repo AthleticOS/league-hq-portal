@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AthleticOS | Coach Portal</title>
+  <title>AthleticOS | Secure Portal</title>
   <link rel="icon" type="image/png" href="../favicon.png">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
@@ -204,8 +204,8 @@
   <!-- AIRTIGHT IDENTITY MATRIX LOGIN GATE -->
   <div id="pin-screen">
     <div class="pin-box">
-      <h2 id="login-box-title">School Reps Access</h2>
-      <p id="login-box-desc">Please verify your email and PIN to open your school's athletic workspace.</p>
+      <h2 id="login-box-title">Secure Portal Login</h2>
+      <p id="login-box-desc">Please verify your email and PIN to open your athletic workspace.</p>
       
       <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; text-align:left; margin-bottom:4px; text-transform:uppercase;">Registered User Email</label>
       <input type="email" id="auth-email" class="text-input" placeholder="e.g. coach@school.edu" style="text-align: center; font-weight:600; margin-bottom:15px; outline:none; border-width:2px;">
@@ -214,10 +214,6 @@
       <input type="password" id="auth-pin" class="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="••••••">
       
       <button class="btn-submit" id="btn-unlock" onclick="verifyPin()">Unlock Portal</button>
-      
-      <div id="backdoor-indicator" style="margin-top: 15px; font-size: 0.75rem; color: var(--text-muted); font-weight:700; cursor:pointer;" onclick="toggleBackdoorMode()">
-        🛡️ Non-School League Admin Login
-      </div>
     </div>
   </div>
 
@@ -671,29 +667,6 @@
       return url;
     }
 
-    let isAdminMode = false;
-    function toggleBackdoorMode() {
-      const boxTitle = document.getElementById('login-box-title');
-      const boxDesc = document.getElementById('login-box-desc');
-      isAdminMode = !isAdminMode;
-      
-      if(isAdminMode) {
-        targetSchoolID = ""; // Clear constraint
-        boxTitle.innerText = "League Admin Access";
-        boxDesc.innerText = "Log in with your administrator email and PIN to access the global dashboard.";
-        document.getElementById('backdoor-indicator').innerText = "🔙 Return to School Reps Login";
-        window.history.pushState({}, document.title, window.location.pathname); // Clears the URL visually
-      } else {
-        targetSchoolID = urlParams.get('school') || '';
-        boxTitle.innerText = "School Reps Access";
-        boxDesc.innerText = "Please verify your email and PIN to open your school's athletic workspace.";
-        document.getElementById('backdoor-indicator').innerText = "🛡️ Non-School League Admin Login";
-        if(targetSchoolID) {
-          window.history.pushState({}, document.title, window.location.pathname + "?school=" + targetSchoolID); // Restores URL
-        }
-      }
-    }
-
     async function verifyPin() {
       const emailInput = document.getElementById('auth-email').value.trim();
       const pinInput = document.getElementById('auth-pin').value.trim();
@@ -751,13 +724,15 @@
         
         // Dynamic Extraction of Roles from Local Context State
         const savedEmail = sessionStorage.getItem(`auth_email`);
-        let userRole = "Coach";
+        let userSchoolRole = "Coach";
+        let userLeagueRole = "none";
         let staffDisplayName = "System Administrator";
 
         if(data.Users && data.Users.length > 0 && savedEmail) {
           const userObj = data.Users.find(u => String(readFlexibleObjectValue(u, "UserEmail")).trim().toLowerCase() === savedEmail.toLowerCase());
           if (userObj) {
-            userRole = readFlexibleObjectValue(userObj, "Role") || readFlexibleObjectValue(userObj, "LeagueRole") || "Coach";
+            userSchoolRole = readFlexibleObjectValue(userObj, "SchoolRole") || "Coach";
+            userLeagueRole = readFlexibleObjectValue(userObj, "LeagueRole") || "none";
             staffDisplayName = readFlexibleObjectValue(userObj, "UserName") || staffDisplayName;
             if(!targetSchoolID) {
               targetSchoolID = readFlexibleObjectValue(userObj, "SchoolID");
@@ -802,7 +777,8 @@
         renderMessages(data.Messages || []);
         
         // UNLOCK ADMINISTRATIVE PRIVILEGE GATEWAYS
-        if(userRole === "Admin" || userRole === "League Manager" || userRole.toLowerCase().includes("manager")) {
+        const validAdmins = ["hq", "conference admin", "league admin"];
+        if(validAdmins.includes(String(userLeagueRole).toLowerCase())) {
           document.getElementById('nav-admin-link').style.display = "flex";
           document.getElementById('admin-staff-name').innerText = staffDisplayName;
           
@@ -1338,4 +1314,980 @@
     }
   </script>
 </body>
-</html>
+</html>[source: 9]/**
+ * ATHLETICOS HQ MASTER TOOLBELT - V39.1 (Phase 1: Communications & Auth Engine)
+ * FIXED: Decoupled Column C (SchoolRole) from system privileges. Bound "God Mode" exclusively to Column F (LeagueRole).
+ * FIXED: Unified Welcome Email routing so all users retain their specific SchoolID context.
+ */
+
+const SHEET_ID = "1HwgLjambTNhiXJ4GB6lzbgJa2aUWC845WKcjQai6yhA";
+const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
+const validAdminRoles = ["hq", "conference admin", "league admin"];
+
+function setupMasterAutomationTrigger() {
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'runMasterAutomation') {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+  ScriptApp.newTrigger('runMasterAutomation').timeBased().everyHours(1).create();
+}
+
+function runMasterAutomation() {
+  generateSmartGameIDs();
+  checkRosterEligibility();
+  validateFixtures();          
+  autoProposeReschedule();
+}
+
+function getFlexKey(obj, targetKey) {
+  if (!obj) return undefined;
+  const cleanTarget = String(targetKey).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+  const foundKey = Object.keys(obj).find(k => String(k).trim().toLowerCase().replace(/[^a-z0-9]/g, '') === cleanTarget);
+  return foundKey ? obj[foundKey] : undefined;
+}
+
+function getCol(sheet, headerName) {
+  const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+  const index = headers.map(h => String(h).trim().toLowerCase().replace(/[^a-z0-9]/g, ''))
+                       .indexOf(String(headerName).trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+  if (index === -1) throw new Error(`Missing Column Reference: "${headerName}" in sheet "${sheet.getName()}"`);
+  return index;
+}
+
+function formatTimeCell(cellValue) {
+  if (cellValue instanceof Date) return Utilities.formatDate(cellValue, Session.getScriptTimeZone(), "HH:mm:ss");
+  return cellValue ? cellValue.toString() : "";
+}
+
+/** * --- PORTAL WEB ROUTING CHANNELS (doGet & doPost) --- */
+
+function doGet(e) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const payload = {};
+    const sheets = ['Schools', 'Sports', 'Divisions', 'Teams', 'Roster', 'Fixtures', 'Messages', 'Settings', 'Venues', 'School_Availability', 'Users'];
+    
+    sheets.forEach(sheetName => {
+      const sheet = ss.getSheetByName(sheetName);
+      payload[sheetName] = sheet ? getRawSheetDataJson(sheet) : [];
+    });
+    
+    return ContentService.createTextOutput(JSON.stringify(payload)).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  try {
+    const postData = JSON.parse(e.postData.contents);
+    const action = String(postData.action || '').trim().toLowerCase();
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    let responseObj = { status: "error", message: "Unknown action parameter request." };
+
+    if (action === "verifypin") {
+      const sheet = ss.getSheetByName("Users");
+      if (!sheet) return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Missing sheet: Users" })).setMimeType(ContentService.MimeType.JSON);
+      
+      const data = getRawSheetDataJson(sheet);
+      const userEmail = String(postData.email || "").trim().toLowerCase();
+      const userPin = String(postData.pin || "").trim();
+      const reqSchool = String(postData.schoolId || "").trim().toLowerCase();
+      const user = data.find(u => String(getFlexKey(u, "UserEmail")).trim().toLowerCase() === userEmail);
+
+      if (user) {
+        if (String(getFlexKey(user, "UserPIN")).trim() === userPin) {
+          
+          const userSchool = String(getFlexKey(user, "SchoolID")).trim().toLowerCase();
+          const userRole = String(getFlexKey(user, "SchoolRole")).trim().toLowerCase(); // Updated to SchoolRole
+          const leagueRole = String(getFlexKey(user, "LeagueRole")).trim().toLowerCase();
+          
+          const isAdmin = validAdminRoles.includes(leagueRole);
+          
+          if (reqSchool === "") {
+            // Attempting to access the base URL layout
+            if (isAdmin) {
+              responseObj = { 
+                status: "success", 
+                message: "Global administrative authorization granted.", 
+                role: userRole, 
+                leagueRole: leagueRole, 
+                schoolId: userSchool, // Retain school context for accurate game filtering
+                email: userEmail 
+              };
+            } else {
+              responseObj = { status: "error", message: "Access Denied: You do not have League and System Admin privileges to use the master portal." };
+            }
+          } else {
+            // Attempting to access a specific school portal context link
+            if (userSchool === reqSchool || isAdmin) {
+              responseObj = { 
+                status: "success", 
+                message: "School verification complete.", 
+                role: userRole, 
+                leagueRole: leagueRole, 
+                schoolId: (isAdmin && userSchool === "") ? reqSchool : userSchool, 
+                email: userEmail 
+              };
+            } else {
+              responseObj = { status: "error", message: "Access Denied: Your email is not registered to manage this specific school." };
+            }
+          }
+        } else {
+          responseObj = { status: "error", message: "Invalid PIN." };
+        }
+      } else {
+        responseObj = { status: "error", message: "Email address not found in the database." };
+      }
+    }
+    
+    else if (action === "generateschedule") {
+      const result = executeAutoScheduler(postData.divisionId);
+      responseObj = { status: result.status, message: result.message };
+    }
+
+    else if (action === "auditscores") {
+      validateFixtures();
+      responseObj = { status: "success", message: "Ledger conflict audit completed." };
+    }
+    
+    else if (action === "updatescore") {
+      const sheet = ss.getSheetByName("Fixtures");
+      const rows = sheet.getDataRange().getValues();
+      const headers = rows[0];
+      const idIdx = getCol(sheet, "GameID");
+      let foundRow = -1;
+      
+      for (let i = 1; i < rows.length; i++) { if (String(rows[i][idIdx]).trim() === String(postData.gameId).trim()) { foundRow = i + 1; break; } }
+      
+      if (foundRow !== -1) {
+        const currentSide = String(rows[foundRow-1][getCol(sheet, "HomeTeamID")]).includes(postData.schoolId) ? "Home" : "Away";
+        if (postData.vote) {
+          if (postData.vote === "confirm") { 
+            sheet.getRange(foundRow, getCol(sheet, "MatchStatus") + 1).setValue("Completed");
+            responseObj = { status: "success", message: "Score verified and locked successfully" };
+          }
+          else if (postData.vote === "dispute") { 
+            sheet.getRange(foundRow, getCol(sheet, "MatchStatus") + 1).setValue("Disputed");
+            // --- PHASE 1 TRIGGER: DISPATCH DISPUTE ALERT ---
+            const sId = rows[foundRow-1][getCol(sheet, "SportID")];
+            const hTeam = rows[foundRow-1][getCol(sheet, "HomeTeamID")];
+            const aTeam = rows[foundRow-1][getCol(sheet, "AwayTeamID")];
+            const rawDate = rows[foundRow-1][getCol(sheet, "Date")];
+            sendDisputeAlert(sId, postData.gameId, hTeam, aTeam, rawDate);
+            responseObj = { status: "success", message: "Match flagged. League admin notified" };
+          }
+        } else {
+          sheet.getRange(foundRow, getCol(sheet, "HomeScore") + 1).setValue(postData.homeScore);
+          sheet.getRange(foundRow, getCol(sheet, "AwayScore") + 1).setValue(postData.awayScore);
+          if (postData.status === "Completed") {
+            sheet.getRange(foundRow, getCol(sheet, "MatchStatus") + 1).setValue("Pending Verification");
+            let submitterIdx = headers.map(h => String(h).trim().toLowerCase().replace(/[^a-z0-9]/g, '')).indexOf("scoresubmitter");
+            if (submitterIdx !== -1) sheet.getRange(foundRow, submitterIdx + 1).setValue(currentSide);
+            responseObj = { status: "success", message: "Scores logged. Awaiting opponent validation sync" };
+          } else {
+            sheet.getRange(foundRow, getCol(sheet, "MatchStatus") + 1).setValue(postData.status);
+            responseObj = { status: "success", message: "Match metadata parameters updated" };
+          }
+        }
+      }
+    }
+    
+    else if (action === "voteproposal") {
+      const sheet = ss.getSheetByName("Fixtures");
+      const rows = sheet.getDataRange().getValues();
+      const idIdx = getCol(sheet, "GameID");
+      let foundRow = -1;
+      
+      for (let i = 1; i < rows.length; i++) { if (String(rows[i][idIdx]).trim() === String(postData.gameId).trim()) { foundRow = i + 1; break; } }
+      
+      if (foundRow !== -1) {
+        const currentSide = String(rows[foundRow-1][getCol(sheet, "HomeTeamID")]).includes(postData.schoolId) ? "Home" : "Away";
+        if (postData.vote === "accept") {
+          const propIdx = getCol(sheet, `Prop${postData.proposalNum}_Status`);
+          const currentPropVal = rows[foundRow-1][propIdx];
+          if (!currentPropVal || currentPropVal === "" || currentPropVal === "null") {
+            sheet.getRange(foundRow, propIdx + 1).setValue(currentSide);
+            responseObj = { status: "success", message: "Acceptance logged. Waiting on counter-party confirmation" };
+          } else {
+            sheet.getRange(foundRow, getCol(sheet, "Date") + 1).setValue(rows[foundRow-1][getCol(sheet, `ProposedDate${postData.proposalNum}`)]);
+            sheet.getRange(foundRow, getCol(sheet, "Time") + 1).setValue(rows[foundRow-1][getCol(sheet, `ProposedTime${postData.proposalNum}`)]);
+            sheet.getRange(foundRow, getCol(sheet, "MatchStatus") + 1).setValue("Scheduled");
+            for(let p=1; p<=3; p++) { sheet.getRange(foundRow, getCol(sheet, `ProposedDate${p}`) + 1).setValue(""); sheet.getRange(foundRow, getCol(sheet, `ProposedTime${p}`) + 1).setValue(""); sheet.getRange(foundRow, getCol(sheet, `Prop${p}_Status`) + 1).setValue(""); }
+            responseObj = { status: "success", message: "Schedule alignment completed live" };
+          }
+        } else if (postData.vote === "decline") {
+          for(let p=1; p<=3; p++) { sheet.getRange(foundRow, getCol(sheet, `ProposedDate${p}`) + 1).setValue(""); sheet.getRange(foundRow, getCol(sheet, `ProposedTime${p}`) + 1).setValue(""); sheet.getRange(foundRow, getCol(sheet, `Prop${p}_Status`) + 1).setValue(""); }
+          responseObj = { status: "success", message: "Rescheduling vectors reset" };
+        }
+      }
+    }
+    
+    else if (action === "addplayer") {
+      const sheet = ss.getSheetByName("Roster");
+      const headers = sheet.getDataRange().getValues()[0];
+
+      const settingsValues = ss.getSheetByName("Settings").getRange(2, 1, 1, 3).getValues()[0];
+      const teamsData = getRawSheetDataJson(ss.getSheetByName("Teams"));
+      const divData = getRawSheetDataJson(ss.getSheetByName("Divisions"));
+      const eligibilityStatus = calculateEligibilityStatus(postData.dob, postData.teamId, teamsData, divData, settingsValues);
+
+      const newRow = headers.map(header => {
+        const h = String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (h === "rosterid") return "PLR-" + Math.floor(Math.random() * 900000 + 100000);
+        if (h === "teamid") return postData.teamId;
+        if (h === "nickname") return postData.nickname;
+        if (h === "dateofbirth") return postData.dob;
+        if (h === "jerseynumber") return postData.jerseyNumber;
+        if (h === "eligibilitystatus") return eligibilityStatus; 
+        if (h === "dateregistered") return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+        return "";
+      });
+      
+      sheet.appendRow(newRow);
+      responseObj = { status: "success", message: "Player records logged successfully" };
+    }
+
+    else if (action === "bulkimportroster") {
+      const sheet = ss.getSheetByName("Roster");
+      const headers = sheet.getDataRange().getValues()[0];
+      const players = postData.players || [];
+      
+      if (players.length > 0) {
+        const settingsValues = ss.getSheetByName("Settings").getRange(2, 1, 1, 3).getValues()[0];
+        const teamsData = getRawSheetDataJson(ss.getSheetByName("Teams"));
+        const divData = getRawSheetDataJson(ss.getSheetByName("Divisions"));
+
+        const newRows = players.map(player => {
+          const eligibilityStatus = calculateEligibilityStatus(player.dob, postData.teamId, teamsData, divData, settingsValues);
+          return headers.map(header => {
+            const h = String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (h === "rosterid") return "PLR-" + Math.floor(Math.random() * 900000 + 100000);
+            if (h === "teamid") return postData.teamId;
+            if (h === "nickname") return player.nickname;
+            if (h === "dateofbirth") return player.dob;
+            if (h === "jerseynumber") return player.jerseyNumber;
+            if (h === "eligibilitystatus") return eligibilityStatus; 
+            if (h === "dateregistered") return Utilities.formatDate(new Date(), Session.getScriptTimeZone(), "yyyy-MM-dd");
+            return "";
+          });
+        });
+        
+        sheet.getRange(sheet.getLastRow() + 1, 1, newRows.length, headers.length).setValues(newRows);
+        responseObj = { status: "success", message: `Successfully imported ${players.length} players.` };
+      } else {
+        responseObj = { status: "error", message: "No valid player data provided in the CSV matrix."};
+      }
+    }
+    
+    else if (action === "updateplayer") {
+      const sheet = ss.getSheetByName("Roster");
+      const rows = sheet.getDataRange().getValues();
+      let foundRow = -1;
+      for (let i = 1; i < rows.length; i++) { if (String(rows[i][getCol(sheet, "RosterID")]).trim() === String(postData.rosterId).trim()) { foundRow = i + 1; break; } }
+      if (foundRow !== -1) {
+        sheet.getRange(foundRow, getCol(sheet, "Nickname") + 1).setValue(postData.nickname);
+        sheet.getRange(foundRow, getCol(sheet, "JerseyNumber") + 1).setValue(postData.jerseyNumber);
+        responseObj = { status: "success", message: "Roster modifications saved" };
+      }
+    }
+    
+    else if (action === "registerteam") {
+      const sheet = ss.getSheetByName("Teams");
+      const headers = sheet.getDataRange().getValues()[0];
+      const newRow = headers.map(header => {
+        const h = String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+        if (h === "teamid") return "TM-" + Math.floor(Math.random() * 90000 + 10000);
+        if (h === "schoolid") return postData.schoolId;
+        if (h === "sportid") return postData.sportId;
+        if (h === "divisionid") return postData.divisionId;
+        if (h === "registrationstatus") return "Approved";
+        return "";
+      });
+      sheet.appendRow(newRow);
+      responseObj = { status: "success", message: "Team added successfully" };
+    }
+
+    else if (action === "updatevenue") {
+      const sheet = ss.getSheetByName("Venues");
+      const rows = sheet.getDataRange().getValues();
+      let foundRow = -1;
+      for (let i = 1; i < rows.length; i++) { if (String(rows[i][getCol(sheet, "VenueID")]).trim() === String(postData.venueId).trim()) { foundRow = i + 1; break; } }
+      if (foundRow !== -1) {
+        const formatTime = (t) => t && t.length === 5 ? t + ":00" : t;
+        sheet.getRange(foundRow, getCol(sheet, "Weekday_Start_Time") + 1).setValue(formatTime(postData.weekdayStart));
+        sheet.getRange(foundRow, getCol(sheet, "Weekday_End_Time") + 1).setValue(formatTime(postData.weekdayEnd));
+        sheet.getRange(foundRow, getCol(sheet, "Weekend_Start_Time") + 1).setValue(formatTime(postData.weekendStart));
+        sheet.getRange(foundRow, getCol(sheet, "Weekend_End_Time") + 1).setValue(formatTime(postData.weekendEnd));
+        responseObj = { status: "success", message: "Operating windows successfully modified" };
+      }
+    }
+
+    else if (action === "addavailability") {
+      const sheet = ss.getSheetByName("School_Availability");
+      const headers = sheet.getDataRange().getValues()[0];
+      
+      const hostBlockingStates = ["Not Available", "School Holiday", "Available to Travel Only"];
+      const hostingAllowed = !hostBlockingStates.includes(postData.constraint);
+      let targets = [];
+      
+      if (postData.scope === "school") {
+        const vSheet = ss.getSheetByName("Venues");
+        const vData = getRawSheetDataJson(vSheet);
+        targets = vData.filter(v => String(getFlexKey(v, "SchoolID")).trim().toLowerCase() === String(postData.schoolId).trim().toLowerCase())
+                       .map(v => getFlexKey(v, "VenueID"));
+      } else if (postData.scope === "venue") {
+        targets = [postData.venueId];
+      } else if (postData.scope === "division") {
+        targets = [""];
+      }
+      
+      if (targets.length === 0 && postData.scope !== "division") {
+        responseObj = { status: "error", message: "No active fields located to process blackout rules" };
+      } else {
+        targets.forEach(vId => {
+          let newRow = headers.map(header => {
+            const h = String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (h === "availabilityid") return "AVL-" + Math.floor(Math.random() * 90000 + 10000);
+            if (h === "schoolid") return postData.schoolId; 
+            if (h === "venueid") return vId;
+            if (h === "divisionid") return postData.divisionId || ""; 
+            if (h === "startdate") return postData.startDate;
+            if (h === "enddate") return postData.endDate;
+            if (h === "isavailable") return hostingAllowed; 
+            if (h === "reason") return postData.constraint; 
+            return "";
+          });
+          sheet.appendRow(newRow);
+        });
+        responseObj = { status: "success", message: "Blackout window parameters saved" };
+      }
+    }
+
+    else if (action === "deleteavailability") {
+      const sheet = ss.getSheetByName("School_Availability");
+      const rows = sheet.getDataRange().getValues();
+      const idIdx = getCol(sheet, "AvailabilityID");
+      let foundRow = -1;
+      
+      for (let i = 1; i < rows.length; i++) {
+        if (String(rows[i][idIdx]).trim() === String(postData.availId).trim()) { foundRow = i + 1; break; }
+      }
+      if (foundRow !== -1) {
+        sheet.deleteRow(foundRow);
+        responseObj = { status: "success", message: "Blackout window successfully removed." };
+      } else {
+        responseObj = { status: "error", message: "Blackout record could not be found." };
+      }
+    }
+
+    else if (action === "addvenue") {
+      const sheet = ss.getSheetByName("Venues");
+      const headers = sheet.getDataRange().getValues()[0];
+      const facilityType = postData.facilityType || "standalone"; 
+      const parentName = String(postData.venueName).trim();
+      const baseName = parentName.toUpperCase().replace(/\s+/g, '-');
+      const sportIds = postData.sportIds || []; 
+      const formatTime = (t) => t && t.length === 5 ? t + ":00" : t;
+
+      if (sportIds.length === 0) return ContentService.createTextOutput(JSON.stringify({ status: "error", message: "Please select at least one sport." })).setMimeType(ContentService.MimeType.JSON);
+      
+      if (facilityType === "standalone") {
+        const sportId = sportIds[0];
+        const newRow = headers.map(header => {
+          const h = String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+          if (h === "venueid") return `${baseName}-${sportId}`;
+          if (h === "schoolid") return postData.schoolId;
+          if (h === "venuename") return parentName;
+          if (h === "sportid") return sportId;
+          if (h === "capacitytype") return "Stand-Alone";
+          if (h === "parentvenueid") return ""; 
+          if (h === "resourceweight") return 100; 
+          if (h === "status") return "Active";
+          if (h === "weekdaystarttime") return formatTime(postData.weekdayStart || "16:00");
+          if (h === "weekdayendtime") return formatTime(postData.weekdayEnd || "19:30");
+          if (h === "weekendstarttime") return formatTime(postData.weekendStart || "08:00");
+          if (h === "weekendendtime") return formatTime(postData.weekendEnd || "17:00");
+          return ""; 
+        });
+        
+        sheet.appendRow(newRow);
+        responseObj = { status: "success", message: "Standalone Field Saved Successfully" };
+      } else {
+        const totalSubUnits = parseInt(postData.unitCount) || 1;
+        const unitWeight = Math.floor(100 / totalSubUnits); 
+        const parentId = `${baseName}-PARENT`;
+        const existingVenues = getRawSheetDataJson(sheet);
+        const parentExists = existingVenues.some(v => String(getFlexKey(v, "VenueID")).trim().toUpperCase() === parentId);
+
+        if (!parentExists) {
+          const parentRow = headers.map(header => {
+            const h = String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+            if (h === "venueid") return parentId;
+            if (h === "schoolid") return postData.schoolId;
+            if (h === "venuename") return parentName;
+            if (h === "capacitytype") return "Parent"; 
+            if (h === "resourceweight") return 100; 
+            if (h === "status") return "Active";
+            return ""; 
+          });
+          sheet.appendRow(parentRow);
+        }
+
+        for (let unitNum = 1; unitNum <= totalSubUnits; unitNum++) {
+          sportIds.forEach(sportId => {
+            const subRow = headers.map(header => {
+              const h = String(header).trim().toLowerCase().replace(/[^a-z0-9]/g, '');
+              if (h === "venueid") return `${baseName}-C${unitNum}-${sportId}`;
+              if (h === "schoolid") return postData.schoolId;
+              if (h === "venuename") return `${parentName} (Court ${unitNum})`; 
+              if (h === "sportid") return sportId;
+              if (h === "capacitytype") return "Sub-Court"; 
+              if (h === "parentvenueid") return parentId; 
+              if (h === "resourceweight") return unitWeight; 
+              if (h === "status") return "Active";
+              if (h === "weekdaystarttime") return formatTime(postData.weekdayStart || "16:00");
+              if (h === "weekdayendtime") return formatTime(postData.weekdayEnd || "19:30");
+              if (h === "weekendstarttime") return formatTime(postData.weekendStart || "08:00");
+              if (h === "weekendendtime") return formatTime(postData.weekendEnd || "17:00");
+              return ""; 
+            });
+            sheet.appendRow(subRow);
+          });
+        }
+        responseObj = { status: "success", message: `Generated Parent Facility and mapped ${totalSubUnits * sportIds.length} sub-court records!` };
+      }
+    }
+    
+    return ContentService.createTextOutput(JSON.stringify(responseObj)).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({ status: "error", message: err.toString() })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function getRawSheetDataJson(sheet) {
+  const range = sheet.getDataRange();
+  const values = range.getValues();
+  if (values.length <= 1) return [];
+  
+  const headers = values[0];
+  const jsonData = [];
+  for (let i = 1; i < values.length; i++) {
+    const row = values[i];
+    const rowObj = {};
+    let hasData = false;
+    for (let j = 0; j < headers.length; j++) {
+      const cellValue = row[j];
+      if (cellValue !== "") hasData = true;
+      if (cellValue instanceof Date) {
+        if (cellValue.getFullYear() === 1899) rowObj[headers[j]] = Utilities.formatDate(cellValue, Session.getScriptTimeZone(), "HH:mm");
+        else rowObj[headers[j]] = Utilities.formatDate(cellValue, Session.getScriptTimeZone(), "yyyy-MM-dd");
+      } else { rowObj[headers[j]] = cellValue; }
+    }
+    if (hasData) jsonData.push(rowObj);
+  }
+  return jsonData;
+}
+
+function timeStringToMinutes(timeStr) {
+  if (!timeStr) return 0;
+  const parts = String(timeStr).split(':');
+  return parseInt(parts[0]) * 60 + parseInt(parts[1]);
+}
+
+function formatMinutesToTime(mins) {
+  let h = Math.floor(mins / 60);
+  let m = mins % 60;
+  return (h < 10 ? '0'+h : h) + ':' + (m < 10 ? '0'+m : m) + ':00';
+}
+
+function calculateEligibilityStatus(dobStr, teamId, teamsData, divData, settingsValues) {
+  if (!dobStr || !teamId) return "Missing DOB";
+
+  const sYear = parseInt(settingsValues[0]);
+  const cMonth = parseInt(settingsValues[1]);
+  const cDay = parseInt(settingsValues[2]);
+
+  const team = teamsData.find(t => String(getFlexKey(t, "TeamID")).trim() === String(teamId).trim());
+  if (!team) return "✅ Eligible";
+
+  const divId = getFlexKey(team, "DivisionID");
+  const div = divData.find(d => String(getFlexKey(d, "DivisionID")).trim() === String(divId).trim());
+  if (!div) return "✅ Eligible";
+
+  const ageLimitStr = String(getFlexKey(div, "Age_Limit") || "");
+  const limitMatch = ageLimitStr.match(/\d+/);
+  
+  if (limitMatch) {
+    const limit = parseInt(limitMatch[0]);
+    const minEligibleDob = new Date(sYear - limit, cMonth - 1, cDay);
+
+    const dobParts = String(dobStr).split('-');
+    if (dobParts.length === 3) {
+      const dobDate = new Date(parseInt(dobParts[0], 10), parseInt(dobParts[1], 10) - 1, parseInt(dobParts[2], 10));
+      if (dobDate < minEligibleDob) {
+        return "❌ TOO OLD";
+      }
+    }
+  }
+  return "✅ Eligible";
+}
+
+// ---------------------------------------------------------
+// MASTER AUTO-SCHEDULER ENGINE
+// ---------------------------------------------------------
+function executeAutoScheduler(targetDivId) {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const fixSheet = ss.getSheetByName("Fixtures");
+  
+  const divData = getRawSheetDataJson(ss.getSheetByName("Divisions"));
+  const teamsData = getRawSheetDataJson(ss.getSheetByName("Teams"));
+  const venueData = getRawSheetDataJson(ss.getSheetByName("Venues"));
+  const availData = getRawSheetDataJson(ss.getSheetByName("School_Availability"));
+  const existingFixtures = getRawSheetDataJson(fixSheet);
+  
+  let div = divData.find(d => String(getFlexKey(d, "DivisionID")).trim() === String(targetDivId).trim());
+  if(!div) return {status: "error", message: "Division parameters not found in the matrix."};
+  
+  let startDateStr = getFlexKey(div, "Schedule_Start_Date");
+  let endDateStr = getFlexKey(div, "Schedule_End_Date");
+  if(!startDateStr || !endDateStr) return {status: "error", message: "Execution Aborted: Missing Schedule_Start_Date or Schedule_End_Date bounderies."};
+  
+  let startDateObj = new Date(startDateStr);
+  let endDateObj = new Date(endDateStr);
+  let durationMins = parseInt(getFlexKey(div, "Match_Duration_Mins")) || 60;
+  let maxGamesPerWeek = parseInt(getFlexKey(div, "Max_Games_Per_Week")) || 2;
+  
+  let approvedTeams = teamsData.filter(t => String(getFlexKey(t, "DivisionID")).trim() === String(targetDivId).trim() && String(getFlexKey(t, "RegistrationStatus")).toLowerCase() === "approved");
+  if(approvedTeams.length < 2) return {status: "error", message: "Execution Aborted: Not enough approved squads to generate mathematical pairings."};
+  
+  let pairings = [];
+  let n = approvedTeams.length;
+  let teamList = [...approvedTeams];
+  let hasBye = false;
+  
+  if (n % 2 !== 0) {
+    teamList.push({TeamID: "BYE"});
+    n++;
+    hasBye = true;
+  }
+
+  for (let round = 0; round < n - 1; round++) {
+    for (let i = 0; i < n / 2; i++) {
+      let home = teamList[i];
+      let away = teamList[n - 1 - i];
+      if (home.TeamID !== "BYE" && away.TeamID !== "BYE") {
+        pairings.push({home: home, away: away});
+        pairings.push({home: away, away: home}); 
+      }
+    }
+    teamList.splice(1, 0, teamList.pop());
+  }
+
+  pairings.sort(() => Math.random() - 0.5);
+  
+  let newFixturesArray = [];
+  let failedPlacements = 0;
+  
+  for (let match of pairings) {
+    let homeTeamId = getFlexKey(match.home, "TeamID");
+    let awayTeamId = getFlexKey(match.away, "TeamID");
+    let hostSchoolId = getFlexKey(match.home, "SchoolID");
+    
+    let hostVenues = venueData.filter(v => 
+      String(getFlexKey(v, "SchoolID")).trim() === String(hostSchoolId).trim() &&
+      String(getFlexKey(v, "Status")).toLowerCase() === "active" && 
+      String(getFlexKey(v, "Capacity_Type")).toLowerCase() !== "parent" &&
+      String(getFlexKey(v, "SportID")).trim() === String(getFlexKey(div, "SportID")).trim()
+    );
+    
+    if(hostVenues.length === 0) {
+        hostVenues = venueData.filter(v => String(getFlexKey(v, "SchoolID")).trim() === String(hostSchoolId).trim() && String(getFlexKey(v, "Status")).toLowerCase() === "active" && String(getFlexKey(v, "Capacity_Type")).toLowerCase() !== "parent");
+    }
+
+    let isScheduled = false;
+
+    for (let d = new Date(startDateObj); d <= endDateObj; d.setDate(d.getDate() + 1)) {
+      if (isScheduled) break;
+      let checkDateStr = Utilities.formatDate(d, Session.getScriptTimeZone(), "yyyy-MM-dd");
+
+      if (getTeamGamesInRollingWeek(homeTeamId, d, existingFixtures, newFixturesArray) >= maxGamesPerWeek) continue;
+      if (getTeamGamesInRollingWeek(awayTeamId, d, existingFixtures, newFixturesArray) >= maxGamesPerWeek) continue;
+      if (getTeamGamesOnDay(homeTeamId, checkDateStr, existingFixtures, newFixturesArray) >= 1) continue;
+      if (getTeamGamesOnDay(awayTeamId, checkDateStr, existingFixtures, newFixturesArray) >= 1) continue;
+
+      for (let venue of hostVenues) {
+        if (isScheduled) break;
+        let vId = getFlexKey(venue, "VenueID");
+        let vParent = getFlexKey(venue, "Parent_VenueID") || "";
+        
+        if (isVenueBlackedOut(vId, d, availData)) continue;
+        
+        let isWeekend = (d.getDay() === 0 || d.getDay() === 6);
+        let openTimeStr = isWeekend ? getFlexKey(venue, "Weekend_Start_Time") : getFlexKey(venue, "Weekday_Start_Time");
+        let closeTimeStr = isWeekend ? getFlexKey(venue, "Weekend_End_Time") : getFlexKey(venue, "Weekday_End_Time");
+        if (!openTimeStr || !closeTimeStr) continue;
+
+        let openMins = timeStringToMinutes(formatTimeCell(openTimeStr));
+        let closeMins = timeStringToMinutes(formatTimeCell(closeTimeStr));
+        
+        for (let timePointer = openMins; (timePointer + durationMins) <= closeMins; timePointer += 30) {
+          if (!isSlotDoubleBooked(checkDateStr, timePointer, durationMins, vId, vParent, existingFixtures, newFixturesArray, venueData, divData)) {
+            newFixturesArray.push({
+              GameID: "GEN-" + Math.floor(Math.random() * 900000 + 100000),
+              Date: checkDateStr,
+              Time: formatMinutesToTime(timePointer),
+              Venue: getFlexKey(venue, "VenueName") || vId,
+              MatchStatus: "Scheduled",
+              HomeTeamID: homeTeamId,
+              AwayTeamID: awayTeamId,
+              SportID: getFlexKey(div, "SportID"),
+              DivisionID: getFlexKey(div, "DivisionID"),
+              VenueID: vId
+            });
+            isScheduled = true;
+            break;
+          }
+        }
+      }
+    }
+    if (!isScheduled) failedPlacements++;
+  }
+
+  if (newFixturesArray.length > 0) {
+    const headers = fixSheet.getRange(1, 1, 1, fixSheet.getLastColumn()).getValues()[0];
+    const writeData = newFixturesArray.map(fixObj => {
+      return headers.map(h => {
+        const cleanH = String(h).trim();
+        if (fixObj[cleanH] !== undefined) return fixObj[cleanH];
+        if (cleanH === "ConflictStatus") return "✅ Clear";
+        return "";
+      });
+    });
+    fixSheet.getRange(fixSheet.getLastRow() + 1, 1, writeData.length, headers.length).setValues(writeData);
+  }
+
+  return {status: "success", message: `Algorithm Execution Complete. Placed: ${newFixturesArray.length} match blocks. Unresolvable Constraints: ${failedPlacements}.`};
+}
+
+// --- AUTO-SCHEDULER MATH HELPERS ---
+
+function getTeamGamesInRollingWeek(teamId, targetDateObj, dbFixtures, cacheFixtures) {
+  let count = 0;
+  let targetTime = targetDateObj.getTime();
+  let msInDay = 24 * 60 * 60 * 1000;
+  const allFixtures = dbFixtures.concat(cacheFixtures);
+  
+  for (let f of allFixtures) {
+    if (getFlexKey(f, "HomeTeamID") === teamId || getFlexKey(f, "AwayTeamID") === teamId) {
+      let fDateObj = new Date(getFlexKey(f, "Date"));
+      if(fDateObj.toString() === "Invalid Date") continue;
+      let fTime = fDateObj.getTime();
+      if (fTime <= targetTime && fTime > targetTime - (7 * msInDay)) count++;
+    }
+  }
+  return count;
+}
+
+function getTeamGamesOnDay(teamId, dateStr, dbFixtures, cacheFixtures) {
+  let count = 0;
+  const allFixtures = dbFixtures.concat(cacheFixtures);
+  for (let f of allFixtures) {
+    if (String(getFlexKey(f, "Date")) === dateStr) {
+      if (getFlexKey(f, "HomeTeamID") === teamId || getFlexKey(f, "AwayTeamID") === teamId) count++;
+    }
+  }
+  return count;
+}
+
+function isVenueBlackedOut(venueId, targetDateObj, availData) {
+  for(let a of availData) {
+    let bVenue = String(getFlexKey(a, "VenueID")).trim();
+    let bStart = new Date(getFlexKey(a, "StartDate"));
+    let bEnd = new Date(getFlexKey(a, "EndDate"));
+    let isAvail = String(getFlexKey(a, "IsAvailable")).toLowerCase();
+    
+    if (isAvail === "false" && bVenue === String(venueId).trim()) {
+      if (targetDateObj >= bStart && targetDateObj <= bEnd) return true;
+    }
+  }
+  return false;
+}
+
+function isSlotDoubleBooked(targetDateStr, targetStartMins, targetDuration, targetVenueId, targetParentId, dbFixtures, cacheFixtures, venueData, divData) {
+  let targetEndMins = targetStartMins + targetDuration;
+  const allFixtures = dbFixtures.concat(cacheFixtures);
+
+  for (let f of allFixtures) {
+    let status = String(getFlexKey(f, "MatchStatus")).toUpperCase();
+    if (status === "CANCELLED" || status === "COMPLETED" || status === "FORFEIT") continue;
+
+    let fDate = new Date(getFlexKey(f, "Date")).toDateString();
+    
+    if (fDate === new Date(targetDateStr).toDateString()) {
+      
+      let fTimeStr = formatTimeCell(getFlexKey(f, "Time"));
+      if (!fTimeStr) continue;
+      
+      let fDivId = getFlexKey(f, "DivisionID");
+      let fDivObj = divData.find(d => String(getFlexKey(d, "DivisionID")).trim() === String(fDivId).trim());
+      let fDuration = fDivObj && getFlexKey(fDivObj, "Match_Duration_Mins") ? parseInt(getFlexKey(fDivObj, "Match_Duration_Mins")) : 60;
+      
+      let fStartMins = timeStringToMinutes(fTimeStr);
+      let fEndMins = fStartMins + fDuration;
+
+      let fVenueId = String(getFlexKey(f, "VenueID")).trim();
+      let fVenueObj = venueData.find(v => String(getFlexKey(v, "VenueID")).trim() === fVenueId);
+      let fParentId = fVenueObj ? String(getFlexKey(fVenueObj, "Parent_VenueID")).trim() : "";
+      
+      let timeOverlap = (targetStartMins < fEndMins && fStartMins < targetEndMins);
+      let physicalOverlap = false;
+      
+      if (targetVenueId === fVenueId) physicalOverlap = true;
+      else if (targetVenueId === fParentId && fParentId !== "") physicalOverlap = true;
+      else if (fVenueId === targetParentId && targetParentId !== "") physicalOverlap = true;
+
+      if (timeOverlap && physicalOverlap) return true;
+    }
+  }
+  return false;
+}
+
+// ---------------------------------------------------------
+// NOTIFICATION ENGINES (PHASE 1)
+// ---------------------------------------------------------
+
+function sendWelcomeEmail(email, name, schoolId, pin, leagueRole) {
+  if (!email || !String(email).includes("@")) return;
+
+  const cleanSchoolId = encodeURIComponent(String(schoolId).trim());
+  const cleanLeagueRole = String(leagueRole || "").trim().toLowerCase();
+  const isAdmin = validAdminRoles.includes(cleanLeagueRole);
+
+  // UNIFIED ROUTING: Everyone uses the exact same portal URL with their school context attached.
+  const portalUrl = `https://bisal.athleticos.net/portal/?school=${cleanSchoolId}`;
+
+  const portalName = isAdmin ? "Coach Portal & League Command Center" : "Coach Portal";
+
+  // Cleaned up instructions to reflect the new automated UI reveal
+  const extraInstructions = isAdmin
+    ? "Your account has been upgraded with System Administrator privileges. The 'Admin' tab will automatically unlock when you access your dashboard."
+    : "";
+
+  const subject = `Welcome to AthleticOS - Secure ${portalName} Access`;
+
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: 0 auto;">
+      <h2>Welcome to AthleticOS</h2>
+      <p>Hello ${name || "User"},</p>
+      <p>Your secure ${portalName} access has been provisioned.</p>
+      <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; margin: 20px 0;">
+        <p style="margin: 0 0 10px 0;"><strong>Your Secure PIN:</strong> <span style="font-size: 1.2rem; letter-spacing: 2px; color: #012300;">${pin}</span></p>
+        <p style="margin: 0;"><strong>Access Link:</strong> <a href="${portalUrl}" style="color: #52c920; font-weight: bold;">Click here to open your dashboard</a></p>
+      </div>
+      ${extraInstructions ? `<p style="color: #1E40AF; font-weight: bold; font-size: 0.9em;">${extraInstructions}</p>` : ""}
+      <p style="font-size: 0.9em; color: #666;">Please keep this PIN secure. If you experience any issues accessing your dashboard, please contact your League Administrator.</p>
+      <p style="font-size: 0.8em; color: #999; margin-top: 30px;">Best regards,<br>AthleticOS Operations Engine</p>
+    </div>
+  `;
+
+  const plainBody = `Hello ${name || "User"},\n\nYour AthleticOS secure ${portalName} has been provisioned.\n\nSecure PIN: ${pin}\n\nAccess Link: ${portalUrl}\n\n${extraInstructions}\n\nPlease keep this PIN secure.\n\nBest regards,\nAthleticOS Operations Engine`;
+
+  try {
+    MailApp.sendEmail({
+      to: email,
+      subject: subject,
+      body: plainBody,
+      htmlBody: htmlBody
+    });
+  } catch(e) {
+    console.error("Welcome email dispatch failed: " + e.toString());
+  }
+}
+
+function sendDisputeAlert(sportId, gameId, homeTeam, awayTeam, rawDate) {
+  try {
+    const ss = SpreadsheetApp.openById(SHEET_ID);
+    const sportsSheet = ss.getSheetByName("Sports");
+    if (!sportsSheet) return;
+    
+    const sportsData = getRawSheetDataJson(sportsSheet);
+    const sport = sportsData.find(s => String(getFlexKey(s, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
+    if (!sport) return;
+    
+    const managerEmail = getFlexKey(sport, "League_Manager");
+    const webhookUrl = getFlexKey(sport, "ChatWebhookURL");
+    const sportName = getFlexKey(sport, "Name") || sportId;
+    
+    let gameDate = rawDate;
+    if (rawDate instanceof Date) {
+      gameDate = Utilities.formatDate(rawDate, Session.getScriptTimeZone(), "yyyy-MM-dd");
+    }
+    
+    const subject = `⚠️ SCORE DISPUTED: Game ${gameId} (${sportName})`;
+    
+    const message = `A match score has been marked as DISPUTED and requires immediate administrative review.\n\n` +
+      `Game ID: ${gameId}\n` +
+      `Sport: ${sportName}\n` +
+      `Matchup: ${homeTeam} vs ${awayTeam}\n` +
+      `Date: ${gameDate}\n\n` +
+      `Please access the Master Admin Ledger or AppSheet to verify and override the final score.`;
+      
+    if (managerEmail && String(managerEmail).includes("@")) {
+      MailApp.sendEmail(managerEmail, subject, message);
+    }
+    
+    if (webhookUrl && String(webhookUrl).startsWith("http")) {
+      const payload = { "text": `*${subject}*\n${message}` };
+      const options = {
+        "method": "post",
+        "contentType": "application/json",
+        "payload": JSON.stringify(payload)
+      };
+      
+      UrlFetchApp.fetch(webhookUrl, options);
+    }
+  } catch (e) {
+    console.error("Dispute alert dispatch failed: " + e.toString());
+  }
+}
+
+// ---------------------------------------------------------
+// DATABASE MANAGEMENT UTILITIES
+// ---------------------------------------------------------
+
+function generateUserPINs() {
+  const ss = SpreadsheetApp.openById(SHEET_ID);
+  const sheet = ss.getSheetByName("Users");
+  if (!sheet) return;
+  
+  const data = sheet.getDataRange().getValues();
+  if (data.length <= 1) return;
+  const headers = data[0];
+  const pinColIdx = headers.map(h => String(h).trim().toLowerCase()).indexOf("userpin");
+  const emailColIdx = headers.map(h => String(h).trim().toLowerCase()).indexOf("useremail");
+  const nameColIdx = headers.map(h => String(h).trim().toLowerCase()).indexOf("username");
+  const schoolColIdx = headers.map(h => String(h).trim().toLowerCase()).indexOf("schoolid");
+  const leagueRoleColIdx = headers.map(h => String(h).trim().toLowerCase()).indexOf("leaguerole");
+
+  if (pinColIdx === -1) {
+    console.error("Error: Could not find 'UserPIN' column in Users tab.");
+    return;
+  }
+
+  let updates = 0;
+  for (let i = 1; i < data.length; i++) {
+    const currentPin = String(data[i][pinColIdx]).trim();
+    if (!currentPin || currentPin === "") {
+      const newPin = Math.floor(Math.random() * 900000 + 100000).toString();
+      sheet.getRange(i + 1, pinColIdx + 1).setValue(newPin);
+      
+      const uEmail = emailColIdx !== -1 ? data[i][emailColIdx] : "";
+      const uName = nameColIdx !== -1 ? data[i][nameColIdx] : "";
+      const uSchool = schoolColIdx !== -1 ? data[i][schoolColIdx] : "";
+      const uLeagueRole = leagueRoleColIdx !== -1 ? data[i][leagueRoleColIdx] : "";
+      
+      sendWelcomeEmail(uEmail, uName, uSchool, newPin, uLeagueRole);
+      updates++;
+    }
+  }
+  console.log(`Success: Generated ${updates} new PIN(s).`);
+}
+
+function processUserEdits(e) {
+  if (!e || !e.range) return;
+  
+  const sheet = e.range.getSheet();
+  const tabName = sheet.getName().trim().toLowerCase();
+
+  if (tabName !== "users") return;
+  
+  try {
+    const row = e.range.getRow();
+    const col = e.range.getColumn();
+    if (row <= 1) return;
+    
+    const headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const cleanHeaders = headers.map(h => String(h).trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+    
+    const schoolColIdx = cleanHeaders.findIndex(h => h.includes("schoolid") || h === "school") + 1;
+    const pinColIdx = cleanHeaders.findIndex(h => h.includes("userpin") || h === "pin" || h === "password") + 1;
+    const emailColIdx = cleanHeaders.findIndex(h => h.includes("useremail") || h === "email") + 1;
+    const nameColIdx = cleanHeaders.findIndex(h => h.includes("username") || h === "name") + 1;
+    const leagueRoleColIdx = cleanHeaders.findIndex(h => h.includes("leaguerole")) + 1;
+    
+    let editedValue = String(e.range.getValue()).trim();
+    if (!editedValue || editedValue === "") return;
+    
+    if (col === schoolColIdx && schoolColIdx > 0) {
+      if (!editedValue.toUpperCase().startsWith("SCH-")) {
+        const allSheets = e.source.getSheets();
+        let schoolsSheet = null;
+        for(let s of allSheets) {
+          if(s.getName().trim().toLowerCase() === "schools") { schoolsSheet = s; break; }
+        }
+        
+        if (!schoolsSheet) throw new Error("Schools tab not found.");
+        const schoolsData = schoolsSheet.getDataRange().getValues();
+        const schoolHeaders = schoolsData[0].map(h => String(h).trim().toLowerCase().replace(/[^a-z0-9]/g, ''));
+        
+        const nameIdx = schoolHeaders.findIndex(h => h.includes("name"));
+        const idIdx = schoolHeaders.findIndex(h => h.includes("schoolid") || h.includes("id"));
+
+        if (nameIdx === -1 || idIdx === -1) throw new Error("Could not find Name or ID column in Schools tab.");
+        let found = false;
+        for (let i = 1; i < schoolsData.length; i++) {
+          if (String(schoolsData[i][nameIdx]).trim().toLowerCase() === editedValue.toLowerCase()) {
+            e.range.setValue(schoolsData[i][idIdx]);
+            e.source.toast(`Swapped ${editedValue} to ${schoolsData[i][idIdx]}`, "Success");
+            found = true;
+            break;
+          }
+        }
+        if (!found) {
+          e.source.toast(`School name '${editedValue}' not found in database.`, "Warning");
+        }
+      }
+    }
+
+    const currentRowData = sheet.getRange(row, 1, 1, sheet.getLastColumn()).getValues()[0];
+    const currentEmail = emailColIdx > 0 ? String(currentRowData[emailColIdx - 1]).trim() : "";
+    const currentName = nameColIdx > 0 ? String(currentRowData[nameColIdx - 1]).trim() : "";
+    const currentSchool = schoolColIdx > 0 ? String(currentRowData[schoolColIdx - 1]).trim() : "";
+    const currentPin = pinColIdx > 0 ? String(currentRowData[pinColIdx - 1]).trim() : "";
+    const currentLeagueRole = leagueRoleColIdx > 0 ? String(currentRowData[leagueRoleColIdx - 1]).trim() : "";
+
+    // Required execution gate to ensure dropdown parameters exist before dispatch loops
+    if (currentEmail.includes("@") && currentName !== "" && currentSchool !== "" && currentLeagueRole !== "") {
+      if (!currentPin || currentPin === "") {
+        const newPin = Math.floor(Math.random() * 900000 + 100000).toString();
+        sheet.getRange(row, pinColIdx).setValue(newPin);
+        
+        sendWelcomeEmail(currentEmail, currentName, currentSchool, newPin, currentLeagueRole);
+        e.source.toast(`Row Complete. Generated new PIN and dispatched welcome email to ${currentEmail}.`, "Success");
+      }
+    }
+
+  } catch (err) {
+    console.error(err.message);
+    e.source.toast(err.message, "Script Error");
+  }
+}
+
+function forceSetupEditTrigger() {
+  const sheetId = "1HwgLjambTNhiXJ4GB6lzbgJa2aUWC845WKcjQai6yhA";
+  const triggers = ScriptApp.getProjectTriggers();
+  for (let i = 0; i < triggers.length; i++) {
+    if (triggers[i].getHandlerFunction() === 'processUserEdits') {
+      ScriptApp.deleteTrigger(triggers[i]);
+    }
+  }
+  
+  ScriptApp.newTrigger("processUserEdits")
+    .forSpreadsheet(sheetId)
+    .onEdit()
+    .create();
+  console.log("Installable OnEdit trigger created successfully.");
+}
