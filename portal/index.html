@@ -638,6 +638,16 @@
       return accurateKey ? obj[accurateKey] : '';
     }
 
+    // =========================================================================
+    // PHASE 3: SECURITY GATEKEEPER WRAPPER
+    // =========================================================================
+    function buildSecurePayload(basePayload) {
+      basePayload.authEmail = sessionStorage.getItem('auth_email');
+      basePayload.authPin = sessionStorage.getItem('auth_pin');
+      return JSON.stringify(basePayload);
+    }
+    // =========================================================================
+
     function getSchoolLogo(sch) {
       if (!sch) return '';
       const directKeys = ['Website_Logo', 'Website Logo', 'website_logo', 'WebsiteLogo', 'Logo', 'logo', 'Image', 'image', 'LogoURL'];
@@ -693,7 +703,6 @@
         const result = await response.json();
 
         if (result.status === "success") {
-          // Commit context state keys to secure storage vectors
           sessionStorage.setItem(`auth_active_user`, "true");
           sessionStorage.setItem(`auth_email`, emailInput);
           sessionStorage.setItem(`auth_pin`, pinInput);
@@ -731,7 +740,6 @@
         globalRosterData = data.Roster || []; globalTeamsData = data.Teams || []; globalDivisionsData = data.Divisions || [];
         globalVenuesData = data.Venues || []; globalAvailabilityData = data.School_Availability || []; globalSportsData = data.Sports || [];
         
-        // Dynamic Extraction of Roles from Local Context State
         const savedEmail = sessionStorage.getItem(`auth_email`);
         let userSchoolRole = sessionStorage.getItem(`userRole`) || "Coach";
         let userLeagueRole = sessionStorage.getItem(`leagueRole`) || "none";
@@ -783,19 +791,16 @@
         renderChatLaunchers();
         renderMessages(data.Messages || []);
         
-        // UNLOCK ADMINISTRATIVE PRIVILEGE GATEWAYS
         const validAdmins = ["hq", "conference admin", "league admin"];
         if(validAdmins.includes(String(userLeagueRole).toLowerCase())) {
           document.getElementById('nav-admin-link').style.display = "flex";
           document.getElementById('admin-staff-name').innerText = staffDisplayName;
           
-          // Hydrate Administrative metrics panel objects
           document.getElementById('meta-stat-players').innerText = globalRosterData.length;
           document.getElementById('meta-stat-venues').innerText = globalVenuesData.length;
           document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
           document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
           
-          // Populate scheduler dropdown elements
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
           globalDivisionsData.forEach(div => {
@@ -946,7 +951,7 @@
       const team = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
       if (team) {
         const sportId = readFlexibleObjectValue(team, "SportID");
-        const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
+        const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
         const sportName = sport ? String(readFlexibleObjectValue(sport, "Name")).toLowerCase() : '';
 
         let ruleText = "<strong>Kit & Safety Protocol</strong><br>Ensure proper athletic footwear and matching school kits.";
@@ -1074,7 +1079,7 @@
       btn.innerText = "Syncing Matrix Rows...";
       const payload = { action: "addVenue", schoolId: targetSchoolID, facilityType: document.getElementById('facility-architecture-type').value, venueName: vName, unitCount: document.getElementById('new-venue-unit-count').value, sportIds: Array.from(checkedBoxes).map(cb => readFlexibleObjectValue(globalSportsData.find(s => String(readFlexibleObjectValue(s, "Name")).includes(cb.value)), "SportID")), weekdayStart: document.getElementById('new-v-wkd-start').value, weekdayEnd: document.getElementById('new-v-wkd-end').value, weekendStart: document.getElementById('new-v-wnd-start').value, weekendEnd: document.getElementById('new-v-wnd-end').value };
       try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) }); const result = await res.json();
+        const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload(payload) }); const result = await res.json();
         if(result.status === "success") { btn.innerText = "Facility Saved ✓"; setTimeout(() => initApp(), 1000); } else alert("Error: " + result.message);
       } catch(e) { alert("Network exception."); btn.innerText = "➕ Register Facility Matrix"; }
     }
@@ -1084,7 +1089,7 @@
       const payload = { action: "updateVenue", venueId: document.getElementById('avail-venue-select').value, weekdayStart: document.getElementById('hours-v-wkd-start').value, weekdayEnd: document.getElementById('hours-v-wkd-end').value, weekendStart: document.getElementById('hours-v-wnd-start').value, weekendEnd: document.getElementById('hours-v-wnd-end').value };
       btn.innerText = "Saving Profile...";
       try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload(payload) });
         if((await res.json()).status === "success") { btn.innerText = "Hours Locked ✓"; setTimeout(() => initApp(), 1000); }
       } catch(e) { alert("Network drop."); btn.innerText = "Update Operational Bounds"; }
     }
@@ -1104,7 +1109,7 @@
       
       btn.innerText = "Transmitting...";
       try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify(payload) });
+        const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload(payload) });
         if((await res.json()).status === "success") { btn.innerText = "Logged Sync ✓"; setTimeout(() => initApp(), 1000); }
       } catch(e) { alert("Network dropped."); btn.innerText = "+ Log Availability Change"; }
     }
@@ -1112,7 +1117,7 @@
     async function deleteAvailability(availId) {
       if(!confirm("Are you sure you want to permanently delete this blackout window?")) return;
       try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "deleteAvailability", availId: availId }) });
+        const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "deleteAvailability", availId: availId }) });
         if((await res.json()).status === "success") initApp();
       } catch(e) { alert("Network drop."); }
     }
@@ -1242,7 +1247,7 @@
       document.getElementById('app-container').style.display = 'none'; document.getElementById('loader').style.display = 'block';
       document.getElementById('loader').innerText = `Processing bulk import of ${playersArray.length} athletes. Please do not close this window...`;
       try {
-        const res = await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "bulkImportRoster", schoolId: targetSchoolID, teamId: teamId, players: playersArray }) });
+        const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "bulkImportRoster", schoolId: targetSchoolID, teamId: teamId, players: playersArray }) });
         initApp();
       } catch (err) { alert("Network transaction dropped during upload."); initApp(); }
     }
@@ -1259,7 +1264,7 @@
       try {
         const response = await fetch(API_URL, {
           method: "POST",
-          body: JSON.stringify({ action: "generateSchedule", divisionId: divSelect.value })
+          body: buildSecurePayload({ action: "generateSchedule", divisionId: divSelect.value })
         });
         const result = await response.json();
         alert(`Core Operational Response:\n\n${result.message}`);
@@ -1273,15 +1278,15 @@
 
     async function triggerGlobalScoreAudit() {
       alert("Conflict Watchdog verification sweep initiated. This updates conflict status flags inside the sheet ledger.");
-      await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "auditScores" }) });
+      await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "auditScores" }) });
       initApp();
     }
 
-    async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
-    async function submitProposalVote(gameId, proposalNum, voteType) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "voteProposal", schoolId: targetSchoolID, gameId: gameId, proposalNum: proposalNum, vote: voteType }) }).then(() => initApp()); }
-    async function submitScore(gameId) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, homeScore: document.getElementById(`homeScore-${gameId}`).value, awayScore: document.getElementById(`awayScore-${gameId}`).value, status: document.getElementById(`status-${gameId}`).value }) }).then(() => initApp()); }
-    async function updatePlayer(rosterId) { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value }) }).then(() => initApp()); }
-    async function registerTeam() { fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "registerTeam", schoolId: targetSchoolID, divisionId: document.getElementById('new-team-division').value, sportId: document.getElementById('new-team-division').options[document.getElementById('new-team-division').selectedIndex].getAttribute('data-sport') }) }).then(() => initApp()); }
+    async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
+    async function submitProposalVote(gameId, proposalNum, voteType) { fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "voteProposal", schoolId: targetSchoolID, gameId: gameId, proposalNum: proposalNum, vote: voteType }) }).then(() => initApp()); }
+    async function submitScore(gameId) { fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, homeScore: document.getElementById(`homeScore-${gameId}`).value, awayScore: document.getElementById(`awayScore-${gameId}`).value, status: document.getElementById(`status-${gameId}`).value }) }).then(() => initApp()); }
+    async function updatePlayer(rosterId) { fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "updatePlayer", rosterId: rosterId, nickname: document.getElementById(`nick-${rosterId}`).value, jerseyNumber: document.getElementById(`jersey-${rosterId}`).value }) }).then(() => initApp()); }
+    async function registerTeam() { fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "registerTeam", schoolId: targetSchoolID, divisionId: document.getElementById('new-team-division').value, sportId: document.getElementById('new-team-division').options[document.getElementById('new-team-division').selectedIndex].getAttribute('data-sport') }) }).then(() => initApp()); }
     
     async function submitPlayer() { 
       const btn = document.getElementById('btn-add-player'); const teamId = document.getElementById('reg-team').value;
@@ -1308,7 +1313,7 @@
             }
           }
         }
-        await fetch(API_URL, { method: "POST", body: JSON.stringify({ action: "addPlayer", teamId: teamId, nickname: nickname, dob: dob, jerseyNumber: jerseyNumber }) });
+        await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "addPlayer", teamId: teamId, nickname: nickname, dob: dob, jerseyNumber: jerseyNumber }) });
         alert(isTooOld ? "Player logged as TOO OLD." : "✅ Player successfully registered!");
         document.getElementById('reg-nickname').value = ''; document.getElementById('reg-dob').value = ''; document.getElementById('reg-jersey').value = '';
         initApp();
