@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>AthleticOS | Coach Portal</title>
+  <title>AthleticOS | Secure Portal</title>
   <link rel="icon" type="image/png" href="../favicon.png">
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
@@ -205,7 +205,6 @@
 
   <div id="loader">Syncing Database...</div>
 
-  <!-- AIRTIGHT IDENTITY MATRIX LOGIN GATE -->
   <div id="pin-screen">
     <div class="pin-box">
       <h2 id="login-box-title">Secure Portal Login</h2>
@@ -469,7 +468,6 @@
       <div id="messages-list"></div>
     </div>
 
-    <!-- HIDDEN "GOD MODE" LEAGUE ADMINISTRATIVE ENGINE TAB -->
     <div id="tab-admin" class="tab-content">
       <div class="card" style="border-color: #BFDBFE; background-color: #EFF6FF;">
         <div class="card-header" style="color: #1E40AF;">🛡️ Sovereign League Governance Command Console</div>
@@ -836,6 +834,7 @@
         let optionsHtml = '';
         
         const mStatus = readFlexibleObjectValue(game, "MatchStatus");
+        const cStatus = readFlexibleObjectValue(game, "ConflictStatus") || "✅ Clear";
         const gId = readFlexibleObjectValue(game, "GameID");
         const sId = readFlexibleObjectValue(game, "SportID");
         const dId = readFlexibleObjectValue(game, "DivisionID");
@@ -846,6 +845,11 @@
 
         let currentSide = String(hTeam || '').includes(targetSchoolID) ? "Home" : "Away";
         let isScoreLocked = false; let scoreBadgeHtml = ""; let scoreActionButtonsHtml = `<button class="btn-submit" onclick="submitScore('${gId}')">Update Match</button>`;
+
+        let conflictBadgeHtml = "";
+        if (!String(cStatus).includes("Clear") && String(cStatus).trim() !== "") {
+            conflictBadgeHtml = `<div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; color: #991B1B; padding: 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; margin-bottom: 12px; line-height: 1.4;">🚨 WATCHDOG ALERT: ${cStatus}</div>`;
+        }
 
         if (mStatus === "Pending Verification") {
           isScoreLocked = true;
@@ -891,7 +895,7 @@
           proposalsHtml += `</div>`;
         }
         
-        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hTeam, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aTeam, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
+        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hTeam, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aTeam, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
         container.appendChild(card);
       });
     }
@@ -942,7 +946,7 @@
       const team = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
       if (team) {
         const sportId = readFlexibleObjectValue(team, "SportID");
-        const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
+        const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
         const sportName = sport ? String(readFlexibleObjectValue(sport, "Name")).toLowerCase() : '';
 
         let ruleText = "<strong>Kit & Safety Protocol</strong><br>Ensure proper athletic footwear and matching school kits.";
