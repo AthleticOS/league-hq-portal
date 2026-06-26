@@ -323,8 +323,17 @@
           <option value="complex">Multi-Court Complex Shell (e.g. Building D - Gymnasium)</option>
         </select>
 
+        <div id="complex-action-toggle" style="display:none; margin-bottom:12px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
+          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">COMPLEX ACTION</label>
+          <select class="status-select" id="complex-action-type" onchange="toggleComplexInput(this.value, 'complex')" style="margin-bottom:0;">
+            <option value="new">Register a Brand New Complex</option>
+            <option value="existing">Add Courts to an Existing Complex</option>
+          </select>
+        </div>
+
         <label id="label-primary-venue-title" style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FIELD / PITCH IDENTIFIER NAME</label>
         <input type="text" class="text-input" id="new-venue-name" placeholder="e.g. Building D - Gymnasium, Main Turf Field">
+        <select class="status-select" id="existing-parent-select" style="display:none; margin-bottom:10px;"></select>
 
         <div id="complex-split-wizard-gate" style="display:none; margin-top:10px; background-color:#F0FDF4; border:1px solid #BBF7D0; padding:12px; border-radius:8px; margin-bottom:12px;">
           <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">MAX SIMULTANEOUS LOGISTICAL CAPACITY</label>
@@ -984,10 +993,44 @@
     }
 
     function evaluateOnboardingViewTrack(type) {
-      document.getElementById('complex-split-wizard-gate').style.display = type === 'standalone' ? 'none' : 'block';
-      document.getElementById('label-primary-venue-title').innerText = type === 'standalone' ? "FIELD / PITCH IDENTIFIER NAME" : "PARENT COMPLEX SHELL IDENTIFIER";
-      document.getElementById('new-venue-unit-count').value = type === 'standalone' ? "1" : document.getElementById('complex-layout-style').value;
+      const complexToggle = document.getElementById('complex-action-toggle');
+      const complexGate = document.getElementById('complex-split-wizard-gate');
+      
+      if (type === 'standalone') {
+        complexToggle.style.display = 'none';
+        complexGate.style.display = 'none';
+        document.getElementById('new-venue-unit-count').value = "1";
+        toggleComplexInput('new', 'standalone');
+      } else {
+        complexToggle.style.display = 'block';
+        complexGate.style.display = 'block';
+        document.getElementById('new-venue-unit-count').value = document.getElementById('complex-layout-style').value;
+        toggleComplexInput(document.getElementById('complex-action-type').value, 'complex');
+      }
     }
+
+    function toggleComplexInput(actionType, archType = 'complex') {
+      const textInput = document.getElementById('new-venue-name');
+      const selectInput = document.getElementById('existing-parent-select');
+      const label = document.getElementById('label-primary-venue-title');
+
+      if (archType === 'standalone') {
+        label.innerText = "FIELD / PITCH IDENTIFIER NAME";
+        textInput.style.display = 'block';
+        selectInput.style.display = 'none';
+      } else {
+        if (actionType === 'new') {
+          label.innerText = "NEW PARENT COMPLEX SHELL NAME";
+          textInput.style.display = 'block';
+          selectInput.style.display = 'none';
+        } else {
+          label.innerText = "TARGET EXISTING PARENT COMPLEX";
+          textInput.style.display = 'none';
+          selectInput.style.display = 'block';
+        }
+      }
+    }
+
     function calculateComplexUnitCapacity(value) { document.getElementById('new-venue-unit-count').value = value; }
 
     function populateSportsMenu(sports) {
@@ -999,7 +1042,18 @@
     function populateAvailabilityMenus(venues, sports) {
       document.getElementById('avail-venue-select').innerHTML = '<option value="">Select Mapped Facility...</option>';
       document.getElementById('ex-venue-id').innerHTML = '<option value="">Select Target Facility...</option>';
+      document.getElementById('existing-parent-select').innerHTML = '<option value="">Select Parent Complex...</option>';
+      
       const schoolVenues = venues.filter(v => String(readFlexibleObjectValue(v, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+      
+      // Smart Toggle Generation (Parent Complexes Only)
+      const parentVenues = schoolVenues.filter(v => String(readFlexibleObjectValue(v, "Capacity_Type")).trim().toLowerCase() === 'parent');
+      parentVenues.forEach(v => {
+        const vName = readFlexibleObjectValue(v, "VenueName") || readFlexibleObjectValue(v, "VenueID");
+        document.getElementById('existing-parent-select').innerHTML += `<option value="${vName}">${vName}</option>`;
+      });
+
+      // Regular Operational Bounds Dropdowns (Playable Courts Only)
       schoolVenues.filter(v => String(readFlexibleObjectValue(v, "Capacity_Type")).trim().toLowerCase() !== 'parent').forEach(v => {
         const textLabel = `${readFlexibleObjectValue(v, "VenueName") || readFlexibleObjectValue(v, "VenueID")} • ${readFlexibleObjectValue(sports.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(readFlexibleObjectValue(v, "SportID")).trim().toLowerCase()), "Name") || 'Field'}`;
         document.getElementById('avail-venue-select').innerHTML += `<option value="${readFlexibleObjectValue(v, "VenueID")}">${textLabel}</option>`;
@@ -1072,12 +1126,22 @@
 
     async function submitCreateNewVenue() {
       const btn = document.getElementById('btn-add-court');
-      const vName = document.getElementById('new-venue-name').value;
+      const archType = document.getElementById('facility-architecture-type').value;
+      const complexAction = document.getElementById('complex-action-type').value;
+      
+      let vName = "";
+      if (archType === 'complex' && complexAction === 'existing') {
+        vName = document.getElementById('existing-parent-select').value;
+        if (!vName) return alert("Please select an existing Parent Complex from the dropdown.");
+      } else {
+        vName = document.getElementById('new-venue-name').value;
+      }
+
       const checkedBoxes = document.querySelectorAll('.sport-venue-checkbox:checked');
       if (!vName || checkedBoxes.length === 0) return alert("Please provide a facility name and toggle at least one sport.");
 
       btn.innerText = "Syncing Matrix Rows...";
-      const payload = { action: "addVenue", schoolId: targetSchoolID, facilityType: document.getElementById('facility-architecture-type').value, venueName: vName, unitCount: document.getElementById('new-venue-unit-count').value, sportIds: Array.from(checkedBoxes).map(cb => readFlexibleObjectValue(globalSportsData.find(s => String(readFlexibleObjectValue(s, "Name")).includes(cb.value)), "SportID")), weekdayStart: document.getElementById('new-v-wkd-start').value, weekdayEnd: document.getElementById('new-v-wkd-end').value, weekendStart: document.getElementById('new-v-wnd-start').value, weekendEnd: document.getElementById('new-v-wnd-end').value };
+      const payload = { action: "addVenue", schoolId: targetSchoolID, facilityType: archType, venueName: vName, unitCount: document.getElementById('new-venue-unit-count').value, sportIds: Array.from(checkedBoxes).map(cb => readFlexibleObjectValue(globalSportsData.find(s => String(readFlexibleObjectValue(s, "Name")).includes(cb.value)), "SportID")), weekdayStart: document.getElementById('new-v-wkd-start').value, weekdayEnd: document.getElementById('new-v-wkd-end').value, weekendStart: document.getElementById('new-v-wnd-start').value, weekendEnd: document.getElementById('new-v-wnd-end').value };
       try {
         const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload(payload) }); const result = await res.json();
         if(result.status === "success") { btn.innerText = "Facility Saved ✓"; setTimeout(() => initApp(), 1000); } else alert("Error: " + result.message);
@@ -1184,8 +1248,7 @@
           const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
           if(sport) {
             const sportName = readFlexibleObjectValue(sport, "Name") || sId; const chatUrl = readFlexibleObjectValue(sport, "ChatSpaceLink") || '#';
-            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; 
-            width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
+            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
           }
         });
       }
