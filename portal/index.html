@@ -248,6 +248,23 @@
     </div>
 
     <div id="tab-teams" class="tab-content">
+      
+      <div class="card" id="admin-staff-management-card" style="display:none; border-color: #C2410C; background-color: #FFF7ED;">
+        <div class="card-header" style="color: #9A3412;">🛡️ Manage Coaching Staff (AD Only)</div>
+        <div class="explainer-box" style="border-left-color: #C2410C; background-color: #FFFFFF; font-size:0.75rem;">
+          Provision a secure portal account for a new coach. An automated email with their secure PIN will be dispatched immediately.
+        </div>
+        
+        <input type="text" class="text-input" id="new-staff-name" placeholder="Coach Full Name" style="margin-bottom:10px;">
+        <input type="email" class="text-input" id="new-staff-email" placeholder="Coach Email Address" style="margin-bottom:10px;">
+        
+        <label style="font-size:0.7rem; color:#9A3412; font-weight:800; display:block; margin-bottom:6px;">ASSIGN VISIBILITY PERMISSIONS</label>
+        <div id="dynamic-staff-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#FFFFFF; border:1px solid #FFEDD5; padding:10px; border-radius:6px; margin-bottom:12px;">
+          </div>
+
+        <button class="btn-submit btn-small" id="btn-add-staff" onclick="submitNewStaff()" style="background-color: #C2410C;">+ Provision Secure Account</button>
+      </div>
+
       <div class="card">
         <div class="card-header">Register for Division</div>
         <select class="status-select" id="new-team-division"><option value="">Select Division...</option></select>
@@ -750,8 +767,8 @@
         globalVenuesData = data.Venues || []; globalAvailabilityData = data.School_Availability || []; globalSportsData = data.Sports || [];
         
         const savedEmail = sessionStorage.getItem(`auth_email`);
-        let userSchoolRole = sessionStorage.getItem(`userRole`) || "Coach";
-        let userLeagueRole = sessionStorage.getItem(`leagueRole`) || "none";
+        let userSchoolRole = String(sessionStorage.getItem(`userRole`)).toLowerCase();
+        let userLeagueRole = String(sessionStorage.getItem(`leagueRole`)).toLowerCase();
         let staffDisplayName = "System Administrator";
 
         if(data.Users && data.Users.length > 0 && savedEmail) {
@@ -795,13 +812,20 @@
         populateAvailabilityMenus(globalVenuesData, globalSportsData);
         populateBlackoutDivisions(); 
         populateSportsMenu(globalSportsData);
+        populateStaffSportsMenu(globalSportsData);
         buildInteractiveCalendarMesh();
         
         renderChatLaunchers();
         renderMessages(data.Messages || []);
         
         const validAdmins = ["hq", "conference admin", "league admin"];
-        if(validAdmins.includes(String(userLeagueRole).toLowerCase())) {
+        
+        // AD DELEGATION REVEAL
+        if (userSchoolRole === "admin" || userSchoolRole === "director" || validAdmins.includes(userLeagueRole)) {
+          document.getElementById('admin-staff-management-card').style.display = 'block';
+        }
+
+        if(validAdmins.includes(userLeagueRole)) {
           document.getElementById('nav-admin-link').style.display = "flex";
           document.getElementById('admin-staff-name').innerText = staffDisplayName;
           
@@ -1037,6 +1061,16 @@
       const container = document.getElementById('new-venue-sports-checkboxes'); container.innerHTML = '';
       const baseNames = [...new Set(sports.map(s => String(readFlexibleObjectValue(s, "Name")).split('(')[0].trim()))].filter(Boolean);
       baseNames.sort().forEach(name => { container.innerHTML += `<label style="display:flex; align-items:center; gap:6px; margin: 2px 0; font-size:0.85rem; font-weight:600; cursor:pointer;"><input type="checkbox" class="sport-venue-checkbox" value="${name}"><span>${name}</span></label>`; });
+    }
+
+    function populateStaffSportsMenu(sports) {
+      const container = document.getElementById('dynamic-staff-sports-checkboxes');
+      if(!container) return;
+      container.innerHTML = '';
+      const baseNames = [...new Set(sports.map(s => String(readFlexibleObjectValue(s, "Name")).split('(')[0].trim()))].filter(Boolean);
+      baseNames.sort().forEach(name => { 
+        container.innerHTML += `<label style="display:flex; align-items:center; gap:6px; margin: 2px 0; font-size:0.85rem; font-weight:600; cursor:pointer;"><input type="checkbox" class="staff-sport-checkbox" value="${name}"><span>${name}</span></label>`; 
+      });
     }
 
     function populateAvailabilityMenus(venues, sports) {
@@ -1343,6 +1377,42 @@
       alert("Conflict Watchdog verification sweep initiated. This updates conflict status flags inside the sheet ledger.");
       await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "auditScores" }) });
       initApp();
+    }
+
+    async function submitNewStaff() {
+      const btn = document.getElementById('btn-add-staff');
+      const name = document.getElementById('new-staff-name').value.trim();
+      const email = document.getElementById('new-staff-email').value.trim();
+      const checkedBoxes = document.querySelectorAll('.staff-sport-checkbox:checked');
+      
+      if (!name || !email || !email.includes('@')) return alert("Error: Please provide a valid full name and email address.");
+      
+      let selectedSports = Array.from(checkedBoxes).map(cb => cb.value);
+      if(selectedSports.length === 0) selectedSports = ["None"];
+      
+      btn.innerText = "Provisioning Secure Identity..."; btn.disabled = true;
+      try {
+        const payload = {
+          action: "addstaff",
+          coachName: name,
+          coachEmail: email,
+          managedSports: selectedSports
+        };
+        const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload(payload) });
+        const result = await res.json();
+        if(result.status === "success") {
+          alert("✅ " + result.message);
+          document.getElementById('new-staff-name').value = '';
+          document.getElementById('new-staff-email').value = '';
+          checkedBoxes.forEach(cb => cb.checked = false);
+        } else {
+          alert(result.message);
+        }
+      } catch(e) {
+        alert("Network exception occurred during transmission.");
+      } finally {
+        btn.innerText = "+ Provision Secure Account"; btn.disabled = false;
+      }
     }
 
     async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
