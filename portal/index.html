@@ -637,7 +637,7 @@
     <div class="nav-item active" onclick="switchTab('games')">Games</div>
     <div class="nav-item" onclick="switchTab('teams')">Teams</div>
     <div class="nav-item" onclick="switchTab('registration')">Rosters</div>
-    <div class="nav-item" onclick="switchTab('availability')">Availability</div>
+    <div class="nav-item" id="nav-availability" onclick="switchTab('availability')">Availability</div>
     <div class="nav-item" onclick="switchTab('messages')">Messages</div>
     <div class="nav-item" id="nav-admin-link" style="display:none;" onclick="switchTab('admin')">Admin</div>
     <div class="nav-item" onclick="switchTab('help')">Help</div>
@@ -774,13 +774,19 @@
         if (data && data.status === "error") throw new Error(data.message);
 
         globalUsersData = data.Users || [];
-        globalRosterData = data.Roster || []; globalTeamsData = data.Teams || []; globalDivisionsData = data.Divisions || [];
-        globalVenuesData = data.Venues || []; globalAvailabilityData = data.School_Availability || []; globalSportsData = data.Sports || [];
+        globalRosterData = data.Roster || []; 
+        globalTeamsData = data.Teams || []; 
+        globalDivisionsData = data.Divisions || [];
+        globalVenuesData = data.Venues || []; 
+        globalAvailabilityData = data.School_Availability || []; 
+        globalSportsData = data.Sports || [];
         
         const savedEmail = sessionStorage.getItem(`auth_email`);
         let userSchoolRole = String(sessionStorage.getItem(`userRole`)).toLowerCase();
         let userLeagueRole = String(sessionStorage.getItem(`leagueRole`)).toLowerCase();
         let staffDisplayName = "System Administrator";
+        
+        let assignedTeams = []; // Phase 4 Filter Parameter
 
         if(globalUsersData.length > 0 && savedEmail) {
           const userObj = globalUsersData.find(u => String(readFlexibleObjectValue(u, "UserEmail")).trim().toLowerCase() === savedEmail.toLowerCase());
@@ -789,7 +795,50 @@
             if(!targetSchoolID) {
               targetSchoolID = readFlexibleObjectValue(userObj, "SchoolID");
             }
+            
+            // Extract the specific teams this coach is allowed to see
+            let mt = readFlexibleObjectValue(userObj, "ManagedTeams") || "None";
+            if (mt.toLowerCase() !== "none" && mt.trim() !== "") {
+              assignedTeams = mt.split(',').map(t => t.trim().toLowerCase());
+            }
           }
+        }
+
+        const validAdmins = ["hq", "conference admin", "league admin"];
+        const isFullAccess = (userSchoolRole === "admin" || userSchoolRole === "director" || validAdmins.includes(userLeagueRole));
+
+        // LASER-FOCUSED SPORT FILTERING & FAILSAFES
+        let appFixtures = data.Fixtures || [];
+        
+        if (!isFullAccess) {
+            // Lock out the Availability Tab entirely for standard coaches
+            document.getElementById('nav-availability').style.display = 'none';
+            
+            // Orphan Failsafe
+            if (assignedTeams.length === 0) {
+                document.getElementById('app-container').innerHTML = `
+                  <div class="card" style="border-color: #DC2626; background-color: #FEF2F2; text-align: center; padding: 40px 20px;">
+                    <h3 style="color: #991B1B; margin-top: 0;">⚠️ No Teams Assigned</h3>
+                    <p style="color: #7F1D1D; font-size: 0.9rem;">Your secure account is active, but you have not been granted visibility to any specific teams yet.</p>
+                    <p style="color: #7F1D1D; font-size: 0.9rem;">Please contact your Athletic Director to update your coaching assignments.</p>
+                  </div>
+                `;
+                loaderElement.style.display = 'none'; 
+                document.getElementById('app-container').style.display = 'block';
+                return; // Stop rendering the rest of the application
+            }
+
+            // Filter Global Teams List to only show assigned teams
+            globalTeamsData = globalTeamsData.filter(t => {
+                return assignedTeams.includes(String(readFlexibleObjectValue(t, "TeamID")).trim().toLowerCase());
+            });
+
+            // Filter Fixtures to only show games involving the assigned teams
+            appFixtures = appFixtures.filter(game => {
+                const hId = String(readFlexibleObjectValue(game, "HomeTeamID")).trim().toLowerCase();
+                const aId = String(readFlexibleObjectValue(game, "AwayTeamID")).trim().toLowerCase();
+                return assignedTeams.includes(hId) || assignedTeams.includes(aId);
+            });
         }
 
         if (data.Settings && data.Settings.length > 0) {
@@ -816,7 +865,8 @@
         }
         
         document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
-        renderGames(data.Fixtures || [], data.Schools || [], globalSportsData, globalDivisionsData);
+        
+        renderGames(appFixtures, data.Schools || [], globalSportsData, globalDivisionsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
         
@@ -829,12 +879,10 @@
         renderChatLaunchers();
         renderMessages(data.Messages || []);
         
-        const validAdmins = ["hq", "conference admin", "league admin"];
-        
         // AD DELEGATION REVEAL
-        if (userSchoolRole === "admin" || userSchoolRole === "director" || validAdmins.includes(userLeagueRole)) {
+        if (isFullAccess) {
           document.getElementById('admin-staff-management-card').style.display = 'block';
-          renderStaffList(); // Populate the existing staff list
+          renderStaffList();
         }
 
         if(validAdmins.includes(userLeagueRole)) {
