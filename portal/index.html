@@ -660,6 +660,8 @@
     let leagueYear = 2026; let cutoffMonth = 1; let cutoffDay = 1; let calFocusDate = new Date();
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
     
+    let activeRosterTeamId = ""; // NEW: State Tracker for Active Roster Dropdown
+    
     window.onerror = function(message, source, lineno, colno, error) {
       document.getElementById('loader').style.display = 'none';
       document.getElementById('portal-crash-terminal').style.display = 'block';
@@ -869,6 +871,15 @@
         renderGames(appFixtures, data.Schools || [], globalSportsData, globalDivisionsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
+
+        // STATE RESTORATION: Redraw the active roster list seamlessly
+        if (activeRosterTeamId) {
+            const rosterSelect = document.getElementById('manage-team');
+            if (rosterSelect.querySelector(`option[value="${activeRosterTeamId}"]`)) {
+                rosterSelect.value = activeRosterTeamId;
+                renderRosterList(activeRosterTeamId);
+            }
+        }
         
         populateAvailabilityMenus(globalVenuesData, globalSportsData);
         populateBlackoutDivisions(); 
@@ -1128,6 +1139,7 @@
     }
 
     function renderRosterList(teamId) {
+      activeRosterTeamId = teamId; // SAVE STATE
       const container = document.getElementById('roster-list');
       const complianceBox = document.getElementById('dynamic-roster-compliance');
       const showArchived = document.getElementById('toggle-archived-players').checked;
