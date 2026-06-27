@@ -190,7 +190,10 @@
         <p id="school-title">Identity Verification Required</p>
       </div>
     </div>
-    <div id="dynamic-school-logo-container"></div>
+    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
+      <div id="dynamic-school-logo-container"></div>
+      <button id="btn-signout" onclick="signOut()" style="display:none; background-color:#991B1B; color:#fff; border:none; border-radius:4px; font-size:0.65rem; font-weight:800; padding:4px 8px; cursor:pointer;">SIGN OUT</button>
+    </div>
   </header>
 
   <div id="portal-crash-terminal" style="display:none; margin:20px; padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px; font-family:monospace;">
@@ -677,13 +680,34 @@
     }
 
     // =========================================================================
-    // PHASE 3: SECURITY GATEKEEPER WRAPPER
+    // PHASE 3: SECURITY GATEKEEPER WRAPPER & SESSION MANAGEMENT
     // =========================================================================
     function buildSecurePayload(basePayload) {
       basePayload.authEmail = sessionStorage.getItem('auth_email');
       basePayload.authPin = sessionStorage.getItem('auth_pin');
       return JSON.stringify(basePayload);
     }
+    
+    let inactivityTimer;
+    function resetIdleTimer() {
+      clearTimeout(inactivityTimer);
+      if (sessionStorage.getItem('auth_active_user') === "true") {
+        inactivityTimer = setTimeout(signOut, 20 * 60 * 1000); // 20 minutes
+      }
+    }
+    
+    function signOut() {
+      sessionStorage.removeItem('auth_active_user');
+      sessionStorage.removeItem('auth_email');
+      sessionStorage.removeItem('auth_pin');
+      sessionStorage.removeItem('leagueRole');
+      sessionStorage.removeItem('userRole');
+      window.location.reload();
+    }
+
+    ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
+      document.addEventListener(evt, resetIdleTimer, true);
+    });
     // =========================================================================
 
     function getSchoolLogo(sch) {
@@ -768,6 +792,8 @@
     async function initApp() {
       const loaderElement = document.getElementById('loader');
       loaderElement.style.display = 'block'; loaderElement.innerText = "Syncing Database Core Matrices...";
+      document.getElementById('btn-signout').style.display = 'block'; // Reveal manual sign-out
+      resetIdleTimer(); // Start 20-minute watchdog
 
       try {
         const response = await fetch(API_URL);
