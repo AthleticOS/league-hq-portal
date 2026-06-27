@@ -268,7 +268,7 @@
         <input type="text" class="text-input" id="new-staff-name" placeholder="Coach Full Name" style="margin-bottom:10px;">
         <input type="email" class="text-input" id="new-staff-email" placeholder="Coach Email Address" style="margin-bottom:10px;">
         
-        <label style="font-size:0.7rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px;">ASSIGN VISIBILITY PERMISSIONS</label>
+        <label style="font-size:0.7rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px;">ASSIGN VISIBILITY PERMISSIONS (TEAMS)</label>
         <div id="dynamic-staff-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#FFFFFF; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
           </div>
 
@@ -823,7 +823,7 @@
         populateAvailabilityMenus(globalVenuesData, globalSportsData);
         populateBlackoutDivisions(); 
         populateSportsMenu(globalSportsData);
-        populateStaffSportsMenu(globalSportsData);
+        populateStaffTeamsMenu();
         buildInteractiveCalendarMesh();
         
         renderChatLaunchers();
@@ -891,7 +891,7 @@
           const name = readFlexibleObjectValue(staff, "UserName");
           const email = readFlexibleObjectValue(staff, "UserEmail");
           const role = readFlexibleObjectValue(staff, "SchoolRole");
-          const sports = readFlexibleObjectValue(staff, "ManagedSports") || "None";
+          const teamsStr = readFlexibleObjectValue(staff, "ManagedTeams") || "None";
           const isRevoked = String(role).toLowerCase() === "revoked";
           const isSelf = String(email).trim().toLowerCase() === String(savedEmail).trim().toLowerCase();
           
@@ -906,27 +906,46 @@
               toggleBtn = `<span style="font-size:0.7rem; color:var(--text-muted); font-weight:800; padding:5px;">(You)</span>`;
           }
 
-          let sportsEditHtml = "";
+          const currentTeamsArr = teamsStr.split(',').map(s => s.trim().toLowerCase());
+          let visibilityLabels = [];
+          if (teamsStr !== "None" && teamsStr !== "") {
+              currentTeamsArr.forEach(tId => {
+                  const tObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).toLowerCase() === tId);
+                  if(tObj) {
+                     visibilityLabels.push(getTeamDisplayName(readFlexibleObjectValue(tObj, "SportID"), readFlexibleObjectValue(tObj, "DivisionID"), globalSportsData, globalDivisionsData));
+                  } else {
+                     visibilityLabels.push(tId);
+                  }
+              });
+          }
+          const displayVisibility = visibilityLabels.length > 0 ? visibilityLabels.join(', ') : "None";
+
+          let teamsEditHtml = "";
           if (!isRevoked && !isSelf) {
                const cleanEmailId = email.replace(/[^a-zA-Z0-9]/g, '');
-               let sportsCheckboxesHtml = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:8px;">`;
-               const baseNames = [...new Set(globalSportsData.map(s => String(readFlexibleObjectValue(s, "Name")).split('(')[0].trim()))].filter(Boolean);
-               const currentSportsArr = sports.split(',').map(s => s.trim().toLowerCase());
+               let teamsCheckboxesHtml = `<div style="display:grid; grid-template-columns:1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:8px; max-height: 150px; overflow-y: auto;">`;
+               const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
                
-               baseNames.sort().forEach(sportName => {
-                   const isChecked = currentSportsArr.includes(sportName.toLowerCase()) ? "checked" : "";
-                   sportsCheckboxesHtml += `<label style="display:flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:600; cursor:pointer;">
-                       <input type="checkbox" class="edit-staff-sport-cb-${cleanEmailId}" value="${sportName}" ${isChecked}>
-                       <span>${sportName}</span>
-                   </label>`;
-               });
-               sportsCheckboxesHtml += `</div>`;
+               if(schoolTeams.length === 0) {
+                  teamsCheckboxesHtml += `<p style="font-size:0.75rem; color:var(--text-muted);">No teams registered.</p>`;
+               } else {
+                  schoolTeams.forEach(team => {
+                      const teamId = readFlexibleObjectValue(team, "TeamID");
+                      const displayName = getTeamDisplayName(readFlexibleObjectValue(team, "SportID"), readFlexibleObjectValue(team, "DivisionID"), globalSportsData, globalDivisionsData);
+                      const isChecked = currentTeamsArr.includes(String(teamId).toLowerCase()) ? "checked" : "";
+                      teamsCheckboxesHtml += `<label style="display:flex; align-items:center; gap:6px; font-size:0.75rem; font-weight:600; cursor:pointer;">
+                          <input type="checkbox" class="edit-staff-team-cb-${cleanEmailId}" value="${teamId}" ${isChecked}>
+                          <span>${displayName}</span>
+                      </label>`;
+                  });
+               }
+               teamsCheckboxesHtml += `</div>`;
 
-               sportsEditHtml = `
+               teamsEditHtml = `
                <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
-                   <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">EDIT ASSIGNED SPORTS</label>
-                   ${sportsCheckboxesHtml}
-                   <button class="btn-submit btn-small" style="background-color:var(--text-muted); margin-top:0; width:auto;" onclick="editStaffSports('${email}', 'edit-staff-sport-cb-${cleanEmailId}')">Save Sport Assignments</button>
+                   <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">EDIT ASSIGNED TEAMS</label>
+                   ${teamsCheckboxesHtml}
+                   <button class="btn-submit btn-small" style="background-color:var(--text-muted); margin-top:0; width:auto;" onclick="editStaffTeams('${email}', 'edit-staff-team-cb-${cleanEmailId}')">Save Team Assignments</button>
                </div>`;
           }
 
@@ -939,14 +958,14 @@
                   <div>
                       <span style="font-weight:800; font-size:0.85rem; color:var(--primary);">${name}</span>
                       <div style="font-size:0.75rem; color:var(--text-muted);">${email}</div>
-                      <div style="font-size:0.7rem; margin-top:4px;">Visibility: <b>${sports}</b></div>
+                      <div style="font-size:0.7rem; margin-top:4px;">Visibility: <b>${displayVisibility}</b></div>
                   </div>
                   <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
                       <span class="${badgeClass}">${badgeText}</span>
                       ${toggleBtn}
                   </div>
               </div>
-              ${sportsEditHtml}
+              ${teamsEditHtml}
           </div>`;
       });
     }
@@ -1181,13 +1200,21 @@
       baseNames.sort().forEach(name => { container.innerHTML += `<label style="display:flex; align-items:center; gap:6px; margin: 2px 0; font-size:0.85rem; font-weight:600; cursor:pointer;"><input type="checkbox" class="sport-venue-checkbox" value="${name}"><span>${name}</span></label>`; });
     }
 
-    function populateStaffSportsMenu(sports) {
+    function populateStaffTeamsMenu() {
       const container = document.getElementById('dynamic-staff-sports-checkboxes');
       if(!container) return;
       container.innerHTML = '';
-      const baseNames = [...new Set(sports.map(s => String(readFlexibleObjectValue(s, "Name")).split('(')[0].trim()))].filter(Boolean);
-      baseNames.sort().forEach(name => { 
-        container.innerHTML += `<label style="display:flex; align-items:center; gap:6px; margin: 2px 0; font-size:0.85rem; font-weight:600; cursor:pointer;"><input type="checkbox" class="staff-sport-checkbox" value="${name}"><span>${name}</span></label>`; 
+      
+      const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+      if(schoolTeams.length === 0) {
+         container.innerHTML = '<p style="font-size:0.75rem; color:var(--text-muted); grid-column: 1 / -1;">No teams registered for this school yet.</p>';
+         return;
+      }
+      
+      schoolTeams.forEach(team => {
+        const teamId = readFlexibleObjectValue(team, "TeamID");
+        const displayName = getTeamDisplayName(readFlexibleObjectValue(team, "SportID"), readFlexibleObjectValue(team, "DivisionID"), globalSportsData, globalDivisionsData);
+        container.innerHTML += `<label style="display:flex; align-items:center; gap:6px; margin: 2px 0; font-size:0.75rem; font-weight:600; cursor:pointer;"><input type="checkbox" class="staff-team-checkbox" value="${teamId}"><span>${displayName}</span></label>`; 
       });
     }
 
@@ -1501,12 +1528,12 @@
       const btn = document.getElementById('btn-add-staff');
       const name = document.getElementById('new-staff-name').value.trim();
       const email = document.getElementById('new-staff-email').value.trim();
-      const checkedBoxes = document.querySelectorAll('.staff-sport-checkbox:checked');
+      const checkedBoxes = document.querySelectorAll('.staff-team-checkbox:checked');
       
       if (!name || !email || !email.includes('@')) return alert("Error: Please provide a valid full name and email address.");
       
-      let selectedSports = Array.from(checkedBoxes).map(cb => cb.value);
-      if(selectedSports.length === 0) selectedSports = ["None"];
+      let selectedTeams = Array.from(checkedBoxes).map(cb => cb.value);
+      if(selectedTeams.length === 0) selectedTeams = ["None"];
       
       btn.innerText = "Provisioning Secure Identity..."; btn.disabled = true;
       try {
@@ -1514,7 +1541,7 @@
           action: "addstaff",
           coachName: name,
           coachEmail: email,
-          managedSports: selectedSports
+          managedTeams: selectedTeams
         };
         const res = await fetch(API_URL, { method: "POST", body: buildSecurePayload(payload) });
         const result = await res.json();
@@ -1552,15 +1579,15 @@
       } catch(e) { alert("Network exception."); initApp(); }
     }
 
-    async function editStaffSports(email, checkboxClass) {
+    async function editStaffTeams(email, checkboxClass) {
       const checkedBoxes = document.querySelectorAll('.' + checkboxClass + ':checked');
-      let selectedSports = Array.from(checkedBoxes).map(cb => cb.value);
-      if(selectedSports.length === 0) selectedSports = ["None"];
-      const sportsVal = selectedSports.join(",");
+      let selectedTeams = Array.from(checkedBoxes).map(cb => cb.value);
+      if(selectedTeams.length === 0) selectedTeams = ["None"];
+      const teamsVal = selectedTeams.join(",");
       
       document.getElementById('loader').style.display = 'block'; document.getElementById('app-container').style.display = 'none';
       try {
-        await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "editstaff", coachEmail: email, managedSports: sportsVal }) });
+        await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "editstaff", coachEmail: email, managedTeams: teamsVal }) });
         initApp();
       } catch(e) { alert("Network exception."); initApp(); }
     }
