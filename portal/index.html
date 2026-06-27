@@ -893,7 +893,6 @@
           const role = readFlexibleObjectValue(staff, "SchoolRole");
           const sports = readFlexibleObjectValue(staff, "ManagedSports") || "None";
           const isRevoked = String(role).toLowerCase() === "revoked";
-          
           const isSelf = String(email).trim().toLowerCase() === String(savedEmail).trim().toLowerCase();
           
           let toggleBtn = "";
@@ -909,13 +908,25 @@
 
           let sportsEditHtml = "";
           if (!isRevoked && !isSelf) {
+               const cleanEmailId = email.replace(/[^a-zA-Z0-9]/g, '');
+               let sportsCheckboxesHtml = `<div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:8px;">`;
+               const baseNames = [...new Set(globalSportsData.map(s => String(readFlexibleObjectValue(s, "Name")).split('(')[0].trim()))].filter(Boolean);
+               const currentSportsArr = sports.split(',').map(s => s.trim().toLowerCase());
+               
+               baseNames.sort().forEach(sportName => {
+                   const isChecked = currentSportsArr.includes(sportName.toLowerCase()) ? "checked" : "";
+                   sportsCheckboxesHtml += `<label style="display:flex; align-items:center; gap:6px; font-size:0.8rem; font-weight:600; cursor:pointer;">
+                       <input type="checkbox" class="edit-staff-sport-cb-${cleanEmailId}" value="${sportName}" ${isChecked}>
+                       <span>${sportName}</span>
+                   </label>`;
+               });
+               sportsCheckboxesHtml += `</div>`;
+
                sportsEditHtml = `
                <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
-                   <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">EDIT ASSIGNED SPORTS (Comma Separated)</label>
-                   <div style="display:flex; gap:10px;">
-                       <input type="text" class="text-input" style="margin-bottom:0; padding:6px; font-size:0.8rem;" id="edit-sports-${email.replace(/[@.]/g, '')}" value="${sports}">
-                       <button class="btn-submit btn-small" style="background-color:var(--text-muted); margin-top:0; width:auto;" onclick="editStaffSports('${email}', 'edit-sports-${email.replace(/[@.]/g, '')}')">Save</button>
-                   </div>
+                   <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">EDIT ASSIGNED SPORTS</label>
+                   ${sportsCheckboxesHtml}
+                   <button class="btn-submit btn-small" style="background-color:var(--text-muted); margin-top:0; width:auto;" onclick="editStaffSports('${email}', 'edit-staff-sport-cb-${cleanEmailId}')">Save Sport Assignments</button>
                </div>`;
           }
 
@@ -1541,8 +1552,12 @@
       } catch(e) { alert("Network exception."); initApp(); }
     }
 
-    async function editStaffSports(email, inputId) {
-      const sportsVal = document.getElementById(inputId).value;
+    async function editStaffSports(email, checkboxClass) {
+      const checkedBoxes = document.querySelectorAll('.' + checkboxClass + ':checked');
+      let selectedSports = Array.from(checkedBoxes).map(cb => cb.value);
+      if(selectedSports.length === 0) selectedSports = ["None"];
+      const sportsVal = selectedSports.join(",");
+      
       document.getElementById('loader').style.display = 'block'; document.getElementById('app-container').style.display = 'none';
       try {
         await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "editstaff", coachEmail: email, managedSports: sportsVal }) });
