@@ -248,7 +248,17 @@
     </div>
 
     <div id="tab-teams" class="tab-content">
+      <div class="card">
+        <div class="card-header">Register for Division</div>
+        <select class="status-select" id="new-team-division"><option value="">Select Division...</option></select>
+        <button class="btn-submit btn-small" id="btn-register-team" onclick="registerTeam()">Register Team</button>
+      </div>
       
+      <div class="card">
+        <div class="card-header">Your Registered Teams</div>
+        <div id="current-teams-list"></div>
+      </div>
+
       <div class="card" id="admin-staff-management-card" style="display:none; border-color: var(--primary); background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">🛡️ Manage Coaching Staff (AD Only)</div>
         <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF; font-size:0.75rem;">
@@ -263,16 +273,10 @@
           </div>
 
         <button class="btn-submit btn-small" id="btn-add-staff" onclick="submitNewStaff()" style="background-color: var(--primary);">+ Provision Secure Account</button>
-      </div>
-
-      <div class="card">
-        <div class="card-header">Register for Division</div>
-        <select class="status-select" id="new-team-division"><option value="">Select Division...</option></select>
-        <button class="btn-submit btn-small" id="btn-register-team" onclick="registerTeam()">Register Team</button>
-      </div>
-      <div class="card">
-        <div class="card-header">Your Registered Teams</div>
-        <div id="current-teams-list"></div>
+        
+        <hr style="border: 1px solid var(--border); margin: 20px 0;">
+        <div class="card-header" style="color: var(--primary);">📋 Existing Staff Roster</div>
+        <div id="existing-staff-list" class="space-y-2"></div>
       </div>
     </div>
 
@@ -308,7 +312,12 @@
       </div>
 
       <div class="card">
-        <div class="card-header">Manage Existing Roster</div>
+        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+          <span>Manage Existing Roster</span>
+          <label style="font-size:0.7rem; font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:5px;">
+            <input type="checkbox" id="toggle-archived-players" onchange="renderRosterList(document.getElementById('manage-team').value)"> Show Archived
+          </label>
+        </div>
         <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
         <div id="dynamic-roster-compliance" class="explainer-box" style="display: none; border-left-color: #C2410C; background-color: #FFF7ED; color: #9A3412;"></div>
         <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
@@ -644,6 +653,7 @@
     let targetSchoolRegion = ''; 
     
     let globalSettingsData = {}; 
+    let globalUsersData = [];
     let globalRosterData = [];
     let globalTeamsData = []; let globalDivisionsData = [];
     let globalVenuesData = []; let globalAvailabilityData = []; let globalSportsData = [];
@@ -763,6 +773,7 @@
         const data = await response.json();
         if (data && data.status === "error") throw new Error(data.message);
 
+        globalUsersData = data.Users || [];
         globalRosterData = data.Roster || []; globalTeamsData = data.Teams || []; globalDivisionsData = data.Divisions || [];
         globalVenuesData = data.Venues || []; globalAvailabilityData = data.School_Availability || []; globalSportsData = data.Sports || [];
         
@@ -771,8 +782,8 @@
         let userLeagueRole = String(sessionStorage.getItem(`leagueRole`)).toLowerCase();
         let staffDisplayName = "System Administrator";
 
-        if(data.Users && data.Users.length > 0 && savedEmail) {
-          const userObj = data.Users.find(u => String(readFlexibleObjectValue(u, "UserEmail")).trim().toLowerCase() === savedEmail.toLowerCase());
+        if(globalUsersData.length > 0 && savedEmail) {
+          const userObj = globalUsersData.find(u => String(readFlexibleObjectValue(u, "UserEmail")).trim().toLowerCase() === savedEmail.toLowerCase());
           if (userObj) {
             staffDisplayName = readFlexibleObjectValue(userObj, "UserName") || staffDisplayName;
             if(!targetSchoolID) {
@@ -823,6 +834,7 @@
         // AD DELEGATION REVEAL
         if (userSchoolRole === "admin" || userSchoolRole === "director" || validAdmins.includes(userLeagueRole)) {
           document.getElementById('admin-staff-management-card').style.display = 'block';
+          renderStaffList(); // Populate the existing staff list
         }
 
         if(validAdmins.includes(userLeagueRole)) {
@@ -860,6 +872,72 @@
       const gender = div ? readFlexibleObjectValue(div, "Gender") : '';
       const ageLimit = div ? readFlexibleObjectValue(div, "Age_Limit") : (divisionId || 'Unknown Div');
       return gender ? `${sportName} - ${gender} - ${ageLimit}` : `${sportName} - ${ageLimit}`;
+    }
+
+    function renderStaffList() {
+      const container = document.getElementById('existing-staff-list');
+      if(!container) return;
+      container.innerHTML = '';
+      
+      const schoolStaff = globalUsersData.filter(u => String(readFlexibleObjectValue(u, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+      const savedEmail = sessionStorage.getItem(`auth_email`);
+      
+      if(schoolStaff.length === 0) {
+          container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted);">No staff registered.</p>';
+          return;
+      }
+      
+      schoolStaff.forEach(staff => {
+          const name = readFlexibleObjectValue(staff, "UserName");
+          const email = readFlexibleObjectValue(staff, "UserEmail");
+          const role = readFlexibleObjectValue(staff, "SchoolRole");
+          const sports = readFlexibleObjectValue(staff, "ManagedSports") || "None";
+          const isRevoked = String(role).toLowerCase() === "revoked";
+          
+          const isSelf = String(email).trim().toLowerCase() === String(savedEmail).trim().toLowerCase();
+          
+          let toggleBtn = "";
+          if (!isSelf) {
+              if (isRevoked) {
+                  toggleBtn = `<button class="btn-submit btn-small" style="background-color: #166534; width:auto;" onclick="toggleStaffStatus('${email}', 'Coach')">↺ Restore</button>`;
+              } else {
+                  toggleBtn = `<button class="btn-submit btn-small" style="background-color: #991B1B; width:auto;" onclick="toggleStaffStatus('${email}', 'Revoked')">🚫 Revoke</button>`;
+              }
+          } else {
+              toggleBtn = `<span style="font-size:0.7rem; color:var(--text-muted); font-weight:800; padding:5px;">(You)</span>`;
+          }
+
+          let sportsEditHtml = "";
+          if (!isRevoked && !isSelf) {
+               sportsEditHtml = `
+               <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
+                   <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">EDIT ASSIGNED SPORTS (Comma Separated)</label>
+                   <div style="display:flex; gap:10px;">
+                       <input type="text" class="text-input" style="margin-bottom:0; padding:6px; font-size:0.8rem;" id="edit-sports-${email.replace(/[@.]/g, '')}" value="${sports}">
+                       <button class="btn-submit btn-small" style="background-color:var(--text-muted); margin-top:0; width:auto;" onclick="editStaffSports('${email}', 'edit-sports-${email.replace(/[@.]/g, '')}')">Save</button>
+                   </div>
+               </div>`;
+          }
+
+          const badgeClass = isRevoked ? "prop-status-text too-old" : "prop-status-text approved";
+          const badgeText = isRevoked ? "REVOKED" : role.toUpperCase();
+          
+          container.innerHTML += `
+          <div style="border:1px solid var(--border); padding:10px; border-radius:6px; background:#fff; margin-bottom:8px;">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                  <div>
+                      <span style="font-weight:800; font-size:0.85rem; color:var(--primary);">${name}</span>
+                      <div style="font-size:0.75rem; color:var(--text-muted);">${email}</div>
+                      <div style="font-size:0.7rem; margin-top:4px;">Visibility: <b>${sports}</b></div>
+                  </div>
+                  <div style="display:flex; flex-direction:column; align-items:flex-end; gap:5px;">
+                      <span class="${badgeClass}">${badgeText}</span>
+                      ${toggleBtn}
+                  </div>
+              </div>
+              ${sportsEditHtml}
+          </div>`;
+      });
     }
 
     function renderGames(fixtures, schoolsData, sportsData, divisionsData) {
@@ -974,6 +1052,7 @@
     function renderRosterList(teamId) {
       const container = document.getElementById('roster-list');
       const complianceBox = document.getElementById('dynamic-roster-compliance');
+      const showArchived = document.getElementById('toggle-archived-players').checked;
 
       if (!teamId) { 
         container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p>'; 
@@ -1000,19 +1079,47 @@
         complianceBox.style.display = 'none';
       }
 
-      const teamRoster = globalRosterData.filter(p => String(readFlexibleObjectValue(p, "TeamID")).trim().toLowerCase() === String(teamId).trim().toLowerCase());
+      const teamRoster = globalRosterData.filter(p => {
+         if (String(readFlexibleObjectValue(p, "TeamID")).trim().toLowerCase() !== String(teamId).trim().toLowerCase()) return false;
+         const status = String(readFlexibleObjectValue(p, "EligibilityStatus")).trim();
+         if (showArchived) return status === "Archived";
+         return status !== "Archived";
+      });
+
       container.innerHTML = '';
       
       if (teamRoster.length === 0) {
-        container.innerHTML = '<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No players registered for this squad yet.</p>';
+        container.innerHTML = `<p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">No ${showArchived ? 'archived' : 'active'} players found for this squad.</p>`;
         return;
       }
 
       teamRoster.forEach(player => {
         const rId = readFlexibleObjectValue(player, "RosterID");
-        const statusText = String(readFlexibleObjectValue(player, "EligibilityStatus")).toUpperCase().includes("OLD") ? "❌ TOO OLD" : "✔️ Eligible";
-        const statusClass = statusText.includes("OLD") ? "prop-status-text too-old" : "prop-status-text approved";
-        container.innerHTML += `<div class="player-card"><div class="player-meta"><span>DOB: <b>${readFlexibleObjectValue(player, "DateOfBirth") || 'N/A'}</b></span><span class="${statusClass}">${statusText}</span></div><input type="text" class="text-input" id="nick-${rId}" value="${readFlexibleObjectValue(player, "Nickname") || ''}" placeholder="Player Name"><input type="number" class="text-input" id="jersey-${rId}" value="${readFlexibleObjectValue(player, "JerseyNumber") || ''}" placeholder="Jersey Number"><button class="btn-submit btn-small" style="background-color: var(--text-muted);" onclick="updatePlayer('${rId}')">Save Changes</button></div>`;
+        const rawStatus = String(readFlexibleObjectValue(player, "EligibilityStatus")).trim();
+        const isArchived = rawStatus === "Archived";
+        const statusText = rawStatus.toUpperCase().includes("OLD") ? "❌ TOO OLD" : (isArchived ? "Archived" : "✔️ Eligible");
+        
+        let statusClass = "prop-status-text approved";
+        if (statusText.includes("OLD")) statusClass = "prop-status-text too-old";
+        if (isArchived) statusClass = "status-badge"; // Neutral gray badge for archived
+
+        const toggleBtnHtml = isArchived 
+           ? `<button class="btn-submit btn-small" style="background-color: #166534;" onclick="togglePlayerStatus('${rId}', 'Restore')">↺ Restore</button>`
+           : `<button class="btn-submit btn-small" style="background-color: #991B1B;" onclick="togglePlayerStatus('${rId}', 'Archived')">🗑️ Archive</button>`;
+
+        container.innerHTML += `
+        <div class="player-card">
+          <div class="player-meta">
+            <span>DOB: <b>${readFlexibleObjectValue(player, "DateOfBirth") || 'N/A'}</b></span>
+            <span class="${statusClass}">${statusText}</span>
+          </div>
+          <input type="text" class="text-input" id="nick-${rId}" value="${readFlexibleObjectValue(player, "Nickname") || ''}" placeholder="Player Name" ${isArchived ? 'disabled' : ''}>
+          <input type="number" class="text-input" id="jersey-${rId}" value="${readFlexibleObjectValue(player, "JerseyNumber") || ''}" placeholder="Jersey Number" ${isArchived ? 'disabled' : ''}>
+          <div style="display:flex; gap:10px;">
+            <button class="btn-submit btn-small" style="background-color: var(--text-muted);" onclick="updatePlayer('${rId}')" ${isArchived ? 'disabled' : ''}>Save Changes</button>
+            ${toggleBtnHtml}
+          </div>
+        </div>`;
       });
     }
 
@@ -1405,6 +1512,7 @@
           document.getElementById('new-staff-name').value = '';
           document.getElementById('new-staff-email').value = '';
           checkedBoxes.forEach(cb => cb.checked = false);
+          initApp();
         } else {
           alert(result.message);
         }
@@ -1413,6 +1521,33 @@
       } finally {
         btn.innerText = "+ Provision Secure Account"; btn.disabled = false;
       }
+    }
+
+    async function togglePlayerStatus(rosterId, newStatus) {
+      if(!confirm(`Are you sure you want to change this player's status to: ${newStatus}?`)) return;
+      document.getElementById('loader').style.display = 'block'; document.getElementById('app-container').style.display = 'none';
+      try {
+        await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "toggleplayerstatus", rosterId: rosterId, status: newStatus }) });
+        initApp();
+      } catch(e) { alert("Network exception."); initApp(); }
+    }
+
+    async function toggleStaffStatus(email, newStatus) {
+      if(!confirm(`Are you sure you want to change this coach's portal access to: ${newStatus}?`)) return;
+      document.getElementById('loader').style.display = 'block'; document.getElementById('app-container').style.display = 'none';
+      try {
+        await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "togglestaffstatus", coachEmail: email, status: newStatus }) });
+        initApp();
+      } catch(e) { alert("Network exception."); initApp(); }
+    }
+
+    async function editStaffSports(email, inputId) {
+      const sportsVal = document.getElementById(inputId).value;
+      document.getElementById('loader').style.display = 'block'; document.getElementById('app-container').style.display = 'none';
+      try {
+        await fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "editstaff", coachEmail: email, managedSports: sportsVal }) });
+        initApp();
+      } catch(e) { alert("Network exception."); initApp(); }
     }
 
     async function submitScoreVerification(gameId, voteType) { fetch(API_URL, { method: "POST", body: buildSecurePayload({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType }) }).then(() => initApp()); }
