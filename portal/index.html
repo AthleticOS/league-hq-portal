@@ -81,6 +81,18 @@
     .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
     .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
 
+    /* ACCORDION HELP MENU */
+    .accordion-item { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: #fff; overflow: hidden; }
+    .accordion-header { background: #F8FAFC; width: 100%; padding: 15px; text-align: left; font-weight: 800; font-size: 0.9rem; color: var(--text-main); border: none; outline: none; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }
+    .accordion-header:hover { background: #F1F5F9; }
+    .accordion-header:after { content: '+'; color: var(--primary); font-size: 1.2rem; font-weight: bold; transition: transform 0.2s; }
+    .accordion-header.active { border-bottom: 1px solid var(--border); }
+    .accordion-header.active:after { content: '−'; transform: rotate(180deg); }
+    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: white; }
+    .accordion-inner { padding: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+    .accordion-inner strong { color: var(--text-main); display: block; margin-top: 10px; margin-bottom: 3px; }
+    .accordion-inner strong:first-child { margin-top: 0; }
+
     /* PROPOSAL INTERACTIVE OBJECTS */
     .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
     .proposal-title { font-size: 0.8rem; color: #C2410C; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
@@ -132,18 +144,6 @@
     /* God Mode highlight */
     #nav-admin { display: none; color: #C2410C; }
     #nav-admin.active { background-color: #FFF7ED; border-top-color: #C2410C; }
-
-    /* ACCORDION HELP MENU */
-    .accordion-item { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: #fff; overflow: hidden; }
-    .accordion-header { background: #F8FAFC; width: 100%; padding: 15px; text-align: left; font-weight: 800; font-size: 0.9rem; color: var(--text-main); border: none; outline: none; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }
-    .accordion-header:hover { background: #F1F5F9; }
-    .accordion-header:after { content: '+'; color: var(--primary); font-size: 1.2rem; font-weight: bold; transition: transform 0.2s; }
-    .accordion-header.active { border-bottom: 1px solid var(--border); }
-    .accordion-header.active:after { content: '−'; transform: rotate(180deg); }
-    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: white; }
-    .accordion-inner { padding: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
-    .accordion-inner strong { color: var(--text-main); display: block; margin-top: 10px; margin-bottom: 3px; }
-    .accordion-inner strong:first-child { margin-top: 0; }
   </style>
 </head>
 <body>
@@ -380,10 +380,23 @@
     </div>
 
     <div id="tab-help" class="tab-content">
+      
       <div class="card">
         <div class="card-header">Contact League Admin</div>
         <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
         <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: #25D366; color: white;">💬 WhatsApp Admin</a>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Technical Support</div>
+        <a href="mailto:support@athleticos.net" class="btn-submit" style="margin-bottom: 10px; background-color: var(--primary);">🛠️ Email System Architect</a>
+        <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 5px; margin-bottom: 0;">For bug reports, portal access issues, or technical errors.</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">Emergency Scheduling Line</div>
+        <a href="tel:+1234567890" class="btn-submit" style="background-color: #991B1B;">🚨 Call Game-Day Hotline</a>
+        <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 5px; margin-bottom: 0;">For severe weather delays or immediate day-of cancellations only.</p>
       </div>
 
       <div class="card">
@@ -443,6 +456,11 @@
         </div>
         <p style="font-size:0.85rem; color:var(--text-muted); text-align:center; padding: 20px;">Administrative tools and venue matrix overrides will populate here.</p>
       </div>
+    </div>
+
+    <div style="text-align: center; padding: 20px; padding-bottom: 30px; font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">
+      <span style="display: block; margin-bottom: 5px;">⚡ Architected & Powered by AthleticOS [cite: 70-71]</span>
+      <a href="https://athleticos.net" target="_blank" style="color: var(--accent); text-decoration: none;">www.athleticos.net</a>
     </div>
 
   </div>
@@ -518,7 +536,6 @@
       btn.style.backgroundColor = "#64748B";
 
       try {
-        // Initial login hits the fetch API normally (without secure wrapper) because we don't have the session credentials yet!
         const response = await fetch(API_URL, {
           method: "POST",
           body: JSON.stringify({ action: "verifyPIN", schoolId: targetSchoolID, pin: pinInput })
@@ -527,7 +544,6 @@
 
         if (result.status === "success") {
           sessionStorage.setItem(`auth_${targetSchoolID}`, "true");
-          // Securely inject the user roles and auth data into the active session
           sessionStorage.setItem(`userRole`, result.role || "none");
           sessionStorage.setItem(`leagueRole`, result.leagueRole || "none");
           sessionStorage.setItem(`_userEmail`, result.email || "");
@@ -1405,6 +1421,17 @@
       }
     }
 
+    // --- ACCORDION CONTROLLER ---
+    function toggleAccordion(button) {
+      button.classList.toggle("active");
+      const content = button.nextElementSibling;
+      if (content.style.maxHeight) {
+        content.style.maxHeight = null;
+      } else {
+        content.style.maxHeight = content.scrollHeight + "px";
+      }
+    }
+
     // --- SECURE LIFECYCLE BOOTSTRAPPER ---
     document.addEventListener("DOMContentLoaded", () => {
       if (!targetSchoolID) {
@@ -1432,16 +1459,6 @@
           nav.classList.add('active');
         }
       });
-    }
-
-    function toggleAccordion(button) {
-      button.classList.toggle("active");
-      const content = button.nextElementSibling;
-      if (content.style.maxHeight) {
-        content.style.maxHeight = null;
-      } else {
-        content.style.maxHeight = content.scrollHeight + "px";
-      }
     }
   </script>
 </body>
