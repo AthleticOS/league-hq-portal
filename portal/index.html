@@ -380,7 +380,6 @@
     </div>
 
     <div id="tab-help" class="tab-content">
-      
       <div class="card">
         <div class="card-header">Contact League Admin</div>
         <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
@@ -443,7 +442,6 @@
             </div>
           </div>
         </div>
-
       </div>
     </div>
 
@@ -459,10 +457,9 @@
     </div>
 
     <div style="text-align: center; padding: 20px; padding-bottom: 30px; font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">
-      <span style="display: block; margin-bottom: 5px;">⚡ Architected & Powered by AthleticOS [cite: 70-71]</span>
+      <span style="display: block; margin-bottom: 5px;">⚡ Architected & Powered by AthleticOS</span>
       <a href="https://athleticos.net" target="_blank" style="color: var(--accent); text-decoration: none;">www.athleticos.net</a>
     </div>
-
   </div>
 
   <div class="bottom-nav" id="bottom-nav">
@@ -519,7 +516,6 @@
         email: sessionStorage.getItem('_userEmail'),
         pin: sessionStorage.getItem('_userPin')
       };
-      
       const response = await fetch(API_URL, {
         method: "POST",
         body: JSON.stringify(payload)
@@ -536,6 +532,7 @@
       btn.style.backgroundColor = "#64748B";
 
       try {
+        // Initial login hits the fetch API normally (without secure wrapper) because we don't have the session credentials yet!
         const response = await fetch(API_URL, {
           method: "POST",
           body: JSON.stringify({ action: "verifyPIN", schoolId: targetSchoolID, pin: pinInput })
@@ -544,6 +541,7 @@
 
         if (result.status === "success") {
           sessionStorage.setItem(`auth_${targetSchoolID}`, "true");
+          // Securely inject the user roles and auth data into the active session
           sessionStorage.setItem(`userRole`, result.role || "none");
           sessionStorage.setItem(`leagueRole`, result.leagueRole || "none");
           sessionStorage.setItem(`_userEmail`, result.email || "");
