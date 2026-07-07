@@ -81,18 +81,6 @@
     .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
     .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
 
-    /* ACCORDION HELP MENU */
-    .accordion-item { border: 1px solid var(--border); border-radius: 8px; margin-bottom: 10px; background: #fff; overflow: hidden; }
-    .accordion-header { background: #F8FAFC; width: 100%; padding: 15px; text-align: left; font-weight: 800; font-size: 0.9rem; color: var(--text-main); border: none; outline: none; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center; }
-    .accordion-header:hover { background: #F1F5F9; }
-    .accordion-header:after { content: '+'; color: var(--primary); font-size: 1.2rem; font-weight: bold; transition: transform 0.2s; }
-    .accordion-header.active { border-bottom: 1px solid var(--border); }
-    .accordion-header.active:after { content: '−'; transform: rotate(180deg); }
-    .accordion-content { max-height: 0; overflow: hidden; transition: max-height 0.2s ease-out; background: white; }
-    .accordion-inner { padding: 15px; font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
-    .accordion-inner strong { color: var(--text-main); display: block; margin-top: 10px; margin-bottom: 3px; }
-    .accordion-inner strong:first-child { margin-top: 0; }
-
     /* PROPOSAL INTERACTIVE OBJECTS */
     .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
     .proposal-title { font-size: 0.8rem; color: #C2410C; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
@@ -387,60 +375,18 @@
       </div>
 
       <div class="card">
-        <div class="card-header">Technical Support</div>
-        <a href="mailto:support@athleticos.net" class="btn-submit" style="margin-bottom: 10px; background-color: var(--primary);">🛠️ Email System Architect</a>
-        <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 5px; margin-bottom: 0;">For bug reports, portal access issues, or technical errors.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-header">Emergency Scheduling Line</div>
-        <a href="tel:+1234567890" class="btn-submit" style="background-color: #991B1B;">🚨 Call Game-Day Hotline</a>
-        <p style="font-size: 0.8rem; color: var(--text-muted); text-align: center; margin-top: 5px; margin-bottom: 0;">For severe weather delays or immediate day-of cancellations only.</p>
-      </div>
-
-      <div class="card">
-        <div class="card-header">Help Center & FAQ</div>
-        
-        <div class="accordion-item">
-          <button class="accordion-header" onclick="toggleAccordion(this)">🏆 Scoring & Match Logistics</button>
-          <div class="accordion-content">
-            <div class="accordion-inner">
-              <strong>How do I report a final score?</strong>
-              Navigate to the 'Games' tab, locate your matchup, enter the Home and Away scores, change the status dropdown to 'Completed', and tap 'Update Match'.
-              
-              <strong>My opponent entered the wrong score. What do I do?</strong>
-              If a score is pending your verification and it is incorrect, click the red "❌ Dispute Score" button. This locks the match and alerts the League Admin to manually review and override the ledger.
-            </div>
-          </div>
+        <div class="card-header">Frequently Asked Questions</div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I report a final score?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Go to the 'Games' tab, enter the Home and Away scores, select 'Completed' from the status dropdown, and tap 'Update Match'.</p>
         </div>
-
-        <div class="accordion-item">
-          <button class="accordion-header" onclick="toggleAccordion(this)">📋 Rosters & Eligibility</button>
-          <div class="accordion-content">
-            <div class="accordion-inner">
-              <strong>How do I register a new team?</strong>
-              Go to the 'Teams' tab, select your desired division from the dropdown, and tap 'Register Team'. Once approved, that division will activate in your Rosters tab.
-              
-              <strong>Why can't I edit a player's Date of Birth?</strong>
-              To maintain strict league eligibility compliance, birthdays are permanently locked upon submission. If you made a typo, contact your League Director for an official override.
-              
-              <strong>What does the "❌ TOO OLD" flag mean?</strong>
-              The system calculates a player's age against the league's firm cutoff date for that specific division. If they exceed the limit, they are mathematically barred from participating.
-            </div>
-          </div>
+        <div style="margin-bottom: 15px; border-bottom: 1px solid var(--border); padding-bottom: 10px;">
+          <strong style="font-size: 0.9rem;">How do I register a new team?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">Navigate to the 'Teams' tab, select the division you wish to compete in, and tap 'Register Team'. The division will then activate in your Rosters tab dropdown list.</p>
         </div>
-
-        <div class="accordion-item">
-          <button class="accordion-header" onclick="toggleAccordion(this)">📍 Facility Availability & Blackouts</button>
-          <div class="accordion-content">
-            <div class="accordion-inner">
-              <strong>How do I log a school holiday?</strong>
-              Navigate to the 'Availability' tab. Select your dates on the interactive calendar, choose 'Global School Blackout', set the constraint to 'School Holiday', and submit.
-              
-              <strong>Why do I need to map my courts?</strong>
-              Our geometric auto-scheduler uses your facility parameters to prevent double-bookings. If you have a gym that can hold 2 simultaneous games, declaring that correctly ensures maximum home-game efficiency without overlaps.
-            </div>
-          </div>
+        <div style="margin-bottom: 0;">
+          <strong style="font-size: 0.9rem;">Why can't I edit a player's Date of Birth?</strong>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 5px; margin-bottom: 0;">To maintain league eligibility compliance, player birthdays are permanently locked upon submission. Contact your League Director to request an official change.</p>
         </div>
       </div>
     </div>
@@ -456,10 +402,6 @@
       </div>
     </div>
 
-    <div style="text-align: center; padding: 20px; padding-bottom: 30px; font-size: 0.75rem; color: var(--text-muted); font-weight: 800; text-transform: uppercase;">
-      <span style="display: block; margin-bottom: 5px;">⚡ Architected & Powered by AthleticOS</span>
-      <a href="https://athleticos.net" target="_blank" style="color: var(--accent); text-decoration: none;">www.athleticos.net</a>
-    </div>
   </div>
 
   <div class="bottom-nav" id="bottom-nav">
@@ -516,6 +458,7 @@
         email: sessionStorage.getItem('_userEmail'),
         pin: sessionStorage.getItem('_userPin')
       };
+      
       const response = await fetch(API_URL, {
         method: "POST",
         body: JSON.stringify(payload)
@@ -1416,17 +1359,6 @@
       } catch (err) { 
         alert("Connection failed."); btn.innerText = originalText;
         btn.style.backgroundColor = "var(--primary)"; 
-      }
-    }
-
-    // --- ACCORDION CONTROLLER ---
-    function toggleAccordion(button) {
-      button.classList.toggle("active");
-      const content = button.nextElementSibling;
-      if (content.style.maxHeight) {
-        content.style.maxHeight = null;
-      } else {
-        content.style.maxHeight = content.scrollHeight + "px";
       }
     }
 
