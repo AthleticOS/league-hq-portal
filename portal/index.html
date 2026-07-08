@@ -328,6 +328,7 @@
     </div>
 
     <div id="tab-availability" class="tab-content">
+      
       <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
         <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
         <div class="explainer-box info">
@@ -685,10 +686,8 @@
     // PHASE 3: SECURITY GATEKEEPER WRAPPER & SESSION MANAGEMENT
     // =========================================================================
     function buildSecurePayload(basePayload) {
-      basePayload.auth = {
-        email: sessionStorage.getItem('auth_email'),
-        pin: sessionStorage.getItem('auth_pin')
-      };
+      basePayload.authEmail = sessionStorage.getItem('auth_email');
+      basePayload.authPin = sessionStorage.getItem('auth_pin');
       return JSON.stringify(basePayload);
     }
     
@@ -739,7 +738,7 @@
       if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
         if (match && match[0]) {
-          return `https://lh3.googleusercontent.com/d/$${match[0]}`;
+          return `https://lh3.googleusercontent.com/d/${match[0]}`;
         }
       }
       return url;
