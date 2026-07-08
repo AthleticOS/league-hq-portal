@@ -210,7 +210,7 @@
       </div>
       
       <div class="w-full h-64 md:h-96 bg-slate-200 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center border border-slate-300 shadow-inner">
-        <iframe src="https://www.google.com/maps/d/u/3/embed?mid=107FCpyg8pFXbLQH1pZQ6Roe1bFI0yS4&ehbc=2E312F&noprof=1" width="100%" height="100%" style="border:0;" allowfullscreen="" loading="lazy"></iframe>
+        <iframe src="https://www.google.com/maps/d/u/3/embed?mid=107FCpyg8pFXbLQH1pZQ6Roe1bFI0yS4&ehbc=2E312F&noprof=1" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
       </div>
 
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
@@ -524,7 +524,6 @@
     let currentStandingsConference = 'Overall'; 
     let calendarCurrentDate = new Date();
     let calendarSelectedDateStr = ''; 
-    let mapEngineInitialized = false;
 
     window.onload = function() {
       processAppInit();
@@ -598,7 +597,6 @@
       renderSchools();
       renderRosterSelectors();
       renderSettings();
-      initDynamicMap();
       
       // Force standings to be the default view on launch
       switchTab('standings');
@@ -730,10 +728,6 @@
         activeBtn.classList.add('border-athleticos-green', 'text-athleticos-evergreen', 'font-bold');
         const activeIcon = activeBtn.querySelector('i');
         if (activeIcon) activeIcon.classList.add('text-athleticos-green');
-      }
-
-      if(tabId === 'schools' && mapEngineInitialized && typeof google !== 'undefined') {
-         initDynamicMap(); 
       }
     }
 
