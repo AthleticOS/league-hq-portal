@@ -219,6 +219,12 @@
       <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; text-align:left; margin-bottom:4px; text-transform:uppercase;">6-Digit Account Secure PIN</label>
       <input type="password" id="auth-pin" class="pin-input" pattern="[0-9]*" inputmode="numeric" placeholder="••••••">
       
+      <!-- INJECTED COMPLIANCE CHECKBOX -->
+      <label style="display:flex; align-items:flex-start; gap:10px; text-align:left; font-size:0.75rem; color:var(--text-muted); margin-bottom:20px; cursor:pointer;">
+        <input type="checkbox" id="auth-consent" style="margin-top:3px; transform:scale(1.2);">
+        <span>I agree to the <a href="https://athleticos.net/legal" target="_blank" style="color:var(--accent); text-decoration:underline;">Privacy Policy</a> and consent to receiving operational platform training communications.</span>
+      </label>
+      
       <button class="btn-submit" id="btn-unlock" onclick="verifyPin()">Unlock Portal</button>
     </div>
   </div>
@@ -556,16 +562,16 @@
           <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Access the live official rules, regulations, and age cutoff dates below.</p>
           <div style="margin-top: auto;">
             <a href="https://bisal.athleticos.net" target="_blank" class="btn-submit" style="background-color: var(--primary); margin-bottom: 10px;">🌍 View Public Fan Portal</a>
-            <a href="https://bisal.athleticos.net/handbook.html" target="_blank" class="btn-submit" style="background-color: var(--primary);">📖 Official League Handbook</a>
+            <a href="https://AthleticOS.github.io/league-hq-portal/handbook.html" target="_blank" class="btn-submit" style="background-color: var(--primary);">📖 Official League Handbook</a>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-header">AthleticOS Support</div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Get help mapping your venues or training your staff.</p>
+          <div class="card-header">AthleticOS Training & Community</div>
+          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Access your Masterclass courses and connect with other Athletic Directors.</p>
           <div style="margin-top: auto;">
-            <a href="https://www.youtube.com/@AthleticOS_HQ" target="_blank" class="btn-submit" style="margin-bottom: 10px; background-color: var(--wizard-step-text);">📹 Video Tutorials</a>
-            <a href="https://onboarding.athleticos.net" target="_blank" class="btn-submit" style="background-color: var(--wizard-step-text);">💻 Facility Mapping & Onboarding</a>
+            <a href="https://training.athleticos.net" target="_blank" class="btn-submit" style="margin-bottom: 10px; background-color: var(--wizard-step-text);">🎓 Open Training Portal</a>
+            <a href="https://www.youtube.com/@AthleticOS_HQ" target="_blank" class="btn-submit" style="background-color: var(--wizard-step-text);">📹 YouTube Tutorials</a>
           </div>
         </div>
         
@@ -747,10 +753,16 @@
     async function verifyPin() {
       const emailInput = document.getElementById('auth-email').value.trim();
       const pinInput = document.getElementById('auth-pin').value.trim();
+      const consentChecked = document.getElementById('auth-consent').checked;
       const btn = document.getElementById('btn-unlock');
       
       if(!emailInput || !pinInput) {
         alert("Authentication Error:\n\nYou must provide both your registered email address and secure 6-digit PIN.");
+        return;
+      }
+
+      if(!consentChecked) {
+        alert("Compliance Check:\n\nYou must agree to the Privacy Policy and operational communications to access the portal.");
         return;
       }
       
@@ -763,7 +775,8 @@
             action: "verifyPIN", 
             schoolId: targetSchoolID, 
             email: emailInput, 
-            pin: pinInput 
+            pin: pinInput,
+            consentGiven: true
           }) 
         });
         const result = await response.json();
