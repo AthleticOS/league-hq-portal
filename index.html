@@ -79,10 +79,6 @@
           <i class="fa-solid fa-school"></i><span>School Directory</span>
         </button>
 
-        <button onclick="switchTab('rosters')" id="tab-rosters" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
-          <i class="fa-solid fa-users-rectangle"></i><span>Rosters</span>
-        </button>
-
         <button onclick="switchTab('dashboard')" id="tab-dashboard" class="tab-btn flex items-center space-x-2 border-b-2 border-transparent text-slate-500 hover:text-athleticos-evergreen px-1 pb-2 text-sm font-medium transition-all">
           <i class="fa-solid fa-satellite-dish"></i><span>League Intel</span>
         </button>
@@ -214,38 +210,6 @@
       </div>
 
       <div id="schoolsContainer" class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"></div>
-    </section>
-
-    <section id="view-rosters" class="tab-view hidden space-y-6">
-      <div class="border-b border-slate-200 pb-4 flex flex-col md:flex-row md:items-end justify-between gap-4">
-        <div>
-          <h2 class="text-2xl font-extrabold text-athleticos-carbon tracking-tight">Official Rosters</h2>
-          <p class="text-slate-500 text-sm">Verify registered school athletes and squad eligibility rosters.</p>
-        </div>
-        <div class="flex gap-2">
-          <select id="rosterSchoolFilter" onchange="onRosterSelectionChange()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none max-w-[200px]">
-          </select>
-          <select id="rosterTeamFilter" onchange="renderRoster()" class="bg-white border border-slate-300 rounded-lg px-3 py-2 text-xs font-semibold focus:border-athleticos-green focus:ring-1 focus:ring-athleticos-green outline-none">
-          </select>
-        </div>
-      </div>
-      <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="min-w-full divide-y divide-slate-200 text-sm">
-            <thead class="bg-slate-50 font-bold text-slate-700">
-              <tr>
-                <th scope="col" class="px-6 py-4 text-center">Jersey</th>
-                <th scope="col" class="px-6 py-4 text-left">Athlete Nickname</th>
-                <th scope="col" class="px-6 py-4 text-center">Birthdate</th>
-                <th scope="col" class="px-6 py-4 text-center">Status</th>
-                <th scope="col" class="px-6 py-4 text-center">Date Registered</th>
-              </tr>
-            </thead>
-            <tbody id="rosterBody" class="divide-y divide-slate-200 text-slate-600">
-            </tbody>
-          </table>
-        </div>
-      </div>
     </section>
 
     <section id="view-dashboard" class="tab-view hidden space-y-8">
@@ -595,7 +559,6 @@
       renderFixtures();
       calculateStandings();
       renderSchools();
-      renderRosterSelectors();
       renderSettings();
       
       // Force standings to be the default view on launch
@@ -1159,51 +1122,6 @@
     }
 
     function closeSchoolProfileModal() { document.getElementById('schoolProfileModal').classList.add('hidden'); }
-
-    function renderRosterSelectors() {
-      const schoolSelector = document.getElementById('rosterSchoolFilter');
-      if(!schoolSelector) return;
-      schoolSelector.innerHTML = buildConferenceGroupedOptions(activeDatabase.Schools || [], false);
-      onRosterSelectionChange();
-    }
-
-    function onRosterSelectionChange() {
-      const schoolId = document.getElementById('rosterSchoolFilter').value;
-      const teamSelector = document.getElementById('rosterTeamFilter');
-      if(!teamSelector) return;
-      teamSelector.innerHTML = '';
-      const schoolTeams = getApprovedTeams().filter(t => String(t.SchoolID).trim() === String(schoolId).trim());
-
-      if (schoolTeams.length === 0) { teamSelector.innerHTML = '<option value="">No registered squads</option>'; renderRoster(); return; }
-      schoolTeams.forEach(team => {
-        const sport = activeDatabase.Sports.find(s => String(s.SportID).trim() === String(team.SportID).trim());
-        const div = activeDatabase.Divisions.find(d => String(d.DivisionID).trim() === String(team.DivisionID).trim());
-        const sportLabel = sport ? (sport.Season ? `${sport.Name} (${sport.Season})` : sport.Name) : "Sport";
-        teamSelector.innerHTML += `<option value="${String(team.TeamID).trim()}">${sportLabel} - ${div ? `${div.Age_Limit} (${div.Gender})` : "Bracket"}</option>`;
-      });
-      renderRoster();
-    }
-
-    function renderRoster() {
-      const teamId = document.getElementById('rosterTeamFilter').value;
-      const tbody = document.getElementById('rosterBody');
-      if(!tbody) return;
-      tbody.innerHTML = '';
-      if (!teamId) { tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No active squad roster selected.</td></tr>`; return; }
-
-      const players = (activeDatabase.Roster || []).filter(p => String(p.TeamID).trim() === String(teamId).trim());
-      if (players.length === 0) { tbody.innerHTML = `<tr><td colspan="5" class="px-6 py-12 text-center text-slate-400 font-medium">No verified athletes found on this squad's official registry ledger.</td></tr>`; return; }
-      players.forEach(p => {
-        tbody.innerHTML += `
-          <tr class="hover:bg-slate-50 transition-all font-medium text-slate-600 text-xs sm:text-sm">
-            <td class="px-6 py-4 text-center font-black text-athleticos-carbon">${p.JerseyNumber || '-'}</td>
-            <td class="px-6 py-4 text-left font-bold text-athleticos-carbon">${p.Nickname}</td>
-            <td class="px-6 py-4 text-center font-mono">${p.DateOfBirth}</td>
-            <td class="px-6 py-4 text-center"><span class="bg-emerald-50 text-emerald-800 border border-emerald-200 px-2.5 py-1 rounded-full text-[10px] font-bold">${p.EligibilityStatus || 'Eligible'}</span></td>
-            <td class="px-6 py-4 text-center font-mono text-slate-400">${p.DateRegistered || '-'}</td>
-          </tr>`;
-      });
-    }
 
     async function fetchLiveSheetData(apiUrl) {
       const statusElement = document.getElementById('connectionStatus');
