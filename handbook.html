@@ -328,7 +328,6 @@
           <li><a href="#mission">Mission</a></li>
           <li><a href="#membership">Membership</a></li>
           <li><a href="#age-groups">Age Groups</a></li>
-          <li><a href="#tournament">Formats</a></li>
           <li><a href="#sport-rules">Rules</a></li>
           <li><a href="#conduct">Conduct</a></li>
           <li><a href="#health">Safety</a></li>
@@ -344,7 +343,7 @@
 
       <section id="mission" class="section-card">
         <h2>Mission, Vision & Values</h2>
-        <p>The Bangkok International School Athletics League (BISAL) was established with the goal of fostering a love for sportsmanship and competition between schools. We achieve this by organizing sporting events that create a positive, mindful, and inclusive environment.</p>
+        <p id="dyn-mission-statement">Loading mission statement...</p>
         
         <h3>Vision</h3>
         <p><strong>Embrace Uniqueness, Achieve Greatness, Experience Success.</strong></p>
@@ -421,24 +420,6 @@
         </div>
       </section>
 
-      <section id="tournament" class="section-card">
-        <h2>Tournament Formats & Procedures</h2>
-        <p>Tournaments will follow standardized bracket alignments to ensure uniform competition across the league.</p>
-        
-        <ul>
-          <li><strong>3 to 5 Teams:</strong> Round Robin format. Each team plays each other in a league-style event. No requirement for a final.</li>
-          <li><strong>6 Teams:</strong> 2 Pools of 3 teams. Cross-over semi-finals (1st Pool A vs 2nd Pool B). 3rd place in groups play each other at the same time as the final.</li>
-          <li><strong>8 Teams:</strong> 2 Pools of 4 teams. Cross-over semi-finals. 3rd in groups play each other, and 4th vs 4th.</li>
-        </ul>
-
-        <h3>Agreed Tie-Breaker Formula</h3>
-        <ol>
-          <li>Head to Head record</li>
-          <li>Goal / Points difference</li>
-          <li>Total Points scored</li>
-        </ol>
-      </section>
-
       <section id="sport-rules" class="section-card">
         <h2>Rules & Regulations by Sport</h2>
         <p>All BISAL games adhere to international official rule books unless modified below.</p>
@@ -453,13 +434,13 @@
         <p>BISAL is committed to fostering a positive and respectful environment for everyone involved.</p>
         
         <h3>Coaches & Teachers</h3>
-        <p>Public criticism of officials is strictly prohibited. Entering the field of play without the referee's permission is not allowed. Violations may result in a one-year ban from coaching in BISAL events.</p>
+        <p id="dyn-coc-coaches">Loading...</p>
 
         <h3>Players</h3>
-        <p>Players must follow the referee's instructions and avoid questioning decisions. Cheating, complaining, or wasting time are unacceptable behaviors. Sportsmanship includes shaking hands with opponents and officials after the game.</p>
+        <p id="dyn-coc-players">Loading...</p>
 
         <h3>Spectators</h3>
-        <p>Schools are responsible for the conduct of their attending spectators. Minor incidents will result in a warning to the school representative. Repeated offenses may result in team point deductions, spectator ejection, or disqualification from the event.</p>
+        <p id="dyn-coc-spectators">Loading...</p>
       </section>
 
       <section id="health" class="section-card">
@@ -570,6 +551,11 @@
         document.getElementById('dyn-late-fee').innerText = readFlexibleObjectValue(settings, "Late_Payment_Fee") || "1,000";
         document.getElementById('dyn-grace-deadline').innerText = readFlexibleObjectValue(settings, "Grace_Period_Deadline") || "September 15th";
 
+        document.getElementById('dyn-mission-statement').innerText = readFlexibleObjectValue(settings, "Mission_Statement") || "The Bangkok International School Athletics League (BISAL) was established with the goal of fostering a love for sportsmanship and competition between schools.";
+        document.getElementById('dyn-coc-coaches').innerText = readFlexibleObjectValue(settings, "CoC_Coaches") || "Loading...";
+        document.getElementById('dyn-coc-players').innerText = readFlexibleObjectValue(settings, "CoC_Players") || "Loading...";
+        document.getElementById('dyn-coc-spectators').innerText = readFlexibleObjectValue(settings, "CoC_Spectators") || "Loading...";
+
         const cMonthNum = parseInt(readFlexibleObjectValue(settings, "Cutoff_Month")) || 6;
         const cDayNum = parseInt(readFlexibleObjectValue(settings, "Cutoff_Day")) || 1;
         const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -582,17 +568,15 @@
         const rulesContainer = document.getElementById('dynamic-rules-container');
         if (sports.length > 0) {
           rulesContainer.innerHTML = '';
-          const renderedSports = new Set(); // Track base names to prevent duplicates
+          const renderedSports = new Set(); 
 
           sports.forEach(sport => {
             const rawName = readFlexibleObjectValue(sport, "Name") || "Sport";
             
-            // Clean the string: Splitting by '(' or '-' to drop the term info (e.g. "Basketball (Term 1)" -> "Basketball")
             const baseNameMatch = rawName.match(/^([^(|\-]+)/);
             const baseName = baseNameMatch ? baseNameMatch[1].trim() : rawName.trim();
             const lookupKey = baseName.toLowerCase();
 
-            // Only render if we haven't seen this sport base name yet
             if (!renderedSports.has(lookupKey)) {
               renderedSports.add(lookupKey);
               
