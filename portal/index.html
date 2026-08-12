@@ -374,13 +374,23 @@
 
         <div id="complex-split-wizard-gate" style="display:none; margin-top:10px; background-color:#F0FDF4; border:1px solid #BBF7D0; padding:12px; border-radius:8px; margin-bottom:12px;">
           <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">MAX SIMULTANEOUS LOGISTICAL CAPACITY</label>
-          <select class="status-select" id="complex-layout-style" onchange="calculateComplexUnitCapacity(this.value)" style="margin-bottom:10px;">
+          <select class="status-select" id="complex-layout-style" onchange="calculateComplexUnitCapacity(this.value)" style="margin-bottom:0;">
             <option value="1">1 Main Premier Court (Takes up the whole building capacity)</option>
             <option value="2">2 Side-by-Side Courts (Allows 2 games to match concurrently)</option>
             <option value="3">3 Parallel Sections (Allows 3 games to match concurrently)</option>
             <option value="4">4 Tournament Grid Zones (Allows 4 games to match concurrently)</option>
           </select>
           <input type="hidden" id="new-venue-unit-count" value="1">
+
+          <div id="main-court-toggle-container" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #BBF7D0;">
+            <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+              <input type="checkbox" id="new-venue-has-main" style="margin-top:2px; transform:scale(1.2);" checked>
+              <div>
+                <span style="font-size:0.75rem; color:#166534; font-weight:800; display:block;">GENERATE 100% MAIN COURT OVERLAY</span>
+                <span style="font-size:0.65rem; color:#166534; display:block; margin-top:4px; line-height:1.4;">Leave checked if this building is used as a single large court for Varsity games. Uncheck if this facility is ONLY used as separate partitioned courts (like a massive fieldhouse).</span>
+              </div>
+            </label>
+          </div>
         </div>
 
         <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE TOURNEY CARRIER CAPACITIES</label>
@@ -1340,20 +1350,24 @@
       const textInput = document.getElementById('new-venue-name');
       const selectInput = document.getElementById('existing-parent-select');
       const label = document.getElementById('label-primary-venue-title');
+      const mainCourtToggle = document.getElementById('main-court-toggle-container');
 
       if (archType === 'standalone') {
         label.innerText = "FIELD / PITCH IDENTIFIER NAME";
         textInput.style.display = 'block';
         selectInput.style.display = 'none';
+        if (mainCourtToggle) mainCourtToggle.style.display = 'none';
       } else {
         if (actionType === 'new') {
           label.innerText = "NEW PARENT COMPLEX SHELL NAME";
           textInput.style.display = 'block';
           selectInput.style.display = 'none';
+          if (mainCourtToggle) mainCourtToggle.style.display = 'block';
         } else {
           label.innerText = "TARGET EXISTING PARENT COMPLEX";
           textInput.style.display = 'none';
           selectInput.style.display = 'block';
+          if (mainCourtToggle) mainCourtToggle.style.display = 'none';
         }
       }
     }
@@ -1498,6 +1512,7 @@
     async function submitCreateNewVenue() {
       const archType = document.getElementById('facility-architecture-type').value;
       const complexAction = document.getElementById('complex-action-type').value;
+      const hasMainCourt = document.getElementById('new-venue-has-main') ? document.getElementById('new-venue-has-main').checked : false;
       
       let vName = "";
       if (archType === 'complex' && complexAction === 'existing') {
@@ -1512,7 +1527,19 @@
 
       uiLockButton('btn-add-court', 'Syncing Matrix Rows...');
 
-      const payload = { action: "addVenue", schoolId: targetSchoolID, facilityType: archType, venueName: vName, unitCount: document.getElementById('new-venue-unit-count').value, sportIds: Array.from(checkedBoxes).map(cb => readFlexibleObjectValue(globalSportsData.find(s => String(readFlexibleObjectValue(s, "Name")).includes(cb.value)), "SportID")), weekdayStart: document.getElementById('new-v-wkd-start').value, weekdayEnd: document.getElementById('new-v-wkd-end').value, weekendStart: document.getElementById('new-v-wnd-start').value, weekendEnd: document.getElementById('new-v-wnd-end').value };
+      const payload = { 
+        action: "addVenue", 
+        schoolId: targetSchoolID, 
+        facilityType: archType, 
+        venueName: vName, 
+        unitCount: document.getElementById('new-venue-unit-count').value, 
+        hasMainCourt: hasMainCourt,
+        sportIds: Array.from(checkedBoxes).map(cb => readFlexibleObjectValue(globalSportsData.find(s => String(readFlexibleObjectValue(s, "Name")).includes(cb.value)), "SportID")), 
+        weekdayStart: document.getElementById('new-v-wkd-start').value, 
+        weekdayEnd: document.getElementById('new-v-wkd-end').value, 
+        weekendStart: document.getElementById('new-v-wnd-start').value, 
+        weekendEnd: document.getElementById('new-v-wnd-end').value 
+      };
 
       try {
         const result = await secureApiCall(payload);
