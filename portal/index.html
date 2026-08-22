@@ -181,13 +181,13 @@
     details.faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
     details.faq-item p { margin: 0; padding: 0 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 10px; }
     
-    /* LOGISTICS SUB-NAVIGATION PILLS */
-    .logistics-sub-nav { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid var(--border); overflow-x: auto; padding-bottom: 0px; }
-    .logistics-sub-nav::-webkit-scrollbar { display: none; } /* Hide scrollbar for clean mobile look */
+    /* UNIVERSAL SUB-NAVIGATION PILLS */
+    .pill-sub-nav { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid var(--border); overflow-x: auto; padding-bottom: 0px; }
+    .pill-sub-nav::-webkit-scrollbar { display: none; } /* Hide scrollbar for clean mobile look */
     .sub-nav-btn { background: transparent; border: none; font-family: inherit; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); cursor: pointer; padding: 10px 15px; white-space: nowrap; transition: all 0.2s; border-radius: 8px 8px 0 0; text-transform: uppercase; letter-spacing: 0.5px; }
     .sub-nav-btn.active { color: var(--primary); background: var(--card-bg); border-bottom: 3px solid var(--accent); }
-    .logistics-section { display: none; }
-    .logistics-section.active { display: block; }
+    .sub-section { display: none; }
+    .sub-section.active { display: block; }
   </style>
 </head>
 <body>
@@ -265,93 +265,116 @@
       </div>
     </div>
 
+    <!-- TEAMS TAB WITH PILL NAV -->
     <div id="tab-teams" class="tab-content">
-      <div class="card">
-        <div class="card-header">Register for Division</div>
-        <select class="status-select" id="new-team-division"><option value="">Select Division...</option></select>
-        <button class="btn-submit btn-small" id="btn-register-team" onclick="registerTeam()">Register Team</button>
-      </div>
-      
-      <div class="card">
-        <div class="card-header">Your Registered Teams</div>
-        <div id="current-teams-list"></div>
+      <div class="pill-sub-nav">
+        <button class="sub-nav-btn active" id="btn-teams-register" onclick="switchSubTab('teams', 'register')">🏫 Register Teams</button>
+        <button class="sub-nav-btn" id="btn-teams-staff" style="display:none;" onclick="switchSubTab('teams', 'staff')">🛡️ Manage Staff</button>
       </div>
 
-      <div class="card" id="admin-staff-management-card" style="display:none; border-color: var(--primary); background-color: #F8FAFC;">
-        <div class="card-header" style="color: var(--primary);">🛡️ Manage Coaching Staff (AD Only)</div>
-        <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF; font-size:0.75rem;">
-          Provision a secure portal account for a new coach. An automated email with their secure PIN will be dispatched immediately.
+      <div id="section-teams-register" class="sub-section active">
+        <div class="card">
+          <div class="card-header">Register for Division</div>
+          <select class="status-select" id="new-team-division"><option value="">Select Division...</option></select>
+          <button class="btn-submit btn-small" id="btn-register-team" onclick="registerTeam()">Register Team</button>
         </div>
         
-        <input type="text" class="text-input" id="new-staff-name" placeholder="Coach Full Name" style="margin-bottom:10px;">
-        <input type="email" class="text-input" id="new-staff-email" placeholder="Coach Email Address" style="margin-bottom:10px;">
-        
-        <label style="font-size:0.7rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px;">ASSIGN VISIBILITY PERMISSIONS (TEAMS)</label>
-        <div id="dynamic-staff-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#FFFFFF; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
+        <div class="card">
+          <div class="card-header">Your Registered Teams</div>
+          <div id="current-teams-list"></div>
+        </div>
+      </div>
+
+      <div id="section-teams-staff" class="sub-section">
+        <div class="card" id="admin-staff-management-card" style="border-color: var(--primary); background-color: #F8FAFC;">
+          <div class="card-header" style="color: var(--primary);">🛡️ Manage Coaching Staff (AD Only)</div>
+          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF; font-size:0.75rem;">
+            Provision a secure portal account for a new coach. An automated email with their secure PIN will be dispatched immediately.
           </div>
-
-        <button class="btn-submit btn-small" id="btn-add-staff" onclick="submitNewStaff()" style="background-color: var(--primary);">+ Provision Secure Account</button>
-        
-        <hr style="border: 1px solid var(--border); margin: 20px 0;">
-        <div class="card-header" style="color: var(--primary);">📋 Existing Staff Roster</div>
-        <div id="existing-staff-list" class="space-y-2"></div>
-      </div>
-    </div>
-
-    <div id="tab-registration" class="tab-content">
-      <div class="card">
-        <div class="card-header">Bulk Import Roster (CSV)</div>
-        <div class="explainer-box info">
-          <strong>Prerequisite Requirements & Best Practices:</strong>
-          <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 0.8rem;">
-            <li>You must register an active team in the 'Teams' tab before you can upload a roster for it.</li>
-            <li><strong>Crucial Step:</strong> After downloading the template, immediately rename the file to reflect the specific team (e.g., <em>Boys_U15_Basketball.csv</em>). This prevents accidentally uploading the wrong roster to the wrong squad.</li>
-          </ul>
-        </div>
-        <select class="status-select" id="bulk-reg-team" style="margin-bottom: 10px;">
-          <option value="">1. Select Target Team...</option>
-        </select>
-        
-        <div style="display:flex; gap: 10px; margin-bottom: 10px;">
-          <a href="data:text/csv;charset=utf-8,Nickname,DateOfBirth,JerseyNumber%0AJohn%20Doe,2010-05-15,10%0AJane%20Smith,2011-08-22,23" download="BISAL_Roster_Template.csv" class="btn-submit btn-small" style="background-color: var(--text-muted); flex: 1; text-align:center;">⬇️ Download Template</a>
           
-          <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
-          <button id="btn-upload-csv-trigger" class="btn-submit btn-small" style="flex: 1;" onclick="document.getElementById('csv-file-input').click()">⬆️ Upload CSV Roster</button>
-        </div>
-      </div>
+          <input type="text" class="text-input" id="new-staff-name" placeholder="Coach Full Name" style="margin-bottom:10px;">
+          <input type="email" class="text-input" id="new-staff-email" placeholder="Coach Email Address" style="margin-bottom:10px;">
+          
+          <label style="font-size:0.7rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px;">ASSIGN VISIBILITY PERMISSIONS (TEAMS)</label>
+          <div id="dynamic-staff-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#FFFFFF; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
+            </div>
 
-      <div class="card">
-        <div class="card-header">Manual Register New Player</div>
-        <select class="status-select" id="reg-team" style="margin-bottom: 10px;"><option value="">Select Team...</option></select>
-        <input type="text" class="text-input" id="reg-nickname" placeholder="Player Name / Nickname">
-        <input type="date" class="text-input" id="reg-dob">
-        <input type="number" class="text-input" id="reg-jersey" placeholder="Jersey Number">
-        <button class="btn-submit btn-small" id="btn-add-player" onclick="submitPlayer()">+ Add Single Player</button>
-      </div>
-
-      <div class="card">
-        <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
-          <span>Manage Existing Roster</span>
-          <label style="font-size:0.7rem; font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:5px;">
-            <input type="checkbox" id="toggle-archived-players" onchange="renderRosterList(document.getElementById('manage-team').value)"> Show Archived
-          </label>
+          <button class="btn-submit btn-small" id="btn-add-staff" onclick="submitNewStaff()" style="background-color: var(--primary);">+ Provision Secure Account</button>
+          
+          <hr style="border: 1px solid var(--border); margin: 20px 0;">
+          <div class="card-header" style="color: var(--primary);">📋 Existing Staff Roster</div>
+          <div id="existing-staff-list" class="space-y-2"></div>
         </div>
-        <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
-        <div id="dynamic-roster-compliance" class="explainer-box" style="display: none; border-left-color: #C2410C; background-color: #FFF7ED; color: #9A3412;"></div>
-        <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
       </div>
     </div>
 
+    <!-- ROSTERS TAB WITH PILL NAV -->
+    <div id="tab-registration" class="tab-content">
+      <div class="pill-sub-nav">
+        <button class="sub-nav-btn active" id="btn-registration-manage" onclick="switchSubTab('registration', 'manage')">📋 Manage</button>
+        <button class="sub-nav-btn" id="btn-registration-bulk" onclick="switchSubTab('registration', 'bulk')">⬆️ Bulk Import</button>
+        <button class="sub-nav-btn" id="btn-registration-manual" onclick="switchSubTab('registration', 'manual')">➕ Add Single</button>
+      </div>
+
+      <div id="section-registration-manage" class="sub-section active">
+        <div class="card">
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>Manage Existing Roster</span>
+            <label style="font-size:0.7rem; font-weight:700; color:var(--text-muted); display:flex; align-items:center; gap:5px;">
+              <input type="checkbox" id="toggle-archived-players" onchange="renderRosterList(document.getElementById('manage-team').value)"> Show Archived
+            </label>
+          </div>
+          <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
+          <div id="dynamic-roster-compliance" class="explainer-box" style="display: none; border-left-color: #C2410C; background-color: #FFF7ED; color: #9A3412;"></div>
+          <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
+        </div>
+      </div>
+
+      <div id="section-registration-bulk" class="sub-section">
+        <div class="card">
+          <div class="card-header">Bulk Import Roster (CSV)</div>
+          <div class="explainer-box info">
+            <strong>Prerequisite Requirements & Best Practices:</strong>
+            <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 0.8rem;">
+              <li>You must register an active team in the 'Teams' tab before you can upload a roster for it.</li>
+              <li><strong>Crucial Step:</strong> After downloading the template, immediately rename the file to reflect the specific team (e.g., <em>Boys_U15_Basketball.csv</em>). This prevents accidentally uploading the wrong roster to the wrong squad.</li>
+            </ul>
+          </div>
+          <select class="status-select" id="bulk-reg-team" style="margin-bottom: 10px;">
+            <option value="">1. Select Target Team...</option>
+          </select>
+          
+          <div style="display:flex; gap: 10px; margin-bottom: 10px;">
+            <a href="data:text/csv;charset=utf-8,Nickname,DateOfBirth,JerseyNumber%0AJohn%20Doe,2010-05-15,10%0AJane%20Smith,2011-08-22,23" download="BISAL_Roster_Template.csv" class="btn-submit btn-small" style="background-color: var(--text-muted); flex: 1; text-align:center;">⬇️ Download Template</a>
+            
+            <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
+            <button id="btn-upload-csv-trigger" class="btn-submit btn-small" style="flex: 1;" onclick="document.getElementById('csv-file-input').click()">⬆️ Upload CSV Roster</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="section-registration-manual" class="sub-section">
+        <div class="card">
+          <div class="card-header">Manual Register New Player</div>
+          <select class="status-select" id="reg-team" style="margin-bottom: 10px;"><option value="">Select Team...</option></select>
+          <input type="text" class="text-input" id="reg-nickname" placeholder="Player Name / Nickname">
+          <input type="date" class="text-input" id="reg-dob">
+          <input type="number" class="text-input" id="reg-jersey" placeholder="Jersey Number">
+          <button class="btn-submit btn-small" id="btn-add-player" onclick="submitPlayer()">+ Add Single Player</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGISTICS TAB WITH PILL NAV -->
     <div id="tab-availability" class="tab-content">
       
-      <!-- SUB-NAVIGATION PILLS -->
-      <div class="logistics-sub-nav">
-        <button class="sub-nav-btn active" id="btn-logistics-blackouts" onclick="switchLogisticsSubTab('blackouts')">📅 Calendar Blackouts</button>
-        <button class="sub-nav-btn" id="btn-logistics-mapping" onclick="switchLogisticsSubTab('mapping')">🏟️ Facility Mapping</button>
+      <div class="pill-sub-nav">
+        <button class="sub-nav-btn active" id="btn-availability-blackouts" onclick="switchSubTab('availability', 'blackouts')">📅 Calendar Blackouts</button>
+        <button class="sub-nav-btn" id="btn-availability-mapping" onclick="switchSubTab('availability', 'mapping')">🏟️ Facility Mapping</button>
       </div>
 
-      <!-- SECTION 1: BLACKOUTS & AVAILABILITY (DEFAULT VIEW) -->
-      <div id="section-logistics-blackouts" class="logistics-section active">
+      <!-- SECTION 1: BLACKOUTS & AVAILABILITY -->
+      <div id="section-availability-blackouts" class="sub-section active">
         <div class="card">
           <div class="card-header">📅 Interactive Availability Calendar</div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
@@ -413,7 +436,7 @@
       </div>
 
       <!-- SECTION 2: FACILITY MAPPING -->
-      <div id="section-logistics-mapping" class="logistics-section">
+      <div id="section-availability-mapping" class="sub-section">
         <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
           <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
           <div class="explainer-box info">
@@ -1005,7 +1028,7 @@
         renderMessages(data.Messages || []);
         
         if (isFullAccess) {
-          document.getElementById('admin-staff-management-card').style.display = 'block';
+          document.getElementById('btn-teams-staff').style.display = 'inline-block';
           renderStaffList();
         }
 
@@ -2099,17 +2122,15 @@
       document.querySelectorAll('.bottom-nav .nav-item').forEach(n => { if (n.getAttribute('onclick') && n.getAttribute('onclick').includes(tabId)) n.classList.add('active'); });
     }
 
-    function switchLogisticsSubTab(subTabId) {
-      document.querySelectorAll('.logistics-section').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.sub-nav-btn').forEach(el => el.classList.remove('active'));
+    function switchSubTab(group, tabId) {
+      document.querySelectorAll(`#tab-${group === 'rosters' ? 'registration' : group} .sub-section`).forEach(el => el.classList.remove('active'));
+      document.querySelectorAll(`#tab-${group === 'rosters' ? 'registration' : group} .sub-nav-btn`).forEach(el => el.classList.remove('active'));
       
-      if(subTabId === 'blackouts') {
-        document.getElementById('section-logistics-blackouts').classList.add('active');
-        document.getElementById('btn-logistics-blackouts').classList.add('active');
-      } else {
-        document.getElementById('section-logistics-mapping').classList.add('active');
-        document.getElementById('btn-logistics-mapping').classList.add('active');
-      }
+      const targetSection = document.getElementById(`section-${group === 'rosters' ? 'registration' : group}-${tabId}`);
+      const targetBtn = document.getElementById(`btn-${group === 'rosters' ? 'registration' : group}-${tabId}`);
+      
+      if (targetSection) targetSection.classList.add('active');
+      if (targetBtn) targetBtn.classList.add('active');
     }
   </script>
 </body>
