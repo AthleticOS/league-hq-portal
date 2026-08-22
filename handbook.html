@@ -423,9 +423,8 @@
       <section id="sport-rules" class="section-card">
         <h2>Rules & Regulations by Sport</h2>
         <p>All BISAL games adhere to international official rule books unless modified below.<br>
-          
         Full BISAL Super-League Rules Table found in the following link:<br>
-        <a href="https://drive.google.com/file/d/1-xoaSfGEQ-h7pQBoGTsPPs24iBA8HG3z/view?usp=drive_link" target="_blank" style="color:var(--primary-light); font-weight:800; text-decoration:underline;">View Official Master Rules Table</a></p>
+        <a id="dyn-handbook-link" href="#" target="_blank" style="color:var(--primary-light); font-weight:800; text-decoration:underline; display:none;">View Official Master Rules Table</a></p>
         
         <div id="dynamic-rules-container">
           <p style="color:var(--text-muted); font-style:italic;">Loading official sport regulations...</p>
@@ -549,6 +548,7 @@
         const sports = data.Sports || [];
         const divisions = data.Divisions || [];
 
+        // Map settings values
         document.getElementById('dyn-full-fee').innerText = readFlexibleObjectValue(settings, "Full_Membership_Fee") || "25,000";
         document.getElementById('dyn-partial-fee').innerText = readFlexibleObjectValue(settings, "Partial_Membership_Fee") || "2,000";
         document.getElementById('dyn-pay-deadline').innerText = readFlexibleObjectValue(settings, "Payment_Deadline") || "August 30th";
@@ -559,6 +559,14 @@
         document.getElementById('dyn-coc-coaches').innerText = readFlexibleObjectValue(settings, "CoC_Coaches") || "Loading...";
         document.getElementById('dyn-coc-players').innerText = readFlexibleObjectValue(settings, "CoC_Players") || "Loading...";
         document.getElementById('dyn-coc-spectators').innerText = readFlexibleObjectValue(settings, "CoC_Spectators") || "Loading...";
+
+        // Handle dynamic handbook link
+        const handbookUrl = readFlexibleObjectValue(settings, "Handbook_Link");
+        const handbookLinkElement = document.getElementById('dyn-handbook-link');
+        if (handbookUrl && handbookUrl.trim() !== "") {
+          handbookLinkElement.href = handbookUrl;
+          handbookLinkElement.style.display = "inline";
+        }
 
         const cMonthNum = parseInt(readFlexibleObjectValue(settings, "Cutoff_Month")) || 6;
         const cDayNum = parseInt(readFlexibleObjectValue(settings, "Cutoff_Day")) || 1;
