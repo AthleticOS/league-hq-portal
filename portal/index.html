@@ -1179,18 +1179,17 @@
         }
 
         let proposalsHtml = "";
-        const prop1 = readFlexibleObjectValue(game, "ProposedDate1");
-        const prop2 = readFlexibleObjectValue(game, "ProposedDate2");
-        const prop3 = readFlexibleObjectValue(game, "ProposedDate3");
-
-        if (mStatus === "Postponed" && (prop1 || prop2 || prop3)) {
+        if (mStatus === "Postponed") {
           proposalsHtml += `<div class="proposal-box"><div class="proposal-title">⏱ Mutual Rescheduling Requested</div>`;
+          
+          let hasExistingProposals = false;
           for (let pNum = 1; pNum <= 3; pNum++) {
             let pDate = readFlexibleObjectValue(game, `ProposedDate${pNum}`);
             let pTime = readFlexibleObjectValue(game, `ProposedTime${pNum}`);
             let pStatus = readFlexibleObjectValue(game, `Prop${pNum}_Status`);
 
             if (pDate && pDate !== "") {
+              hasExistingProposals = true;
               proposalsHtml += `<div class="proposal-row"><span>Option ${pNum}: <b>${pDate}</b> @ ${pTime}</span>`;
               if (!pStatus || pStatus === "" || pStatus === "null") {
                 proposalsHtml += `
@@ -1210,6 +1209,20 @@
               proposalsHtml += `</div>`;
             }
           }
+
+          if (!hasExistingProposals) {
+            proposalsHtml += `<div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Waiting for system logic to suggest optimal dates, or propose a custom override below.</div>`;
+          }
+
+          proposalsHtml += `<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #FFEDD5;">
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">MANUAL OVERRIDE PROPOSAL</label>
+            <div style="display:flex; gap:10px; margin-bottom:8px;">
+               <input type="date" id="custom-date-${gId}" class="text-input" style="margin-bottom:0; flex:1;">
+               <input type="time" id="custom-time-${gId}" class="text-input" style="margin-bottom:0; flex:1;">
+            </div>
+            <button class="btn-submit btn-small" style="background-color:#C2410C;" onclick="submitCustomProposal('${gId}')">Propose Custom Date</button>
+          </div>`;
+
           proposalsHtml += `</div>`;
         }
         
@@ -1769,7 +1782,6 @@
       }
     }
 
-    // ADMINISTRATIVE TOURNAMENT OPERATION DISPATCHERS
     async function triggerSeasonalScheduleGeneration() {
       const divSelect = document.getElementById('admin-schedule-division');
       if(divSelect.selectedIndex < 0 || !divSelect.value) return alert("Select an initialized league matrix row first.");
@@ -1909,6 +1921,24 @@
         initApp();
       } catch(e) {
         alert("Network Exception.");
+        initApp();
+      }
+    }
+
+    async function submitCustomProposal(gameId) {
+      const cDate = document.getElementById(`custom-date-${gameId}`).value;
+      const cTime = document.getElementById(`custom-time-${gameId}`).value;
+      
+      if (!cDate || !cTime) return alert("⚠️ Action Required: Please select both a custom date and time.");
+
+      showGlobalLoader("Submitting manual override proposal...");
+
+      try {
+        const result = await secureApiCall({ action: "proposecustomdate", schoolId: targetSchoolID, gameId: gameId, customDate: cDate, customTime: cTime });
+        alert(result.message || "✅ Custom proposal sent to opponent successfully.");
+        initApp();
+      } catch(e) {
+        alert("Network dropped during submission.");
         initApp();
       }
     }
