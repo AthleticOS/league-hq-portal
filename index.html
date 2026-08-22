@@ -12,11 +12,11 @@
         extend: {
           colors: {
             bisal: {
-              navy: '#04174a',       /* Primary Brand Color */
-              highlight: '#0ea5e9',  /* Vibrant Sky Blue Accent */
-              gold: '#f59e0b',       /* Secondary Accent */
-              carbon: '#1e293b',     /* Slate 800 for Text */
-              porcelain: '#f8fafc'   /* Slate 50 for Backgrounds */
+              navy: '#04174a',       
+              highlight: '#0ea5e9',  
+              gold: '#f59e0b',       
+              carbon: '#1e293b',     
+              porcelain: '#f8fafc'   
             }
           }
         }
@@ -54,9 +54,11 @@
             <h1 class="text-lg sm:text-2xl font-black tracking-tight leading-none">BISAL <span class="text-bisal-gold">HQ</span></h1>
           </div>
         </div>
-        <div id="connectionStatus" class="flex items-center space-x-2 bg-bisal-carbon/55 px-4 py-2 rounded-full text-xs font-semibold border border-bisal-highlight/20">
-          <span class="h-2 w-2 rounded-full bg-bisal-highlight animate-pulse"></span>
-          <span id="connectionStatusText" class="text-slate-300">Syncing Live Schedule...</span>
+        
+        <!-- Scaled down connection status badge for mobile -->
+        <div id="connectionStatus" class="flex items-center space-x-1.5 sm:space-x-2 bg-bisal-carbon/55 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-xs font-semibold border border-bisal-highlight/20 max-w-[130px] sm:max-w-none">
+          <span class="h-2 w-2 shrink-0 rounded-full bg-bisal-highlight animate-pulse"></span>
+          <span id="connectionStatusText" class="text-slate-300 truncate whitespace-nowrap">Syncing...</span>
         </div>
       </div>
     </div>
@@ -455,7 +457,7 @@
           <!-- AthleticOS Badge - Kept Original Colors Intentionally -->
           <a href="https://athleticos.net" target="_blank" class="group flex items-center space-x-3 bg-[#012300] border border-slate-800 hover:border-[#52C920]/40 p-3 rounded-xl transition-all shadow-inner">
             <div class="h-9 w-9 bg-[#1A1A1A] rounded-lg p-1 border border-slate-700 flex items-center justify-center">
-              <img src="Logo%20Icon.png" alt="AthleticOS" class="h-full w-full object-contain filter group-hover:brightness-110 transition-all">
+              <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" alt="AthleticOS" class="h-full w-full object-contain filter group-hover:brightness-110 transition-all">
             </div>
             <div class="text-left">
               <span class="text-[9px] uppercase tracking-widest text-slate-500 block font-bold leading-none">System Architect</span>
@@ -1132,8 +1134,8 @@
             Settings: data.Settings || [{ CoC_Coaches: "Loading...", CoC_Players: "Loading...", CoC_Spectators: "Loading..." }]
           };
           
-          statusElement.className = "flex items-center space-x-2 bg-bisal-carbon/55 px-4 py-2 rounded-full text-xs font-semibold border border-bisal-highlight/20";
-          statusElement.innerHTML = `<span class="h-2 w-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="text-bisal-highlight">Official Live Stream Connected</span>`;
+          statusElement.className = "flex items-center space-x-1.5 sm:space-x-2 bg-bisal-carbon/55 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-xs font-semibold border border-bisal-highlight/20 max-w-[130px] sm:max-w-none";
+          statusElement.innerHTML = `<span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500 animate-pulse"></span><span class="text-bisal-highlight truncate whitespace-nowrap">Live Stream Connected</span>`;
           
           processAppInit();
         } else {
@@ -1142,8 +1144,8 @@
       } catch (err) {
         console.error("AthleticOS Pipeline failure:", err);
         if(statusElement) {
-          statusElement.className = "flex items-center space-x-2 bg-rose-950/90 px-3.5 py-1.5 rounded-full text-xs font-semibold text-rose-300 border border-rose-800";
-          statusElement.innerHTML = `<span class="h-2 w-2 rounded-full bg-rose-500 animate-ping"></span><span class="text-rose-400 font-bold">Data Connection Offline</span>`;
+          statusElement.className = "flex items-center space-x-1.5 sm:space-x-2 bg-rose-950/90 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-xs font-semibold text-rose-300 border border-rose-800 max-w-[130px] sm:max-w-none";
+          statusElement.innerHTML = `<span class="h-2 w-2 shrink-0 rounded-full bg-rose-500 animate-ping"></span><span class="text-rose-400 font-bold truncate whitespace-nowrap">Connection Offline</span>`;
         }
         setTimeout(() => fetchLiveSheetData(apiUrl), 15000);
       }
