@@ -422,11 +422,9 @@
 
       <section id="sport-rules" class="section-card">
         <h2>Rules & Regulations by Sport</h2>
-        <p>All BISAL games adhere to international official rule books unless modified below.</p>
-        <p style="margin-top: 10px; margin-bottom: 20px;">
-          <strong>Full BISAL Super-League Rules Table found in the following link:</strong><br>
-          <a href="https://drive.google.com/file/d/1-xoaSfGEQ-h7pQBoGTsPPs24iBA8HG3z/view?usp=drive_link" target="_blank" style="color: var(--primary-light); font-weight: 600; text-decoration: underline; word-break: break-all;">https://drive.google.com/file/d/1-xoaSfGEQ-h7pQBoGTsPPs24iBA8HG3z/view?usp=drive_link</a>
-        </p>
+        <p>All BISAL games adhere to international official rule books unless modified below.<br>
+        Full BISAL Super-League Rules Table found in the following link:<br>
+        <a href="https://drive.google.com/file/d/1-xoaSfGEQ-h7pQBoGTsPPs24iBA8HG3z/view?usp=drive_link" target="_blank" style="color:var(--primary-light); font-weight:800; text-decoration:underline;">View Official Master Rules Table</a></p>
         
         <div id="dynamic-rules-container">
           <p style="color:var(--text-muted); font-style:italic;">Loading official sport regulations...</p>
@@ -548,6 +546,7 @@
         const settings = (data.Settings && data.Settings.length > 0) ? data.Settings[0] : {};
         const schools = data.Schools || [];
         const sports = data.Sports || [];
+        const divisions = data.Divisions || [];
 
         document.getElementById('dyn-full-fee').innerText = readFlexibleObjectValue(settings, "Full_Membership_Fee") || "25,000";
         document.getElementById('dyn-partial-fee').innerText = readFlexibleObjectValue(settings, "Partial_Membership_Fee") || "2,000";
@@ -572,28 +571,44 @@
         const rulesContainer = document.getElementById('dynamic-rules-container');
         if (sports.length > 0) {
           rulesContainer.innerHTML = '';
-          const renderedSports = new Set(); 
-
+          const seasonGroups = {};
+          
           sports.forEach(sport => {
-            const rawName = readFlexibleObjectValue(sport, "Name") || "Sport";
-            
-            const baseNameMatch = rawName.match(/^([^(|\-]+)/);
-            const baseName = baseNameMatch ? baseNameMatch[1].trim() : rawName.trim();
-            const lookupKey = baseName.toLowerCase();
+            const season = readFlexibleObjectValue(sport, "Season") || "General Calendar";
+            if (!seasonGroups[season]) seasonGroups[season] = [];
+            seasonGroups[season].push(sport);
+          });
 
-            if (!renderedSports.has(lookupKey)) {
-              renderedSports.add(lookupKey);
-              
+          Object.keys(seasonGroups).sort().forEach(season => {
+            let seasonHtml = `<h3 style="color:var(--primary); font-size:1.4rem; border-bottom: 2px solid var(--border); padding-bottom: 5px; margin-top: 35px; text-transform: uppercase;">${season}</h3>`;
+            
+            seasonGroups[season].forEach(sport => {
+              const sportId = readFlexibleObjectValue(sport, "SportID");
+              const sportName = readFlexibleObjectValue(sport, "Name") || "Unnamed Sport";
               const rules = readFlexibleObjectValue(sport, "Rules") || "No official modifications recorded for this sport.";
               const formattedRules = rules.replace(/\n/g, '<br>');
               
-              rulesContainer.innerHTML += `
-                <div style="margin-bottom: 20px;">
-                  <h3>${baseName}</h3>
-                  <p style="background:var(--bg-main); padding:15px; border-radius:8px; border-left:3px solid var(--primary);">${formattedRules}</p>
+              const assocDivs = divisions.filter(d => String(readFlexibleObjectValue(d, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
+              
+              let ageGroupsText = "";
+              if (assocDivs.length > 0) {
+                  const groups = assocDivs.map(d => {
+                      const g = readFlexibleObjectValue(d, "Gender");
+                      const a = readFlexibleObjectValue(d, "Age_Limit");
+                      return g ? `${g} U${a}` : `U${a}`;
+                  });
+                  ageGroupsText = `<div style="font-size: 0.8rem; font-weight: 700; color: var(--primary-light); margin-bottom: 8px;">Age Groups: ${groups.join(', ')}</div>`;
+              }
+
+              seasonHtml += `
+                <div style="margin-bottom: 20px; padding: 15px; background: var(--bg-card); border-radius: 8px; border-left: 4px solid var(--primary); box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                  <h4 style="margin-top: 0; margin-bottom: 5px; color: var(--primary); font-size: 1.15rem;">${sportName}</h4>
+                  ${ageGroupsText}
+                  <p style="margin: 0; font-size: 0.9rem;">${formattedRules}</p>
                 </div>
               `;
-            }
+            });
+            rulesContainer.innerHTML += seasonHtml;
           });
         }
 
