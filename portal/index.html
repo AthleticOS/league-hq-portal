@@ -180,6 +180,15 @@
     details.faq-item summary::after { content: '+'; font-size: 1.2rem; color: var(--accent); transition: transform 0.2s; font-weight: 400; }
     details.faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
     details.faq-item p { margin: 0; padding: 0 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 10px; }
+    
+    /* MAJOR LOGISTICS ACCORDION STYLES */
+    details.major-section { margin-bottom: 15px; background: transparent; border: none; }
+    details.major-section > summary { font-size: 1.05rem; font-weight: 800; padding: 15px; cursor: pointer; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; display: flex; justify-content: space-between; align-items: center; color: var(--primary); outline: none; list-style: none; margin-bottom: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    details.major-section > summary::-webkit-details-marker { display: none; }
+    details.major-section > summary::after { content: '+'; font-size: 1.5rem; color: var(--text-muted); transition: transform 0.2s; font-weight: 400; }
+    details.major-section[open] > summary::after { content: '−'; transform: rotate(180deg); }
+    details.major-section > .accordion-content { padding-top: 5px; }
+
   </style>
 </head>
 <body>
@@ -336,196 +345,206 @@
 
     <div id="tab-availability" class="tab-content">
       
-      <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
-        <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
-        <div class="explainer-box info">
-          <strong>Why precision mapping matters:</strong>
-          Our league engine uses automated geometric allocation loops. If your facility houses multiple overlapping lines (such as a Gymnasium that supports Basketball layouts OR simultaneous Badminton nets), the database must protect those spaces from clashing. By walking through our step-by-step gateway below, the system ensures your school will never be double-booked for home matches.<br><br>
-          <em>If you need technical help or explanations to accurately map your facilities, please visit the Help tab for video tutorials or to schedule a 20-minute over-the-shoulder Zoom training call with AthleticOS.</em>
-        </div>
-      </div>
+      <details class="major-section" open>
+        <summary>📅 Calendar Blackouts & Availability</summary>
+        <div class="accordion-content">
+          <div class="card">
+            <div class="card-header">📅 Interactive Availability Calendar</div>
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+              <button onclick="navigateCalendarMonth(-1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">◀</button>
+              <span id="cal-month-title" style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">June 2026</span>
+              <button onclick="navigateCalendarMonth(1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">▶</button>
+            </div>
+            <div class="cal-header-row">
+              <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+            </div>
+            <div class="cal-grid-mesh" id="calendar-days-mesh"></div>
+            <div style="margin-top:12px; display:flex; gap:12px; font-size:0.65rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">
+              <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FEE2E2; border-radius:3px;"></span>Blackout / Holiday</div>
+              <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FFEDD5; border-radius:3px;"></span>Travel Only</div>
+            </div>
+          </div>
 
-      <div class="card wizard-card">
-        <span class="wizard-badge">Phase 1: Parent Asset Enrollment</span>
-        <div class="card-header">📦 Declare Physical Asset Box</div>
-        
-        <div class="explainer-box">
-          <strong>Instructions:</strong>
-          Enter the primary standalone field name or the containing complex shell here. Do not enter individual court splits or sub-numbers yet.
-        </div>
-
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FACILITY SYSTEM ARCHITECTURE</label>
-        <select class="status-select" id="facility-architecture-type" onchange="evaluateOnboardingViewTrack(this.value)" style="margin-bottom:12px;">
-          <option value="standalone">Standalone Single Field (e.g. Soccer Field, Rugby Pitch)</option>
-          <option value="complex">Multi-Court Complex Shell (e.g. Building D - Gymnasium)</option>
-        </select>
-
-        <div id="complex-action-toggle" style="display:none; margin-bottom:12px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
-          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">COMPLEX ACTION</label>
-          <select class="status-select" id="complex-action-type" onchange="toggleComplexInput(this.value, 'complex')" style="margin-bottom:0;">
-            <option value="new">Register a Brand New Complex</option>
-            <option value="existing">Add Courts to an Existing Complex</option>
-          </select>
-        </div>
-
-        <label id="label-primary-venue-title" style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FIELD / PITCH IDENTIFIER NAME</label>
-        <input type="text" class="text-input" id="new-venue-name" placeholder="e.g. Building D - Gymnasium, Main Turf Field">
-        <select class="status-select" id="existing-parent-select" style="display:none; margin-bottom:10px;"></select>
-
-        <div id="complex-split-wizard-gate" style="display:none; margin-top:10px; background-color:#F0FDF4; border:1px solid #BBF7D0; padding:12px; border-radius:8px; margin-bottom:12px;">
-          <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">MAX SIMULTANEOUS LOGISTICAL CAPACITY</label>
-          <select class="status-select" id="complex-layout-style" onchange="calculateComplexUnitCapacity(this.value)" style="margin-bottom:0;">
-            <option value="1">1 Main Premier Court (Takes up the whole building capacity)</option>
-            <option value="2">2 Side-by-Side Courts (Allows 2 games to match concurrently)</option>
-            <option value="3">3 Parallel Sections (Allows 3 games to match concurrently)</option>
-            <option value="4">4 Tournament Grid Zones (Allows 4 games to match concurrently)</option>
-          </select>
-          <input type="hidden" id="new-venue-unit-count" value="1">
-
-          <div id="main-court-toggle-container" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #BBF7D0;">
-            <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
-              <input type="checkbox" id="new-venue-has-main" style="margin-top:2px; transform:scale(1.2);" checked>
+          <div class="card" id="exemption-form-card" style="border-color:var(--border);">
+            <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">1. EXEMPTION SCOPE</label>
+            <select class="status-select" id="ex-scope" onchange="toggleExemptionScope(this.value)" style="margin-bottom:10px;">
+              <option value="school">Global School Blackout (Applies to all fields & teams)</option>
+              <option value="venue">Specific Mapped Venue / Field Only</option>
+              <option value="division">Specific Age Group / Team Only</option>
+            </select>
+            <div id="ex-venue-container" style="display:none; margin-bottom:10px;">
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET VENUE</label>
+              <select class="status-select" id="ex-venue-id" style="margin-bottom:0;"></select>
+            </div>
+            <div id="ex-division-container" style="display:none; margin-bottom:10px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET TEAM / DIVISION</label>
+              <select class="status-select" id="ex-div-id" style="margin-bottom:0;"></select>
+            </div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">2. AVAILABILITY CONSTRAINT</label>
+            <select class="status-select" id="ex-constraint" style="margin-bottom:10px;">
+              <option value="Not Available">Not Available (Total Blackout)</option>
+              <option value="School Holiday">School Holiday (Total Blackout)</option>
+              <option value="Available to Travel Only">Available to Travel Only (No Hosting Allowed)</option>
+              <option value="Available to Host Only">Available to Host Only</option>
+            </select>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">3. DATE WINDOW</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
               <div>
-                <span style="font-size:0.75rem; color:#166534; font-weight:800; display:block;">GENERATE 100% MAIN COURT OVERLAY</span>
-                <span style="font-size:0.65rem; color:#166534; display:block; margin-top:4px; line-height:1.4;">Leave checked if this building is used as a single large court for Varsity games. Uncheck if this facility is ONLY used as separate partitioned courts (like a massive fieldhouse).</span>
+                <span style="font-size:0.65rem; color:var(--text-muted);">START DATE</span>
+                <input type="date" class="text-input" id="ex-start-date" style="margin-bottom:0;">
               </div>
-            </label>
+              <div>
+                <span style="font-size:0.65rem; color:var(--text-muted);">END DATE</span>
+                <input type="date" class="text-input" id="ex-end-date" style="margin-bottom:0;">
+              </div>
+            </div>
+            <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header">📋 Logged Exceptions Status</div>
+            <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
           </div>
         </div>
+      </details>
 
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE TOURNEY CARRIER CAPACITIES</label>
-        <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;"></div>
+      <details class="major-section">
+        <summary>🏟️ Facility Architecture & Mapping</summary>
+        <div class="accordion-content">
+          <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
+            <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
+            <div class="explainer-box info">
+              <strong>Why precision mapping matters:</strong>
+              Our league engine uses automated geometric allocation loops. If your facility houses multiple overlapping lines (such as a Gymnasium that supports Basketball layouts OR simultaneous Badminton nets), the database must protect those spaces from clashing. By walking through our step-by-step gateway below, the system ensures your school will never be double-booked for home matches.<br><br>
+              <em>If you need technical help or explanations to accurately map your facilities, please visit the Help tab for video tutorials or to schedule a 20-minute over-the-shoulder Zoom training call with AthleticOS.</em>
+            </div>
+          </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
-          <div>
-            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
-            <input type="time" class="text-input" id="new-v-wkd-start" value="16:00">
-          </div>
-          <div>
-            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
-            <input type="time" class="text-input" id="new-v-wkd-end" value="19:30">
-          </div>
-        </div>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-          <div>
-            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
-            <input type="time" class="text-input" id="new-v-wnd-start" value="08:00">
-          </div>
-          <div>
-            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
-            <input type="time" class="text-input" id="new-v-wnd-end" value="17:00">
-          </div>
-        </div>
+          <div class="card wizard-card">
+            <span class="wizard-badge">Phase 1: Parent Asset Enrollment</span>
+            <div class="card-header">📦 Declare Physical Asset Box</div>
+            
+            <div class="explainer-box">
+              <strong>Instructions:</strong>
+              Enter the primary standalone field name or the containing complex shell here. Do not enter individual court splits or sub-numbers yet.
+            </div>
 
-        <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Sync Structure to Database Core</button>
-      </div>
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FACILITY SYSTEM ARCHITECTURE</label>
+            <select class="status-select" id="facility-architecture-type" onchange="evaluateOnboardingViewTrack(this.value)" style="margin-bottom:12px;">
+              <option value="standalone">Standalone Single Field (e.g. Soccer Field, Rugby Pitch)</option>
+              <option value="complex">Multi-Court Complex Shell (e.g. Building D - Gymnasium)</option>
+            </select>
 
-      <div class="card">
-        <div class="card-header">⏰ Modify Existing Facility Windows</div>
-        <div class="explainer-box">
-          <strong>Usage Profile:</strong>
-          Select an engineered playable court below to alter its absolute hourly boundaries for weekday or weekend loops.
-        </div>
-        <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
-          <option value="">Select Mapped Facility...</option>
-        </select>
-        
-        <div id="venue-hours-form" style="display:none;" class="space-y-2">
-          
-          <div style="margin-bottom:12px; padding:10px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:6px;">
-            <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">FACILITY STATUS (SOFT DELETE)</label>
-            <div style="display:flex; gap:10px;">
-              <select class="status-select" id="hours-v-status" style="margin-bottom:0; flex:1;">
-                <option value="Active">🟢 Active</option>
-                <option value="Under Maintenance">🟡 Under Maintenance</option>
-                <option value="Inactive">🔴 Inactive (Archived)</option>
+            <div id="complex-action-toggle" style="display:none; margin-bottom:12px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
+              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">COMPLEX ACTION</label>
+              <select class="status-select" id="complex-action-type" onchange="toggleComplexInput(this.value, 'complex')" style="margin-bottom:0;">
+                <option value="new">Register a Brand New Complex</option>
+                <option value="existing">Add Courts to an Existing Complex</option>
               </select>
-              <button class="btn-submit btn-small" id="btn-save-status" onclick="submitVenueStatus()" style="width:auto; padding:0 15px;">Update Status</button>
             </div>
+
+            <label id="label-primary-venue-title" style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">FIELD / PITCH IDENTIFIER NAME</label>
+            <input type="text" class="text-input" id="new-venue-name" placeholder="e.g. Building D - Gymnasium, Main Turf Field">
+            <select class="status-select" id="existing-parent-select" style="display:none; margin-bottom:10px;"></select>
+
+            <div id="complex-split-wizard-gate" style="display:none; margin-top:10px; background-color:#F0FDF4; border:1px solid #BBF7D0; padding:12px; border-radius:8px; margin-bottom:12px;">
+              <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">MAX SIMULTANEOUS LOGISTICAL CAPACITY</label>
+              <select class="status-select" id="complex-layout-style" onchange="calculateComplexUnitCapacity(this.value)" style="margin-bottom:0;">
+                <option value="1">1 Main Premier Court (Takes up the whole building capacity)</option>
+                <option value="2">2 Side-by-Side Courts (Allows 2 games to match concurrently)</option>
+                <option value="3">3 Parallel Sections (Allows 3 games to match concurrently)</option>
+                <option value="4">4 Tournament Grid Zones (Allows 4 games to match concurrently)</option>
+              </select>
+              <input type="hidden" id="new-venue-unit-count" value="1">
+
+              <div id="main-court-toggle-container" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #BBF7D0;">
+                <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
+                  <input type="checkbox" id="new-venue-has-main" style="margin-top:2px; transform:scale(1.2);" checked>
+                  <div>
+                    <span style="font-size:0.75rem; color:#166534; font-weight:800; display:block;">GENERATE 100% MAIN COURT OVERLAY</span>
+                    <span style="font-size:0.65rem; color:#166534; display:block; margin-top:4px; line-height:1.4;">Leave checked if this building is used as a single large court for Varsity games. Uncheck if this facility is ONLY used as separate partitioned courts (like a massive fieldhouse).</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE TOURNEY CARRIER CAPACITIES</label>
+            <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;"></div>
+
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+              <div>
+                <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
+                <input type="time" class="text-input" id="new-v-wkd-start" value="16:00">
+              </div>
+              <div>
+                <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
+                <input type="time" class="text-input" id="new-v-wkd-end" value="19:30">
+              </div>
+            </div>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
+              <div>
+                <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
+                <input type="time" class="text-input" id="new-v-wnd-start" value="08:00">
+              </div>
+              <div>
+                <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
+                <input type="time" class="text-input" id="new-v-wnd-end" value="17:00">
+              </div>
+            </div>
+
+            <button class="btn-submit btn-small" id="btn-add-court" onclick="submitCreateNewVenue()">➕ Sync Structure to Database Core</button>
           </div>
 
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
-            <div>
-              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
-              <input type="time" class="text-input" id="hours-v-wkd-start">
+          <div class="card">
+            <div class="card-header">⏰ Modify Existing Facility Windows</div>
+            <div class="explainer-box">
+              <strong>Usage Profile:</strong>
+              Select an engineered playable court below to alter its absolute hourly boundaries for weekday or weekend loops.
             </div>
-            <div>
-              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
-              <input type="time" class="text-input" id="hours-v-wkd-end">
-            </div>
-          </div>
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
-            <div>
-              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
-              <input type="time" class="text-input" id="hours-v-wnd-start">
-            </div>
-            <div>
-              <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
-              <input type="time" class="text-input" id="hours-v-wnd-end">
-            </div>
-          </div>
-          <button class="btn-submit btn-small" id="btn-save-hours" onclick="submitVenueHoursUpdate()">Update Operational Bounds</button>
-        </div>
-      </div>
+            <select class="status-select" id="avail-venue-select" onchange="loadSelectedVenueHours(this.value)" style="margin-bottom:12px;">
+              <option value="">Select Mapped Facility...</option>
+            </select>
+            
+            <div id="venue-hours-form" style="display:none;" class="space-y-2">
+              
+              <div style="margin-bottom:12px; padding:10px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:6px;">
+                <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">FACILITY STATUS (SOFT DELETE)</label>
+                <div style="display:flex; gap:10px;">
+                  <select class="status-select" id="hours-v-status" style="margin-bottom:0; flex:1;">
+                    <option value="Active">🟢 Active</option>
+                    <option value="Under Maintenance">🟡 Under Maintenance</option>
+                    <option value="Inactive">🔴 Inactive (Archived)</option>
+                  </select>
+                  <button class="btn-submit btn-small" id="btn-save-status" onclick="submitVenueStatus()" style="width:auto; padding:0 15px;">Update Status</button>
+                </div>
+              </div>
 
-      <div class="card">
-        <div class="card-header">📅 Interactive Availability Calendar</div>
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-          <button onclick="navigateCalendarMonth(-1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">◀</button>
-          <span id="cal-month-title" style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">June 2026</span>
-          <button onclick="navigateCalendarMonth(1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">▶</button>
-        </div>
-        <div class="cal-header-row">
-          <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
-        </div>
-        <div class="cal-grid-mesh" id="calendar-days-mesh"></div>
-        <div style="margin-top:12px; display:flex; gap:12px; font-size:0.65rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">
-          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FEE2E2; border-radius:3px;"></span>Blackout / Holiday</div>
-          <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FFEDD5; border-radius:3px;"></span>Travel Only</div>
-        </div>
-      </div>
-
-      <div class="card" id="exemption-form-card" style="border-color:var(--border);">
-        <div class="card-header" id="exemption-form-title">🚫 Log Calendar Blackout / Exemption</div>
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">1. EXEMPTION SCOPE</label>
-        <select class="status-select" id="ex-scope" onchange="toggleExemptionScope(this.value)" style="margin-bottom:10px;">
-          <option value="school">Global School Blackout (Applies to all fields & teams)</option>
-          <option value="venue">Specific Mapped Venue / Field Only</option>
-          <option value="division">Specific Age Group / Team Only</option>
-        </select>
-        <div id="ex-venue-container" style="display:none; margin-bottom:10px;">
-          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET VENUE</label>
-          <select class="status-select" id="ex-venue-id" style="margin-bottom:0;"></select>
-        </div>
-        <div id="ex-division-container" style="display:none; margin-bottom:10px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
-          <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET TEAM / DIVISION</label>
-          <select class="status-select" id="ex-div-id" style="margin-bottom:0;"></select>
-        </div>
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">2. AVAILABILITY CONSTRAINT</label>
-        <select class="status-select" id="ex-constraint" style="margin-bottom:10px;">
-          <option value="Not Available">Not Available (Total Blackout)</option>
-          <option value="School Holiday">School Holiday (Total Blackout)</option>
-          <option value="Available to Travel Only">Available to Travel Only (No Hosting Allowed)</option>
-          <option value="Available to Host Only">Available to Host Only</option>
-        </select>
-        <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">3. DATE WINDOW</label>
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:15px;">
-          <div>
-            <span style="font-size:0.65rem; color:var(--text-muted);">START DATE</span>
-            <input type="date" class="text-input" id="ex-start-date" style="margin-bottom:0;">
-          </div>
-          <div>
-            <span style="font-size:0.65rem; color:var(--text-muted);">END DATE</span>
-            <input type="date" class="text-input" id="ex-end-date" style="margin-bottom:0;">
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY OPEN</label>
+                  <input type="time" class="text-input" id="hours-v-wkd-start">
+                </div>
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKDAY CLOSE</label>
+                  <input type="time" class="text-input" id="hours-v-wkd-end">
+                </div>
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND OPEN</label>
+                  <input type="time" class="text-input" id="hours-v-wnd-start">
+                </div>
+                <div>
+                  <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800;">WEEKEND CLOSE</label>
+                  <input type="time" class="text-input" id="hours-v-wnd-end">
+                </div>
+              </div>
+              <button class="btn-submit btn-small" id="btn-save-hours" onclick="submitVenueHoursUpdate()">Update Operational Bounds</button>
+            </div>
           </div>
         </div>
-        <button class="btn-submit btn-small" id="btn-add-exemption" onclick="submitAvailabilityException()">+ Log Availability Change</button>
-      </div>
-
-      <div class="card">
-        <div class="card-header">📋 Logged Exceptions Status</div>
-        <div id="active-exceptions-list" style="font-size:0.85rem;" class="space-y-2"></div>
-      </div>
+      </details>
     </div>
 
     <div id="tab-messages" class="tab-content">
@@ -684,7 +703,7 @@
     <div class="nav-item active" onclick="switchTab('games')">Games</div>
     <div class="nav-item" onclick="switchTab('teams')">Teams</div>
     <div class="nav-item" onclick="switchTab('registration')">Rosters</div>
-    <div class="nav-item" id="nav-availability" onclick="switchTab('availability')">Availability</div>
+    <div class="nav-item" id="nav-availability" onclick="switchTab('availability')">Logistics</div>
     <div class="nav-item" onclick="switchTab('messages')">Messages</div>
     <div class="nav-item" id="nav-admin-link" style="display:none;" onclick="switchTab('admin')">Admin</div>
     <div class="nav-item" onclick="switchTab('help')">Help</div>
