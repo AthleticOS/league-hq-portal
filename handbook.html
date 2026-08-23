@@ -424,7 +424,8 @@
         <h2>Rules & Regulations by Sport</h2>
         <p>All BISAL games adhere to international official rule books unless modified below.<br>
         Full BISAL Super-League Rules Table found in the following link:<br>
-        <a id="dyn-handbook-link" href="#" target="_blank" style="color:var(--primary-light); font-weight:800; text-decoration:underline; display:none;">View Official Master Rules Table</a></p>
+        <!-- The href attribute has been completely removed to prevent initial interference -->
+        <a id="dyn-handbook-link" target="_blank" style="color:var(--primary-light); font-weight:800; text-decoration:underline; display:none;">View Official Master Rules Table</a></p>
         
         <div id="dynamic-rules-container">
           <p style="color:var(--text-muted); font-style:italic;">Loading official sport regulations...</p>
@@ -517,7 +518,8 @@
       return n + (s[(v - 20) % 10] || s[v] || s[0]);
     }
 
-    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    // UPDATED SCRIPT BLOCK: Added .nav-links so smooth scrolling only impacts the sidebar
+    document.querySelectorAll('.nav-links a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
