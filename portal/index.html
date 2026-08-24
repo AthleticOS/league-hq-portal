@@ -1022,7 +1022,7 @@
         
         document.getElementById('school-title').innerText = String(targetSchoolName).toUpperCase();
 
-        renderGames(appFixtures, data.Schools || [], globalSportsData, globalDivisionsData);
+        renderGames(appFixtures, data.Schools || [], globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
 
@@ -1190,10 +1190,22 @@
       });
     }
 
-    function renderGames(fixtures, schoolsData, sportsData, divisionsData) {
+    function renderGames(fixtures, schoolsData, sportsData, divisionsData, teamsData) {
       const container = document.getElementById('games-list');
       container.innerHTML = '';
-      const schoolGames = fixtures.filter(game => String(readFlexibleObjectValue(game, "HomeTeamID")).includes(targetSchoolID) || String(readFlexibleObjectValue(game, "AwayTeamID")).includes(targetSchoolID));
+      
+      const schoolGames = fixtures.filter(game => {
+        const hTeamId = String(readFlexibleObjectValue(game, "HomeTeamID")).trim();
+        const aTeamId = String(readFlexibleObjectValue(game, "AwayTeamID")).trim();
+        
+        const hTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === hTeamId);
+        const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
+        
+        const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
+        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
+        
+        return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
+      });
 
       if (schoolGames.length === 0) { container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`; return; }
 
@@ -1205,14 +1217,20 @@
         const cStatus = readFlexibleObjectValue(game, "ConflictStatus") || "✅ Clear";
         const gId = readFlexibleObjectValue(game, "GameID");
         const sId = readFlexibleObjectValue(game, "SportID");
-        
         const dId = readFlexibleObjectValue(game, "DivisionID");
-        const hTeam = readFlexibleObjectValue(game, "HomeTeamID");
-        const aTeam = readFlexibleObjectValue(game, "AwayTeamID");
+        
+        const hTeamId = readFlexibleObjectValue(game, "HomeTeamID");
+        const aTeamId = readFlexibleObjectValue(game, "AwayTeamID");
+        
+        const hTeamObj = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(hTeamId).trim());
+        const aTeamObj = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(aTeamId).trim());
+        
+        const hSchoolId = hTeamObj ? readFlexibleObjectValue(hTeamObj, "SchoolID") : hTeamId;
+        const aSchoolId = aTeamObj ? readFlexibleObjectValue(aTeamObj, "SchoolID") : aTeamId;
 
         statusOptions.forEach(status => { optionsHtml += `<option value="${status}" ${(mStatus === status) ? 'selected' : ''}>${status}</option>`; });
 
-        let currentSide = String(hTeam || '').includes(targetSchoolID) ? "Home" : "Away";
+        let currentSide = String(hSchoolId).includes(targetSchoolID) ? "Home" : "Away";
         let isScoreLocked = false; let scoreBadgeHtml = ""; 
         let scoreActionButtonsHtml = `<button class="btn-submit" id="btn-score-${gId}" onclick="submitScore('${gId}')">Update Match</button>`;
 
@@ -1285,7 +1303,7 @@
           proposalsHtml += `</div>`;
         }
         
-        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hTeam, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aTeam, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
+        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hSchoolId, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aSchoolId, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
         container.appendChild(card);
       });
     }
