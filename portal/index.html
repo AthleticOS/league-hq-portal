@@ -6,7 +6,7 @@
   <title>AthleticOS | Secure Portal</title>
   <link rel="icon" type="image/png" href="../favicon.png">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=400;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
     :root {
       --primary: #012300;
       --accent: #52C920;
@@ -28,6 +28,42 @@
       padding: 0;
       padding-bottom: 75px;
     }
+
+    /* BISAL ANIMATED PRELOADER */
+    #bisal-preloader {
+      position: fixed; inset: 0; z-index: 9999; background-color: #04174a;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.7s ease; opacity: 1; font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+    .preloader-ring-wrapper { position: relative; width: 192px; height: 192px; margin-bottom: 32px; display: flex; align-items: center; justify-content: center; }
+    .preloader-ring-outer {
+      position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(14,165,233,0.2);
+      border-top-color: #0ea5e9; animation: spin-forward 3s linear infinite;
+    }
+    .preloader-ring-inner {
+      position: absolute; inset: 16px; border-radius: 50%; border: 2px solid rgba(245,158,11,0.2);
+      border-bottom-color: #f59e0b; animation: spin-reverse 2s linear infinite;
+    }
+    .preloader-center {
+      position: relative; z-index: 10; display: flex; align-items: center; justify-content: center;
+      width: 96px; height: 96px; border-radius: 50%; background: #ffffff;
+      border: 1px solid rgba(14,165,233,0.5); box-shadow: 0 0 30px rgba(14,165,233,0.3); overflow: hidden;
+    }
+    .preloader-center img { height: 48px; width: 48px; object-fit: contain; }
+    .preloader-scan { position: absolute; inset: 0; overflow: hidden; border-radius: 50%; pointer-events: none; }
+    .preloader-scan-line { width: 100%; height: 4px; background: rgba(14,165,233,0.5); filter: blur(2px); position: absolute; animation: scan-line 2s linear infinite; }
+    .preloader-text-container { text-align: center; max-width: 320px; width: 100%; padding: 0 16px; box-sizing: border-box;}
+    .preloader-title { font-size: 1.5rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; animation: glitch-text 3s ease-in-out infinite; margin-top:0; }
+    .preloader-subtitle { font-size: 0.75rem; color: #0ea5e9; text-transform: uppercase; letter-spacing: 0.3em; animation: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; margin-bottom: 16px; margin-top:0;}
+    .preloader-track { height: 4px; width: 100%; background: #1e293b; border-radius: 999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); margin-top: 10px; }
+    .preloader-fill { height: 100%; background: linear-gradient(to right, #0ea5e9, #f59e0b); width: 0%; transition: width 0.15s ease-out; }
+    .preloader-meta { display: flex; justify-content: space-between; font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px; font-weight: 800;}
+    
+    @keyframes spin-forward { 100% { transform: rotate(360deg); } }
+    @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+    @keyframes scan-line { 0% { top: -10%; } 100% { top: 110%; } }
+    @keyframes glitch-text { 0%, 100% { text-shadow: 0 0 0px rgba(14,165,233,0); } 50% { text-shadow: 0 0 10px rgba(14,165,233,0.6); } }
+    @keyframes pulse-opacity { 50% { opacity: .5; } }
 
     /* HEADER: 3-Part Flexbox Layout */
     header {
@@ -72,7 +108,6 @@
 
     /* STATE SCREENS */
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
-    #loader { text-align: center; padding: 50px; font-weight: 600; color: var(--text-muted); display: none; word-break: break-word; }
     
     /* SECURITY IDENTITY SCREEN */
     #pin-screen { display: none; padding: 40px 20px; text-align: center; }
@@ -192,6 +227,24 @@
 </head>
 <body>
 
+  <!-- BISAL PRELOADER -->
+  <div id="bisal-preloader" style="display:none;">
+    <div class="preloader-ring-wrapper">
+      <div class="preloader-ring-outer"></div>
+      <div class="preloader-ring-inner"></div>
+      <div class="preloader-center">
+        <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/BISAL.png" alt="BISAL Icon">
+      </div>
+      <div class="preloader-scan"><div class="preloader-scan-line"></div></div>
+    </div>
+    <div class="preloader-text-container">
+      <h2 class="preloader-title">BISAL <span style="color:#f59e0b;">HQ</span></h2>
+      <p class="preloader-subtitle" id="bisal-preloader-msg">Syncing League Data...</p>
+      <div class="preloader-track"><div id="preloader-progress" class="preloader-fill"></div></div>
+      <div class="preloader-meta"><span>Decoupling Data</span><span id="preloader-text">0%</span></div>
+    </div>
+  </div>
+
   <header>
     <div class="header-left">
       <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" alt="AthleticOS Logo" class="header-logo">
@@ -215,8 +268,6 @@
     <h2 style="color: red;">Unauthorized Access</h2>
     <p>This link is invalid. Please use the exact link provided to your Athletic Department.</p>
   </div>
-
-  <div id="loader">Syncing Database...</div>
 
   <div id="pin-screen">
     <div class="pin-box">
@@ -772,8 +823,53 @@
     
     let activeRosterTeamId = "";
     
+    // --- PRELOADER LOGIC ---
+    let preloaderInterval;
+    
+    function showGlobalLoader(msg) {
+        document.getElementById('app-container').style.display = 'none';
+        document.getElementById('bottom-nav').style.display = 'none';
+        
+        const preloader = document.getElementById('bisal-preloader');
+        preloader.style.display = 'flex';
+        preloader.style.opacity = '1';
+        document.getElementById('bisal-preloader-msg').innerText = msg || "Syncing Database Core Matrices...";
+
+        const progressBar = document.getElementById('preloader-progress');
+        const progressText = document.getElementById('preloader-text');
+        let currentProgress = 0;
+        if(progressBar) progressBar.style.width = '0%';
+        if(progressText) progressText.innerText = '0%';
+        
+        clearInterval(preloaderInterval);
+        preloaderInterval = setInterval(() => {
+            if (currentProgress < 85) {
+                currentProgress += Math.random() * 5;
+                if(progressBar) progressBar.style.width = `${Math.min(currentProgress, 85)}%`;
+                if(progressText) progressText.innerText = `${Math.floor(Math.min(currentProgress, 85))}%`;
+            }
+        }, 100);
+    }
+
+    function hideGlobalLoader() {
+        clearInterval(preloaderInterval);
+        const preloader = document.getElementById('bisal-preloader');
+        const progressBar = document.getElementById('preloader-progress');
+        const progressText = document.getElementById('preloader-text');
+        
+        if(progressBar) progressBar.style.width = '100%';
+        if(progressText) progressText.innerText = '100%';
+        
+        setTimeout(() => {
+            if(preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.display = 'none'; }, 700);
+            }
+        }, 300);
+    }
+
     window.onerror = function(message, source, lineno, colno, error) {
-      document.getElementById('loader').style.display = 'none';
+      hideGlobalLoader();
       document.getElementById('portal-crash-terminal').style.display = 'block';
       document.getElementById('crash-log-text').innerText = `${message}\nLine: ${lineno} | Col: ${colno}`;
       return false;
@@ -805,14 +901,6 @@
         btn.style.opacity = "1";
         btn.style.pointerEvents = "auto";
       }
-    }
-
-    function showGlobalLoader(msg) {
-      document.getElementById('app-container').style.display = 'none';
-      document.getElementById('bottom-nav').style.display = 'none';
-      const loader = document.getElementById('loader');
-      loader.style.display = 'block';
-      loader.innerText = msg || "Processing...";
     }
 
     function buildSecurePayload(basePayload) {
@@ -983,7 +1071,7 @@
                     <p style="color: #7F1D1D; font-size: 0.9rem;">Please contact your Athletic Director to update your coaching assignments.</p>
                   </div>
                 `;
-                document.getElementById('loader').style.display = 'none'; 
+                hideGlobalLoader();
                 document.getElementById('app-container').style.display = 'block';
                 return; 
             }
@@ -1067,13 +1155,13 @@
           });
         }
         
-        document.getElementById('loader').style.display = 'none';
         document.getElementById('app-container').style.display = 'block'; 
         document.getElementById('bottom-nav').style.display = 'flex';
+        hideGlobalLoader(); 
       } catch (error) { 
-        const loaderElement = document.getElementById('loader');
-        loaderElement.style.color = "red";
-        loaderElement.innerHTML = `<h4 style="margin:0 0 10px 0;">🛑 SYSTEM INTERCEPT (Sync Failure Warning)</h4><p style="font-size:0.8rem;">${error.message}</p>`;
+        hideGlobalLoader();
+        document.getElementById('portal-crash-terminal').style.display = 'block';
+        document.getElementById('crash-log-text').innerText = `🛑 SYSTEM INTERCEPT (Sync Failure Warning)\n\n${error.message}`;
       }
     }
 
