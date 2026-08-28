@@ -18,6 +18,20 @@
               carbon: '#1e293b',     
               porcelain: '#f8fafc'   
             }
+          },
+          keyframes: {
+            scan: {
+              '0%': { top: '-10%' },
+              '100%': { top: '110%' },
+            },
+            'glitch-text': {
+              '0%, 100%': { textShadow: '0 0 0px rgba(14,165,233,0)' },
+              '50%': { textShadow: '0 0 10px rgba(14,165,233,0.6)' },
+            }
+          },
+          animation: {
+            scan: 'scan 2s linear infinite',
+            'glitch-text': 'glitch-text 3s ease-in-out infinite',
           }
         }
       }
@@ -44,6 +58,40 @@
 </head>
 <body class="bg-bisal-porcelain text-bisal-carbon min-h-screen flex flex-col">
 
+  <!-- BISAL PRELOADER -->
+  <div id="bisal-preloader" class="fixed inset-0 z-[9999] bg-bisal-navy flex flex-col items-center justify-center transition-opacity duration-700 opacity-100">
+    <div class="relative w-48 h-48 flex items-center justify-center mb-8">
+        <div class="absolute inset-0 rounded-full border-2 border-bisal-highlight/20 border-t-bisal-highlight animate-[spin_3s_linear_infinite]"></div>
+        <div class="absolute inset-4 rounded-full border-2 border-bisal-gold/20 border-b-bisal-gold animate-[spin_2s_linear_infinite_reverse]"></div>
+        
+        <div class="relative z-10 flex flex-col items-center justify-center h-24 w-24 rounded-full bg-white border border-bisal-highlight/50 shadow-[0_0_30px_rgba(14,165,233,0.3)] overflow-hidden">
+            <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/BISAL.png" alt="BISAL Icon" class="h-12 w-12 object-contain" />
+        </div>
+        
+        <div class="absolute inset-0 overflow-hidden rounded-full pointer-events-none">
+            <div class="w-full h-1 bg-bisal-highlight/50 blur-[2px] absolute animate-scan"></div>
+        </div>
+    </div>
+
+    <div class="text-center space-y-4 max-w-xs w-full px-4">
+        <h2 class="font-heading text-2xl font-bold text-white tracking-widest uppercase animate-glitch-text" style="margin:0;">
+            BISAL <span class="text-bisal-gold">HQ</span>
+        </h2>
+        <p class="font-ui text-xs text-bisal-highlight uppercase tracking-[0.3em] animate-pulse" style="margin:0;">
+            Syncing League Data...
+        </p>
+        
+        <div class="h-1 w-full bg-bisal-carbon rounded-full overflow-hidden border border-white/5 mt-4">
+            <div id="preloader-progress" class="h-full bg-gradient-to-r from-bisal-highlight to-bisal-gold transition-all duration-150 ease-out" style="width: 0%"></div>
+        </div>
+        
+        <div class="flex justify-between items-center font-ui text-[10px] text-slate-400 uppercase tracking-widest mt-2 font-bold">
+            <span>Decoupling Data</span>
+            <span id="preloader-text">0%</span>
+        </div>
+    </div>
+  </div>
+
   <header class="bg-bisal-navy text-white shadow-xl border-b-4 border-bisal-highlight">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-20">
@@ -55,7 +103,6 @@
           </div>
         </div>
         
-        <!-- Scaled down connection status badge for mobile -->
         <div id="connectionStatus" class="flex items-center space-x-1.5 sm:space-x-2 bg-bisal-carbon/55 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-[9px] sm:text-xs font-semibold border border-bisal-highlight/20 max-w-[130px] sm:max-w-none">
           <span class="h-2 w-2 shrink-0 rounded-full bg-bisal-highlight animate-pulse"></span>
           <span id="connectionStatusText" class="text-slate-300 truncate whitespace-nowrap">Syncing...</span>
@@ -454,7 +501,6 @@
           <p class="text-xs max-w-md leading-relaxed text-slate-400">Public data streaming interface. Secure dashboard modifications and schedule confirmations remain exclusive to verified Athletic Directors.</p>
         </div>
         <div class="shrink-0">
-          <!-- AthleticOS Badge - Kept Original Colors Intentionally -->
           <a href="https://athleticos.net" target="_blank" class="group flex items-center space-x-3 bg-[#012300] border border-slate-800 hover:border-[#52C920]/40 p-3 rounded-xl transition-all shadow-inner">
             <div class="h-9 w-9 bg-[#1A1A1A] rounded-lg p-1 border border-slate-700 flex items-center justify-center">
               <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" alt="AthleticOS" class="h-full w-full object-contain filter group-hover:brightness-110 transition-all">
@@ -491,7 +537,44 @@
     let calendarCurrentDate = new Date();
     let calendarSelectedDateStr = ''; 
 
+    // --- PRELOADER LOGIC ---
+    let preloaderInterval;
+    function startPreloader() {
+        const progressBar = document.getElementById('preloader-progress');
+        const progressText = document.getElementById('preloader-text');
+        let currentProgress = 0;
+        if(progressBar) progressBar.style.width = '0%';
+        if(progressText) progressText.innerText = '0%';
+        
+        preloaderInterval = setInterval(() => {
+            if (currentProgress < 85) {
+                currentProgress += Math.random() * 5;
+                if(progressBar) progressBar.style.width = `${Math.min(currentProgress, 85)}%`;
+                if(progressText) progressText.innerText = `${Math.floor(Math.min(currentProgress, 85))}%`;
+            }
+        }, 100);
+    }
+
+    function completePreloader() {
+        clearInterval(preloaderInterval);
+        const preloader = document.getElementById('bisal-preloader');
+        const progressBar = document.getElementById('preloader-progress');
+        const progressText = document.getElementById('preloader-text');
+        
+        if(progressBar) progressBar.style.width = '100%';
+        if(progressText) progressText.innerText = '100%';
+        
+        setTimeout(() => {
+            if(preloader) {
+                preloader.classList.remove('opacity-100');
+                preloader.classList.add('opacity-0', 'pointer-events-none');
+                setTimeout(() => { preloader.style.display = 'none'; }, 700);
+            }
+        }, 300);
+    }
+
     window.onload = function() {
+      startPreloader();
       processAppInit();
       fetchLiveSheetData(GOOGLE_API_ENDPOINT);
     };
@@ -505,22 +588,16 @@
 
     function getSchoolLogo(sch) {
       if (!sch) return '';
-      
       for (const key in sch) {
         const cleanKey = String(key).toLowerCase().replace(/[^a-z]/g, '');
         if (cleanKey.includes('logo') || cleanKey.includes('image') || cleanKey.includes('pic') || cleanKey.includes('crest') || cleanKey === 'icon') {
           const val = String(sch[key]).trim();
-          if (val.includes('http') || val.includes('www.') || val.includes('drive.google.com')) {
-            return convertDriveLink(val);
-          }
+          if (val.includes('http') || val.includes('www.') || val.includes('drive.google.com')) return convertDriveLink(val);
         }
       }
-      
       for (const key in sch) {
         const val = String(sch[key]).trim();
-        if (val.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i) || val.includes('drive.google.com/') || val.match(/^https?:\/\//i)) {
-          return convertDriveLink(val);
-        }
+        if (val.match(/\.(jpeg|jpg|gif|png|svg|webp)$/i) || val.includes('drive.google.com/') || val.match(/^https?:\/\//i)) return convertDriveLink(val);
       }
       return '';
     }
@@ -529,9 +606,7 @@
       if (!url) return '';
       if (url.includes('drive.google.com')) {
         const match = url.match(/[-\w]{25,}/);
-        if (match && match[0]) {
-          return `https://lh3.googleusercontent.com/d/${match[0]}`;
-        }
+        if (match && match[0]) return `https://lh3.googleusercontent.com/d/${match[0]}`;
       }
       if (url.startsWith('www.')) return 'https://' + url;
       return url;
@@ -553,7 +628,6 @@
       calculateStandings();
       renderSchools();
       renderSettings();
-      
       switchTab('standings');
     }
 
@@ -1138,6 +1212,7 @@
           statusElement.innerHTML = `<span class="h-2 w-2 shrink-0 rounded-full bg-emerald-500 animate-pulse"></span><span class="text-bisal-highlight truncate whitespace-nowrap">Live Stream Connected</span>`;
           
           processAppInit();
+          completePreloader(); // <-- Trigger Fadeout
         } else {
           throw new Error("Invalid data payload from Google Apps Script");
         }
