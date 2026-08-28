@@ -39,7 +39,7 @@
   </script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght=300;400;500;600;700;800&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
     body {
       font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -60,12 +60,12 @@
 
   <!-- BISAL PRELOADER -->
   <div id="bisal-preloader" class="fixed inset-0 z-[9999] bg-bisal-navy flex flex-col items-center justify-center transition-opacity duration-700 opacity-100">
-    <div class="relative w-48 h-48 flex items-center justify-center mb-8">
+    <div class="relative w-56 h-56 flex items-center justify-center mb-8">
         <div class="absolute inset-0 rounded-full border-2 border-bisal-highlight/20 border-t-bisal-highlight animate-[spin_3s_linear_infinite]"></div>
         <div class="absolute inset-4 rounded-full border-2 border-bisal-gold/20 border-b-bisal-gold animate-[spin_2s_linear_infinite_reverse]"></div>
         
-        <div class="relative z-10 flex flex-col items-center justify-center h-24 w-24 rounded-full bg-white border border-bisal-highlight/50 shadow-[0_0_30px_rgba(14,165,233,0.3)] overflow-hidden">
-            <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/BISAL.png" alt="BISAL Icon" class="h-12 w-12 object-contain" />
+        <div class="relative z-10 flex flex-col items-center justify-center h-32 w-32 rounded-full bg-white border border-bisal-highlight/50 shadow-[0_0_30px_rgba(14,165,233,0.3)] overflow-hidden">
+            <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/BISAL.png" alt="BISAL Icon" class="h-20 w-20 object-contain" />
         </div>
         
         <div class="absolute inset-0 overflow-hidden rounded-full pointer-events-none">
@@ -89,6 +89,8 @@
             <span>Decoupling Data</span>
             <span id="preloader-text">0%</span>
         </div>
+
+        <p class="mt-8 text-[9px] text-slate-500 uppercase tracking-widest font-bold">Architecture Built & Powered by Athletic<span class="text-white">OS</span></p>
     </div>
   </div>
 
@@ -493,7 +495,7 @@
     </div>
   </div>
 
-  <footer class="bg-bisal-navy border-t border-bisal-highlight/20 text-slate-400 py-10">
+  <footer class="bg-[#012300] border-t border-bisal-highlight/20 text-slate-400 py-10">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row justify-between items-center gap-6 border-b border-slate-800 pb-8">
         <div class="text-center md:text-left space-y-1">
@@ -501,7 +503,7 @@
           <p class="text-xs max-w-md leading-relaxed text-slate-400">Public data streaming interface. Secure dashboard modifications and schedule confirmations remain exclusive to verified Athletic Directors.</p>
         </div>
         <div class="shrink-0">
-          <a href="https://athleticos.net" target="_blank" class="group flex items-center space-x-3 bg-[#012300] border border-slate-800 hover:border-[#52C920]/40 p-3 rounded-xl transition-all shadow-inner">
+          <a href="https://athleticos.net" target="_blank" class="group flex items-center space-x-3 bg-black/50 border border-slate-800 hover:border-[#52C920]/40 p-3 rounded-xl transition-all shadow-inner">
             <div class="h-9 w-9 bg-[#1A1A1A] rounded-lg p-1 border border-slate-700 flex items-center justify-center">
               <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" alt="AthleticOS" class="h-full w-full object-contain filter group-hover:brightness-110 transition-all">
             </div>
