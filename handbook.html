@@ -27,27 +27,41 @@
       line-height: 1.6;
     }
 
-    /* LOADER OVERLAY */
-    #loader {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--bg-main);
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      z-index: 9999;
+    /* BISAL ANIMATED PRELOADER */
+    #bisal-preloader {
+      position: fixed; inset: 0; z-index: 9999; background-color: #04174a;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      transition: opacity 0.7s ease; opacity: 1; font-family: 'Plus Jakarta Sans', sans-serif;
     }
-    .spinner {
-      border: 4px solid var(--border);
-      border-top: 4px solid var(--primary);
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      animation: spin 1s linear infinite;
-      margin-bottom: 15px;
+    .preloader-ring-wrapper { position: relative; width: 192px; height: 192px; margin-bottom: 32px; display: flex; align-items: center; justify-content: center; }
+    .preloader-ring-outer {
+      position: absolute; inset: 0; border-radius: 50%; border: 2px solid rgba(14,165,233,0.2);
+      border-top-color: #0ea5e9; animation: spin-forward 3s linear infinite;
     }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    .preloader-ring-inner {
+      position: absolute; inset: 16px; border-radius: 50%; border: 2px solid rgba(245,158,11,0.2);
+      border-bottom-color: #f59e0b; animation: spin-reverse 2s linear infinite;
+    }
+    .preloader-center {
+      position: relative; z-index: 10; display: flex; align-items: center; justify-content: center;
+      width: 96px; height: 96px; border-radius: 50%; background: #ffffff;
+      border: 1px solid rgba(14,165,233,0.5); box-shadow: 0 0 30px rgba(14,165,233,0.3); overflow: hidden;
+    }
+    .preloader-center img { height: 48px; width: 48px; object-fit: contain; }
+    .preloader-scan { position: absolute; inset: 0; overflow: hidden; border-radius: 50%; pointer-events: none; }
+    .preloader-scan-line { width: 100%; height: 4px; background: rgba(14,165,233,0.5); filter: blur(2px); position: absolute; animation: scan-line 2s linear infinite; }
+    .preloader-text-container { text-align: center; max-width: 320px; width: 100%; padding: 0 16px; box-sizing: border-box;}
+    .preloader-title { font-size: 1.5rem; font-weight: 800; color: #ffffff; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; animation: glitch-text 3s ease-in-out infinite; margin-top:0; }
+    .preloader-subtitle { font-size: 0.75rem; color: #0ea5e9; text-transform: uppercase; letter-spacing: 0.3em; animation: pulse-opacity 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; margin-bottom: 16px; margin-top:0;}
+    .preloader-track { height: 4px; width: 100%; background: #1e293b; border-radius: 999px; overflow: hidden; border: 1px solid rgba(255,255,255,0.05); margin-top: 10px; }
+    .preloader-fill { height: 100%; background: linear-gradient(to right, #0ea5e9, #f59e0b); width: 0%; transition: width 0.15s ease-out; }
+    .preloader-meta { display: flex; justify-content: space-between; font-size: 0.65rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px; font-weight: 800;}
+    
+    @keyframes spin-forward { 100% { transform: rotate(360deg); } }
+    @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
+    @keyframes scan-line { 0% { top: -10%; } 100% { top: 110%; } }
+    @keyframes glitch-text { 0%, 100% { text-shadow: 0 0 0px rgba(14,165,233,0); } 50% { text-shadow: 0 0 10px rgba(14,165,233,0.6); } }
+    @keyframes pulse-opacity { 50% { opacity: .5; } }
 
     /* MOBILE-FIRST RESPONSIVE CONTENT SHELL */
     .app-wrapper {
@@ -310,9 +324,22 @@
 </head>
 <body>
 
-  <div id="loader">
-    <div class="spinner"></div>
-    <div style="font-weight: 700; color: var(--primary); letter-spacing: 1px; font-size: 0.85rem;">SYNCING LEAGUE DATA...</div>
+  <!-- BISAL PRELOADER -->
+  <div id="bisal-preloader">
+    <div class="preloader-ring-wrapper">
+      <div class="preloader-ring-outer"></div>
+      <div class="preloader-ring-inner"></div>
+      <div class="preloader-center">
+        <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/BISAL.png" alt="BISAL Icon">
+      </div>
+      <div class="preloader-scan"><div class="preloader-scan-line"></div></div>
+    </div>
+    <div class="preloader-text-container">
+      <h2 class="preloader-title">BISAL <span style="color:#f59e0b;">HQ</span></h2>
+      <p class="preloader-subtitle">Syncing League Data...</p>
+      <div class="preloader-track"><div id="preloader-progress" class="preloader-fill"></div></div>
+      <div class="preloader-meta"><span>Decoupling Data</span><span id="preloader-text">0%</span></div>
+    </div>
   </div>
 
   <div class="app-wrapper">
@@ -505,6 +532,41 @@
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
 
+    // --- PRELOADER LOGIC ---
+    let preloaderInterval;
+    function startPreloader() {
+        const progressBar = document.getElementById('preloader-progress');
+        const progressText = document.getElementById('preloader-text');
+        let currentProgress = 0;
+        if(progressBar) progressBar.style.width = '0%';
+        if(progressText) progressText.innerText = '0%';
+        
+        preloaderInterval = setInterval(() => {
+            if (currentProgress < 85) {
+                currentProgress += Math.random() * 5;
+                if(progressBar) progressBar.style.width = `${Math.min(currentProgress, 85)}%`;
+                if(progressText) progressText.innerText = `${Math.floor(Math.min(currentProgress, 85))}%`;
+            }
+        }, 100);
+    }
+
+    function completePreloader() {
+        clearInterval(preloaderInterval);
+        const preloader = document.getElementById('bisal-preloader');
+        const progressBar = document.getElementById('preloader-progress');
+        const progressText = document.getElementById('preloader-text');
+        
+        if(progressBar) progressBar.style.width = '100%';
+        if(progressText) progressText.innerText = '100%';
+        
+        setTimeout(() => {
+            if(preloader) {
+                preloader.style.opacity = '0';
+                setTimeout(() => { preloader.style.display = 'none'; }, 700);
+            }
+        }, 400);
+    }
+
     function readFlexibleObjectValue(obj, targetKeyString) {
       if (!obj) return '';
       const matchKey = String(targetKeyString).toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -518,7 +580,6 @@
       return n + (s[(v - 20) % 10] || s[v] || s[0]);
     }
 
-    // UPDATED SCRIPT BLOCK: Added .nav-links so smooth scrolling only impacts the sidebar
     document.querySelectorAll('.nav-links a[href^="#"]').forEach(anchor => {
       anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -539,6 +600,7 @@
     });
 
     async function loadHandbookData() {
+      startPreloader(); // <-- Trigger Animation
       try {
         const response = await fetch(API_URL);
         const data = await response.json();
@@ -657,14 +719,16 @@
           }
         });
 
-        document.getElementById('loader').style.display = 'none';
         document.getElementById('main-content').style.display = 'block';
-
+        completePreloader(); // <-- Trigger Fadeout
       } catch (err) {
-        document.getElementById('loader').innerHTML = `
-          <h2 style="color:#991b1b; margin-bottom:5px;">Database Sync Failed</h2>
-          <p style="color:var(--text-muted); font-size:0.85rem;">${err.message}</p>
-          <button onclick="location.reload()" style="margin-top:15px; padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:700;">Try Again</button>
+        completePreloader(); // <-- Hide preloader to show error state
+        document.body.innerHTML = `
+          <div style="height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:20px; background:#f8fafc;">
+            <h2 style="color:#991b1b; margin-bottom:5px;">Database Sync Failed</h2>
+            <p style="color:var(--text-muted); font-size:0.85rem;">${err.message}</p>
+            <button onclick="location.reload()" style="margin-top:15px; padding:10px 20px; background:var(--primary); color:#fff; border:none; border-radius:6px; cursor:pointer; font-weight:700;">Try Again</button>
+          </div>
         `;
       }
     }
