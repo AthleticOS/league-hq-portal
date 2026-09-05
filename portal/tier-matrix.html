@@ -183,8 +183,17 @@
       font-size: 0.75rem;
       color: #94a3b8;
       font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 1px;
+      letter-spacing: 0.5px;
+    }
+    .footer-copyright a {
+      color: #94a3b8;
+      text-decoration: none;
+      border-bottom: 1px solid #94a3b8;
+      transition: all 0.2s ease;
+    }
+    .footer-copyright a:hover {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
     }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -388,16 +397,9 @@
           <span class="legal-text">Legal & Privacy</span>
         </div>
       </a>
-      <a href="https://bayermedia.net/legal" target="_blank" class="footer-btn">
-        <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/BMS%20Logo%20Icon.png" alt="Bayer Media Services">
-        <div class="footer-btn-text">
-          <span class="company-name">Bayer Media Services, LLC</span>
-          <span class="legal-text">Legal & Privacy</span>
-        </div>
-      </a>
     </div>
     <div class="footer-copyright">
-      &copy; 2026 AthleticOS | A Bayer Media Company
+      &copy; 2026 AthleticOS | <a href="https://bayermedia.net/legal" target="_blank">A Bayer Media Company</a>
     </div>
   </footer>
 
