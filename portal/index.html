@@ -31,7 +31,7 @@
 
     /* ATHLETICOS ANIMATED PRELOADER */
     #athleticos-preloader {
-      position: fixed; inset: 0; z-index: 9999; background-color: #012300;
+      position: fixed; inset: 0; z-index: 9999; background-color: #1A1A1A;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       transition: opacity 0.7s ease; opacity: 1; font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -202,12 +202,12 @@
 
     /* DYNAMIC NAVIGATION MATRIX */
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; z-index: 200; }
-    .nav-item { flex: 1; text-align: center; padding: 12px 0; font-size: 0.65rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .nav-item { flex: 1; text-align: center; padding: 10px 0; font-size: 0.6rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
     .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
     
     /* God Mode highlight */
-    #nav-admin { display: none; color: #C2410C; }
-    #nav-admin.active { background-color: #FFF7ED; border-top-color: #C2410C; }
+    #nav-admin-link { display: none; color: #C2410C; }
+    #nav-admin-link.active { background-color: #FFF7ED; border-top-color: #C2410C; }
 
     /* FAQ ACCORDION STYLES */
     .faq-category { font-weight: 800; font-size: 0.9rem; color: var(--primary); margin: 15px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 5px; text-transform: uppercase; }
@@ -294,28 +294,46 @@
 
   <div class="container" id="app-container">
     
+    <!-- GAMES TAB WITH PILL NAV -->
     <div id="tab-games" class="tab-content active">
-      <div class="explainer-box info" style="margin-bottom: 15px;">
-        <strong>Match Day Operations</strong>
-        <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 0.8rem;">
-          <li>An adult supervisor must accompany the team to all fixtures.</li>
-          <li>Communicate any travel delays immediately to the host school.</li>
-          <li>Verify and submit final match scores within 24 hours of conclusion.</li>
-        </ul>
+      <div class="pill-sub-nav">
+        <button class="sub-nav-btn active" id="btn-games-matches" onclick="switchSubTab('games', 'matches')">🏀 League Matches</button>
+        <button class="sub-nav-btn" id="btn-games-tournaments" onclick="switchSubTab('games', 'tournaments')">🏆 Tournaments</button>
       </div>
 
-      <div id="games-list"></div>
+      <div id="section-games-matches" class="sub-section active">
+        <div class="explainer-box info" style="margin-bottom: 15px;">
+          <strong>Match Day Operations</strong>
+          <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 0.8rem;">
+            <li>An adult supervisor must accompany the team to all fixtures.</li>
+            <li>Communicate any travel delays immediately to the host school.</li>
+            <li>Verify and submit final match scores within 24 hours of conclusion.</li>
+          </ul>
+        </div>
+        <div id="games-list"></div>
+        <div class="card" style="margin-top: 15px;">
+          <div class="card-header">League Code of Conduct</div>
+          <details class="faq-item">
+            <summary>Coaches & Teachers</summary>
+            <p id="coc-coaches-text">Loading...</p>
+          </details>
+          <details class="faq-item">
+            <summary>Players</summary>
+            <p id="coc-players-text">Loading...</p>
+          </details>
+        </div>
+      </div>
 
-      <div class="card" style="margin-top: 15px;">
-        <div class="card-header">League Code of Conduct</div>
-        <details class="faq-item">
-          <summary>Coaches & Teachers</summary>
-          <p id="coc-coaches-text">Loading...</p>
-        </details>
-        <details class="faq-item">
-          <summary>Players</summary>
-          <p id="coc-players-text">Loading...</p>
-        </details>
+      <div id="section-games-tournaments" class="sub-section">
+        <div class="card" style="border-color: #BFDBFE; background-color: #EFF6FF;">
+          <div class="card-header" style="color: #1E40AF;">🏆 Enterprise Event Management Suite</div>
+          <div class="explainer-box" style="border-left-color: #3B82F6; background-color: #FFFFFF;">
+            <strong>AthleticOS features a dedicated, desktop-optimized Tournament Manager</strong> specifically engineered to handle massive weekend jamborees, pool-play generators, and instant bracket seeding.
+            <br><br>
+            To prevent your mobile interface from becoming cluttered, you will use your same secure email and PIN to access the tournament portal on your computer.
+          </div>
+          <button class="btn-submit" style="background-color: #2563EB; margin-top: 10px;" onclick="alert('The standalone FIBA-style Tournament Manager Web App is currently in deployment tracking. You will be notified when the portal is live.')">Launch Tournament Manager (Coming Soon)</button>
+        </div>
       </div>
     </div>
 
@@ -433,7 +451,124 @@
       </div>
     </div>
 
-    <!-- LOGISTICS TAB WITH PILL NAV -->
+    <!-- MESSAGES TAB -->
+    <div id="tab-messages" class="tab-content">
+      <div class="card">
+        <div class="card-header" style="color:var(--primary);">💬 Live Chat Rooms</div>
+        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">Access your dedicated Google Chat spaces below. (Links activate based on your registered teams).</p>
+        <div id="chat-launchers-container"></div>
+      </div>
+      <div id="messages-list"></div>
+    </div>
+
+    <!-- ADMIN TAB WITH PILL NAV -->
+    <div id="tab-admin" class="tab-content">
+      <div class="pill-sub-nav">
+        <button class="sub-nav-btn active" id="btn-admin-console" onclick="switchSubTab('admin', 'console')">⚙️ Command Console</button>
+        <button class="sub-nav-btn" id="btn-admin-kpis" onclick="switchSubTab('admin', 'kpis')">📈 League KPIs</button>
+      </div>
+
+      <div id="section-admin-console" class="sub-section active">
+        <div class="card" style="border-color: #BFDBFE; background-color: #EFF6FF;">
+          <div class="card-header" style="color: #1E40AF;">🛡️ Sovereign League Governance Command Console</div>
+          <div class="explainer-box" style="border-left-color: #1E40AF; background-color: #FFFFFF;">
+            <strong>Security Protocol Level: Elevated Staff Session</strong>
+            Welcome, <span id="admin-staff-name" style="font-weight:700;">System Administrator</span>. You have passed the database identity handshake loop. The engine parameters below execute directly against the active spreadsheet workspace.
+          </div>
+        </div>
+
+        <div class="action-grid">
+          <div class="card" style="border-color: var(--primary);">
+            <div class="card-header">📅 Seasonal Round-Robin Engine</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Triggers the dynamic matrix pairing loop to populate empty division slots with home/away fixtures.</p>
+            <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; margin-bottom:4px; display:block;">TARGET BRACKET LEAGUE</label>
+            <select class="status-select" id="admin-schedule-division" style="padding:8px; margin-bottom:12px; font-size:0.8rem;"></select>
+            <div style="margin-top: auto;">
+              <button class="btn-submit" id="btn-master-schedule" onclick="triggerSeasonalScheduleGeneration()">Run Dynamic Allocation</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">📊 Ledger Integrity Metrics</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
+            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-header">🛠️ Engineering Toolbelt</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute global administrative transactions and master batch tasks directly.</p>
+            <div style="margin-top: auto; display:flex; flex-direction:column; gap:8px;">
+              <button class="btn-submit btn-small" id="btn-audit-scores" style="background-color: var(--primary);" onclick="triggerGlobalScoreAudit()">Force Conflict Watchdog Re-Audit</button>
+              <button class="btn-submit btn-small" style="background-color:#64748B;" onclick="window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID, '_blank')">📂 Open Google Sheet Ledger</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="section-admin-kpis" class="sub-section">
+        <div class="card" style="border-color: var(--accent);">
+          <div class="card-header">End-of-Year Asset Fulfillment Tracker</div>
+          <div class="explainer-box info">
+            <strong>Target Goals vs. Actuals</strong>
+            <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Monitor the live generation of assets that AthleticOS is contracted to deliver to the league board at the end of the competitive season.</p>
+          </div>
+          
+          <div style="margin-bottom: 20px;">
+            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">1. Operational Match Fulfillment</label>
+            <div style="display:flex; justify-content:space-between; align-items:center; background:#F8FAFC; border:1px solid var(--border); padding:12px; border-radius:6px;">
+              <div>
+                <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-completed-matches">0 / 0</span>
+                <span style="font-size:0.7rem; color:var(--text-muted);">Matches Completed</span>
+              </div>
+              <div style="text-align:right;">
+                <span style="display:block; font-size:1.2rem; font-weight:900; color:var(--accent);" id="kpi-match-percent">0%</span>
+                <span style="font-size:0.7rem; color:var(--text-muted);">Season Completion</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 20px;">
+            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">2. Core Demographic Assets</label>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+              <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
+                <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-total-athletes">0</span>
+                <span style="font-size:0.7rem; color:var(--text-muted);">Verified Athletes</span>
+              </div>
+              <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
+                <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-total-teams">0</span>
+                <span style="font-size:0.7rem; color:var(--text-muted);">Active Teams</span>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">3. Media & Content Deliverables</label>
+            <div style="background:#F8FAFC; border:1px solid var(--border); padding:12px; border-radius:6px; font-size:0.8rem;">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:6px;">
+                <span>Official Highlight Tapes</span>
+                <span style="color:#C2410C; font-weight:bold;">Pending Compilation</span>
+              </div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:6px;">
+                <span>Championship Photo Galleries</span>
+                <span style="color:#C2410C; font-weight:bold;">Awaiting Finals</span>
+              </div>
+              <div style="display:flex; justify-content:space-between;">
+                <span>Platform B-Roll & Case Study</span>
+                <span style="color:#166534; font-weight:bold;">In Progress</span>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- PLANNING TAB (FORMERLY LOGISTICS) WITH PILL NAV -->
     <div id="tab-availability" class="tab-content">
       
       <div class="pill-sub-nav">
@@ -651,57 +786,7 @@
       </div>
     </div>
 
-    <div id="tab-messages" class="tab-content">
-      <div class="card">
-        <div class="card-header" style="color:var(--primary);">💬 Live Chat Rooms</div>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">Access your dedicated Google Chat spaces below. (Links activate based on your registered teams).</p>
-        <div id="chat-launchers-container"></div>
-      </div>
-      <div id="messages-list"></div>
-    </div>
-
-    <div id="tab-admin" class="tab-content">
-      <div class="card" style="border-color: #BFDBFE; background-color: #EFF6FF;">
-        <div class="card-header" style="color: #1E40AF;">🛡️ Sovereign League Governance Command Console</div>
-        <div class="explainer-box" style="border-left-color: #1E40AF; background-color: #FFFFFF;">
-          <strong>Security Protocol Level: Elevated Staff Session</strong>
-          Welcome, <span id="admin-staff-name" style="font-weight:700;">System Administrator</span>. You have passed the database identity handshake loop. The engine parameters below execute directly against the active spreadsheet workspace.
-        </div>
-      </div>
-
-      <div class="action-grid">
-        <div class="card" style="border-color: var(--primary);">
-          <div class="card-header">📅 Seasonal Round-Robin Engine</div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Triggers the dynamic matrix pairing loop to populate empty division slots with home/away fixtures.</p>
-          <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; margin-bottom:4px; display:block;">TARGET BRACKET LEAGUE</label>
-          <select class="status-select" id="admin-schedule-division" style="padding:8px; margin-bottom:12px; font-size:0.8rem;"></select>
-          <div style="margin-top: auto;">
-            <button class="btn-submit" id="btn-master-schedule" onclick="triggerSeasonalScheduleGeneration()">Run Dynamic Allocation</button>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">📊 Ledger Integrity Metrics</div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
-          <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
-            <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
-            <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
-          </div>
-        </div>
-
-        <div class="card">
-          <div class="card-header">🛠️ Engineering Toolbelt</div>
-          <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute global administrative transactions and master batch tasks directly.</p>
-          <div style="margin-top: auto; display:flex; flex-direction:column; gap:8px;">
-            <button class="btn-submit btn-small" id="btn-audit-scores" style="background-color: var(--primary);" onclick="triggerGlobalScoreAudit()">Force Conflict Watchdog Re-Audit</button>
-            <button class="btn-submit btn-small" style="background-color:#64748B;" onclick="window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID, '_blank')">📂 Open Google Sheet Ledger</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
+    <!-- HELP TAB -->
     <div id="tab-help" class="tab-content">
       <div class="action-grid">
         <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
@@ -807,9 +892,9 @@
     <div class="nav-item active" onclick="switchTab('games')">Games</div>
     <div class="nav-item" onclick="switchTab('teams')">Teams</div>
     <div class="nav-item" onclick="switchTab('registration')">Rosters</div>
-    <div class="nav-item" id="nav-availability" onclick="switchTab('availability')">Logistics</div>
     <div class="nav-item" onclick="switchTab('messages')">Messages</div>
-    <div class="nav-item" id="nav-admin-link" style="display:none;" onclick="switchTab('admin')">Admin</div>
+    <div class="nav-item" id="nav-admin-link" onclick="switchTab('admin')">Admin</div>
+    <div class="nav-item" id="nav-availability" onclick="switchTab('availability')">Planning</div>
     <div class="nav-item" onclick="switchTab('help')">Help</div>
   </div>
 
@@ -1168,6 +1253,17 @@
           document.getElementById('meta-stat-venues').innerText = globalVenuesData.length;
           document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
           document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
+
+          // Populate Asset Fulfillment Tracker KPIs
+          document.getElementById('kpi-total-athletes').innerText = globalRosterData.length;
+          document.getElementById('kpi-total-teams').innerText = globalTeamsData.length;
+          
+          const completedMatches = appFixtures.filter(f => readFlexibleObjectValue(f, "MatchStatus") === "Completed" || readFlexibleObjectValue(f, "MatchStatus") === "Finished").length;
+          const scheduledMatches = appFixtures.length;
+          const matchPct = scheduledMatches > 0 ? Math.round((completedMatches / scheduledMatches) * 100) : 0;
+          
+          document.getElementById('kpi-completed-matches').innerText = `${completedMatches} / ${scheduledMatches}`;
+          document.getElementById('kpi-match-percent').innerText = `${matchPct}%`;
 
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
@@ -2357,11 +2453,11 @@
     }
 
     function switchSubTab(group, tabId) {
-      document.querySelectorAll(`#tab-${group === 'rosters' ? 'registration' : group} .sub-section`).forEach(el => el.classList.remove('active'));
-      document.querySelectorAll(`#tab-${group === 'rosters' ? 'registration' : group} .sub-nav-btn`).forEach(el => el.classList.remove('active'));
+      document.querySelectorAll(`#tab-${group} .sub-section`).forEach(el => el.classList.remove('active'));
+      document.querySelectorAll(`#tab-${group} .sub-nav-btn`).forEach(el => el.classList.remove('active'));
       
-      const targetSection = document.getElementById(`section-${group === 'rosters' ? 'registration' : group}-${tabId}`);
-      const targetBtn = document.getElementById(`btn-${group === 'rosters' ? 'registration' : group}-${tabId}`);
+      const targetSection = document.getElementById(`section-${group}-${tabId}`);
+      const targetBtn = document.getElementById(`btn-${group}-${tabId}`);
       
       if (targetSection) targetSection.classList.add('active');
       if (targetBtn) targetBtn.classList.add('active');
