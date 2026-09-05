@@ -29,21 +29,39 @@
       color: var(--text-main);
       margin: 0;
       padding: 0;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
     }
+    
+    /* HEADER STYLES */
     header {
       background-color: var(--primary);
       color: #fff;
       padding: 20px;
-      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
       border-bottom: 4px solid var(--accent);
     }
-    header h1 { margin: 0; font-size: 1.5rem; font-weight: 900; }
+    .header-logo {
+      height: 55px;
+      width: auto;
+      object-fit: contain;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+    }
+    .header-text {
+      text-align: left;
+    }
+    header h1 { margin: 0; font-size: 1.5rem; font-weight: 900; line-height: 1.1; }
     header p { margin: 5px 0 0 0; font-size: 0.85rem; color: var(--accent); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
     
     .container {
       max-width: 800px;
       margin: 30px auto;
       padding: 0 20px;
+      flex: 1;
     }
     .question-card {
       background: var(--card-bg);
@@ -100,19 +118,63 @@
     .slider-tab.active-t3 { background: var(--t3-bg); color: var(--t3); border: 1px solid #fed7aa; }
     .slider-tab.active-t4 { background: var(--t4-bg); color: var(--t4); border: 1px solid #fecaca; }
 
+    /* FOOTER STYLES */
+    footer {
+      margin-top: 40px;
+      padding: 30px 20px;
+      background-color: var(--card-bg);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      flex-wrap: wrap;
+    }
+    .legal-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      padding: 12px 24px;
+      border-radius: 6px;
+      text-decoration: none;
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.2s ease;
+    }
+    .legal-card:hover {
+      background: #e2e8f0;
+      color: var(--primary);
+      border-color: var(--text-muted);
+    }
+    .footer-copyright {
+      margin-top: 20px;
+      font-size: 0.75rem;
+      color: #94a3b8;
+      font-weight: 600;
+    }
+
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
     @media (max-width: 600px) {
       .grid-2 { grid-template-columns: 1fr; }
       .slider-tabs { flex-direction: column; }
+      header { flex-direction: column; text-align: center; }
+      .header-text { text-align: center; }
     }
   </style>
 </head>
 <body>
 
   <header>
-    <h1>AthleticOS Hub</h1>
-    <p>Contractual Asset Turnover Matrix</p>
+    <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" alt="AthleticOS Logo" class="header-logo">
+    <div class="header-text">
+      <h1>AthleticOS Hub</h1>
+      <p>Contractual Asset Turnover Matrix</p>
+    </div>
   </header>
 
   <div class="container">
@@ -283,6 +345,16 @@
 
     </div>
   </div>
+
+  <footer>
+    <div class="footer-links">
+      <a href="https://athleticos.net/legal" target="_blank" class="legal-card">AthleticOS Legal & Privacy</a>
+      <a href="https://bayermedia.net/legal" target="_blank" class="legal-card">BayerMedia Legal & Privacy</a>
+    </div>
+    <div class="footer-copyright">
+      &copy; 2026 AthleticOS | A BayerMedia Entity
+    </div>
+  </footer>
 
   <script>
     function setPrimaryTrack(isYes) {
