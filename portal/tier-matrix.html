@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AthleticOS | Contractual Turnover Matrix</title>
+  <link rel="icon" type="image/png" href="../favicon.png">
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -121,9 +122,9 @@
     /* FOOTER STYLES */
     footer {
       margin-top: 40px;
-      padding: 30px 20px;
-      background-color: var(--card-bg);
-      border-top: 1px solid var(--border);
+      padding: 40px 20px;
+      background-color: var(--primary);
+      border-top: 4px solid var(--accent);
       text-align: center;
     }
     .footer-links {
@@ -132,29 +133,43 @@
       gap: 15px;
       flex-wrap: wrap;
     }
-    .legal-card {
-      background: var(--bg);
-      border: 1px solid var(--border);
+    .footer-btn {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: #111111;
+      border: 1px solid rgba(255,255,255,0.15);
       padding: 12px 24px;
-      border-radius: 6px;
+      border-radius: 8px;
       text-decoration: none;
-      color: var(--text-muted);
+      color: #F8FAFC;
       font-size: 0.75rem;
       font-weight: 800;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       transition: all 0.2s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.3);
     }
-    .legal-card:hover {
-      background: #e2e8f0;
+    .footer-btn:hover {
+      background: var(--accent);
       color: var(--primary);
-      border-color: var(--text-muted);
+      border-color: var(--accent);
+    }
+    .footer-btn:hover svg path {
+      fill: var(--primary);
+    }
+    .footer-btn img {
+      height: 24px;
+      width: auto;
+      object-fit: contain;
     }
     .footer-copyright {
-      margin-top: 20px;
+      margin-top: 25px;
       font-size: 0.75rem;
       color: #94a3b8;
       font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1px;
     }
 
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
@@ -164,6 +179,8 @@
       .slider-tabs { flex-direction: column; }
       header { flex-direction: column; text-align: center; }
       .header-text { text-align: center; }
+      .footer-links { flex-direction: column; align-items: center; }
+      .footer-btn { width: 100%; max-width: 300px; justify-content: center; box-sizing: border-box; }
     }
   </style>
 </head>
@@ -348,11 +365,19 @@
 
   <footer>
     <div class="footer-links">
-      <a href="https://athleticos.net/legal" target="_blank" class="legal-card">AthleticOS Legal & Privacy</a>
-      <a href="https://bayermedia.net/legal" target="_blank" class="legal-card">BayerMedia Legal & Privacy</a>
+      <a href="https://athleticos.net/legal" target="_blank" class="footer-btn">
+        <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" alt="AthleticOS">
+        AthleticOS Legal & Privacy
+      </a>
+      <a href="https://bayermedia.net/legal" target="_blank" class="footer-btn">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="transition: fill 0.2s ease;">
+          <path d="M12 1L3 5V11C3 16.55 6.84 21.74 12 23C17.16 21.74 21 16.55 21 11V5L12 1ZM12 10.99H19C18.47 15.34 15.72 19.16 12 20.93V10.99H5V6.3L12 3.19V10.99Z" fill="#F8FAFC"/>
+        </svg>
+        Bayer Media Services, LLC
+      </a>
     </div>
     <div class="footer-copyright">
-      &copy; 2026 AthleticOS | A BayerMedia Entity
+      &copy; 2026 AthleticOS | A Bayer Media Services, LLC Entity
     </div>
   </footer>
 
