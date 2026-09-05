@@ -334,7 +334,7 @@
 
           <div class="card-header" style="color: var(--primary);">🏆 Enterprise Event Management Suite</div>
           <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF;">
-            <strong>AthleticOS features a dedicated, desktop-optimized Tournament Manager</strong> Specifically engineered to handle massive weekend jamborees, pool-play generators, and instant bracket seeding.
+            <strong>AthleticOS features a dedicated, desktop-optimized Tournament Manager</strong> specifically engineered to handle massive weekend jamborees, pool-play generators, and instant bracket seeding.
             <br><br>
             To prevent your mobile interface from becoming cluttered, you will use your same secure email and PIN to access the tournament portal on your computer.
           </div>
@@ -471,7 +471,7 @@
     <div id="tab-admin" class="tab-content">
       <div class="pill-sub-nav">
         <button class="sub-nav-btn active" id="btn-admin-console" onclick="switchSubTab('admin', 'console')">⚙️ Command Console</button>
-        <button class="sub-nav-btn" id="btn-admin-kpis" onclick="switchSubTab('admin', 'kpis')">📈 League KPIs</button>
+        <button class="sub-nav-btn" id="btn-admin-kpis" onclick="switchSubTab('admin', 'kpis')" style="display:none;">📈 League KPIs</button>
       </div>
 
       <div id="section-admin-console" class="sub-section active">
@@ -1281,16 +1281,9 @@
           document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
           document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
 
-          // Populate Asset Fulfillment Tracker KPIs
+          // Populate Asset Fulfillment Tracker KPIs (Fallback values before fetch)
           document.getElementById('kpi-total-athletes').innerText = globalRosterData.length;
           document.getElementById('kpi-total-teams').innerText = globalTeamsData.length;
-          
-          const completedMatches = appFixtures.filter(f => readFlexibleObjectValue(f, "MatchStatus") === "Completed" || readFlexibleObjectValue(f, "MatchStatus") === "Finished").length;
-          const scheduledMatches = appFixtures.length;
-          const matchPct = scheduledMatches > 0 ? Math.round((completedMatches / scheduledMatches) * 100) : 0;
-          
-          document.getElementById('kpi-completed-matches').innerText = `${completedMatches} / ${scheduledMatches}`;
-          document.getElementById('kpi-match-percent').innerText = `${matchPct}%`;
 
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
@@ -1298,6 +1291,38 @@
             const label = getTeamDisplayName(readFlexibleObjectValue(div, "SportID"), readFlexibleObjectValue(div, "DivisionID"), globalSportsData, globalDivisionsData);
             adminSchedSelect.innerHTML += `<option value="${readFlexibleObjectValue(div, "DivisionID")}">${label}</option>`;
           });
+
+          // Fetch Live KPIs if HQ
+          if (userLeagueRole.includes("hq")) {
+             document.getElementById('btn-admin-kpis').style.display = 'inline-block';
+             secureApiCall({ action: "fetchkpis", schoolId: targetSchoolID }).then(res => {
+                 if(res.status === "success" && res.data) {
+                    const d = res.data;
+                    document.getElementById('kpi-completed-matches').innerText = `${d.scoreReporting.completed} / ${d.scoreReporting.total}`;
+                    document.getElementById('kpi-match-percent').innerText = `${d.scoreReporting.percentage}%`;
+                    
+                    document.getElementById('kpi-total-athletes').innerText = d.rosterUtilization.total > 0 ? `${d.rosterUtilization.percentage}% Utilized` : '0';
+                    document.getElementById('kpi-total-teams').innerText = d.facilityMapping.total > 0 ? `${d.facilityMapping.percentage}% Mapped` : '0';
+                    
+                    // Replace the SLAs section with the Tier Status
+                    const slaContainer = document.getElementById('section-admin-kpis').querySelector('div:last-child > div');
+                    if (slaContainer) {
+                        slaContainer.innerHTML = `
+                          <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:6px;">
+                            <span>Current Projected Tier</span>
+                            <span style="color:var(--primary); font-weight:bold;">${d.tier.current}</span>
+                          </div>
+                          <div style="display:flex; justify-content:space-between;">
+                            <span>Turnover Deliverable</span>
+                            <span style="${d.tier.current.includes('Tier 1') ? 'color:#166534;' : 'color:#C2410C;'} font-weight:bold;">${d.tier.statusLabel}</span>
+                          </div>
+                        `;
+                    }
+                 }
+             }).catch(e => console.error("KPI fetch failed:", e));
+          } else {
+             document.getElementById('btn-admin-kpis').style.display = 'none';
+          }
         }
         
         document.getElementById('app-container').style.display = 'block'; 
