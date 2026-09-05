@@ -143,23 +143,38 @@
       border-radius: 8px;
       text-decoration: none;
       color: #F8FAFC;
-      font-size: 0.75rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
       transition: all 0.2s ease;
       box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+    }
+    .footer-btn-text {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      text-align: left;
+    }
+    .footer-btn-text .company-name {
+      font-size: 1rem;
+      font-weight: 800;
+    }
+    .footer-btn-text .legal-text {
+      font-size: 0.65rem;
+      font-weight: 700;
+      color: #94a3b8;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 2px;
+      transition: color 0.2s ease;
     }
     .footer-btn:hover {
       background: var(--accent);
       color: var(--primary);
       border-color: var(--accent);
     }
-    .footer-btn:hover svg path {
-      fill: var(--primary);
+    .footer-btn:hover .legal-text {
+      color: var(--primary);
     }
     .footer-btn img {
-      height: 24px;
+      height: 28px;
       width: auto;
       object-fit: contain;
     }
@@ -179,8 +194,9 @@
       .slider-tabs { flex-direction: column; }
       header { flex-direction: column; text-align: center; }
       .header-text { text-align: center; }
-      .footer-links { flex-direction: column; align-items: center; }
-      .footer-btn { width: 100%; max-width: 300px; justify-content: center; box-sizing: border-box; }
+      .footer-links { flex-direction: column; align-items: stretch; }
+      .footer-btn { width: 100%; justify-content: center; box-sizing: border-box; }
+      .footer-btn-text { align-items: center; text-align: center; }
     }
   </style>
 </head>
@@ -320,7 +336,7 @@
             <h4>Metric Status</h4>
             <ul class="requirements-list">
               <li><strong>Score Reporting:</strong> > 75%</li>
-              <li><strong>Facility Mapping:</strong> < 100% (Matchmaker disabled)</li>
+              <li><strong>Facility Mapping:</strong> &lt; 100% (Matchmaker disabled)</li>
               <li><strong>Rosters:</strong> 0%</li>
             </ul>
           </div>
@@ -353,7 +369,7 @@
           <div class="info-box">
             <h4>Metric Status</h4>
             <ul class="requirements-list">
-              <li><strong>Score Reporting:</strong> < 75%</li>
+              <li><strong>Score Reporting:</strong> &lt; 75%</li>
               <li><strong>Comms:</strong> Splintering detected.</li>
             </ul>
           </div>
@@ -367,11 +383,17 @@
     <div class="footer-links">
       <a href="https://athleticos.net/legal" target="_blank" class="footer-btn">
         <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" alt="AthleticOS">
-        AthleticOS Legal & Privacy
+        <div class="footer-btn-text">
+          <span class="company-name">AthleticOS</span>
+          <span class="legal-text">Legal & Privacy</span>
+        </div>
       </a>
       <a href="https://bayermedia.net/legal" target="_blank" class="footer-btn">
         <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/BMS%20Logo%20Icon.png" alt="Bayer Media Services">
-        Bayer Media Services, LLC
+        <div class="footer-btn-text">
+          <span class="company-name">Bayer Media Services, LLC</span>
+          <span class="legal-text">Legal & Privacy</span>
+        </div>
       </a>
     </div>
     <div class="footer-copyright">
