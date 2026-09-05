@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AthleticOS | Contractual Turnover Matrix</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #012300;
+      --accent: #52C920;
+      --bg: #F8FAFC;
+      --card-bg: #FFFFFF;
+      --text-main: #1A1A1A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --t1: #166534;
+      --t1-bg: #F0FDF4;
+      --t2: #ca8a04;
+      --t2-bg: #fefce8;
+      --t3: #ea580c;
+      --t3-bg: #fff7ed;
+      --t4: #991B1B;
+      --t4-bg: #FEF2F2;
+    }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg);
+      color: var(--text-main);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background-color: var(--primary);
+      color: #fff;
+      padding: 20px;
+      text-align: center;
+      border-bottom: 4px solid var(--accent);
+    }
+    header h1 { margin: 0; font-size: 1.5rem; font-weight: 900; }
+    header p { margin: 5px 0 0 0; font-size: 0.85rem; color: var(--accent); text-transform: uppercase; font-weight: 700; letter-spacing: 1px; }
+    
+    .container {
+      max-width: 800px;
+      margin: 30px auto;
+      padding: 0 20px;
+    }
+    .question-card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      text-align: center;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      margin-bottom: 20px;
+    }
+    .question-card h2 { margin-top: 0; font-size: 1.3rem; color: var(--primary); }
+    .question-card p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 25px; line-height: 1.5; }
+    
+    .toggle-group { display: flex; justify-content: center; gap: 15px; }
+    .toggle-btn {
+      flex: 1; max-width: 250px;
+      padding: 15px; font-size: 1rem; font-weight: 800; font-family: inherit;
+      border: 2px solid var(--border); border-radius: 8px;
+      background: #fff; color: var(--text-muted); cursor: pointer; transition: all 0.2s;
+    }
+    .toggle-btn.yes.active { border-color: var(--t1); background: var(--t1-bg); color: var(--t1); }
+    .toggle-btn.no.active { border-color: var(--text-main); background: #f1f5f9; color: var(--text-main); }
+
+    .matrix-view { display: none; animation: fadeIn 0.4s ease-out; }
+    
+    .tier-card {
+      background: var(--card-bg);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 20px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+    }
+    .tier-header { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+    .tier-title { font-size: 1.8rem; font-weight: 900; margin: 0; }
+    .tier-subtitle { font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-top: 5px; }
+    .tier-badge { padding: 6px 12px; border-radius: 20px; font-size: 0.75rem; font-weight: 900; text-transform: uppercase; letter-spacing: 1px; }
+
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+    .info-box { background: var(--bg); border: 1px solid var(--border); padding: 15px; border-radius: 8px; }
+    .info-box h4 { margin: 0 0 10px 0; font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); }
+    .info-box p { margin: 0; font-size: 0.95rem; font-weight: 600; line-height: 1.4; color: var(--text-main); }
+    
+    .requirements-list { margin: 0; padding: 0 0 0 20px; font-size: 0.9rem; color: var(--text-muted); line-height: 1.6; }
+    .requirements-list li strong { color: var(--text-main); }
+
+    /* Slider for NO track */
+    .slider-container { background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 20px; }
+    .slider-container p { margin: 0 0 15px 0; font-size: 0.9rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+    .slider-tabs { display: flex; background: var(--bg); border-radius: 8px; padding: 5px; gap: 5px; }
+    .slider-tab { flex: 1; border: none; background: transparent; padding: 10px; font-weight: 800; font-family: inherit; font-size: 0.85rem; color: var(--text-muted); cursor: pointer; border-radius: 6px; transition: all 0.2s; }
+    
+    .slider-tab.active-t2 { background: var(--t2-bg); color: var(--t2); border: 1px solid #fef08a; }
+    .slider-tab.active-t3 { background: var(--t3-bg); color: var(--t3); border: 1px solid #fed7aa; }
+    .slider-tab.active-t4 { background: var(--t4-bg); color: var(--t4); border: 1px solid #fecaca; }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 600px) {
+      .grid-2 { grid-template-columns: 1fr; }
+      .slider-tabs { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>AthleticOS Hub</h1>
+    <p>Contractual Asset Turnover Matrix</p>
+  </header>
+
+  <div class="container">
+    
+    <div class="question-card">
+      <h2>Primary Matrix Condition</h2>
+      <p>Has the League agreed to utilize Term 2 Data Features, achieving <strong>100% Roster Utilization</strong>, <strong>100% Facility Mapping</strong>, and maintaining <strong>>80% Score Reporting</strong>?</p>
+      
+      <div class="toggle-group">
+        <button class="toggle-btn yes" id="btn-yes" onclick="setPrimaryTrack(true)">✅ YES<br><span style="font-size:0.7rem; font-weight:600;">(Full Adoption)</span></button>
+        <button class="toggle-btn no" id="btn-no" onclick="setPrimaryTrack(false)">❌ NO<br><span style="font-size:0.7rem; font-weight:600;">(Partial / Restricted Use)</span></button>
+      </div>
+    </div>
+
+    <!-- TRACK 1: YES (Tier 1) -->
+    <div id="view-tier-1" class="matrix-view">
+      <div class="tier-card" style="border-color: var(--t1);">
+        <div class="tier-header">
+          <div>
+            <h3 class="tier-title" style="color: var(--t1);">Tier 1</h3>
+            <div class="tier-subtitle" style="color: var(--t1);">Full Case Study & Turnover</div>
+          </div>
+          <div class="tier-badge" style="background: var(--t1-bg); color: var(--t1); border: 1px solid #bbf7d0;">WHITELABEL ELIGIBLE</div>
+        </div>
+        
+        <div class="info-box" style="margin-bottom: 20px; background: var(--t1-bg); border-color: #bbf7d0;">
+          <h4>The Core Reward</h4>
+          <p style="color: var(--t1);">AthleticOS removes all branding, delivering a fully whitelabelled Coaches Portal and Admin App. The League receives lifetime free API hosting and full ownership transfer of the underlying AppSheet interface and database to ensure permanent PDPA compliance.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="info-box">
+            <h4>Ownership & Branding</h4>
+            <ul class="requirements-list">
+              <li><strong>Database:</strong> Full ownership transferred to League.</li>
+              <li><strong>AppSheet App:</strong> Full ownership transferred.</li>
+              <li><strong>Coaches Portal:</strong> 100% Whitelabelled (No AthleticOS logos).</li>
+              <li><strong>API Hosting:</strong> Lifetime free access.</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h4>Required Metrics (To Maintain)</h4>
+            <ul class="requirements-list">
+              <li><strong>Roster Utilization:</strong> 100% (All teams)</li>
+              <li><strong>Facility Mapping:</strong> 100% (All active venues)</li>
+              <li><strong>Score Reporting:</strong> > 80% completion rate</li>
+              <li><strong>Comms:</strong> Full participation in siloed testing.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- TRACK 2: NO (Restricted Slider) -->
+    <div id="view-restricted" class="matrix-view">
+      
+      <div class="slider-container">
+        <p>Select the League's Current Engagement Level</p>
+        <div class="slider-tabs">
+          <button class="slider-tab" id="tab-t2" onclick="setRestrictedTier(2)">High Engagement (Tier 2)</button>
+          <button class="slider-tab" id="tab-t3" onclick="setRestrictedTier(3)">Medium Engagement (Tier 3)</button>
+          <button class="slider-tab" id="tab-t4" onclick="setRestrictedTier(4)">Breach / Low (Tier 4)</button>
+        </div>
+      </div>
+
+      <!-- TIER 2 -->
+      <div id="card-t2" class="tier-card" style="display:none; border-color: var(--t2);">
+        <div class="tier-header">
+          <div>
+            <h3 class="tier-title" style="color: var(--t2);">Tier 2</h3>
+            <div class="tier-subtitle" style="color: var(--t2);">Operational Standard</div>
+          </div>
+          <div class="tier-badge" style="background: var(--t2-bg); color: var(--t2); border: 1px solid #fef08a;">BRAND LOCKED</div>
+        </div>
+        
+        <div class="info-box" style="margin-bottom: 20px; background: var(--t2-bg); border-color: #fef08a;">
+          <h4>The Penalty / Reward</h4>
+          <p style="color: var(--t2);">Because the league declined Roster Data transfer, AthleticOS retains the Database and App to absorb PDPA compliance liability. The league receives lifetime free portal access for score tracking, but AthleticOS branding remains permanently locked on all portals to serve as a marketing channel. If the league wishes to purchase the AppSheet database later, a 75% lifetime discount is applied.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="info-box">
+            <h4>Ownership & Branding</h4>
+            <ul class="requirements-list">
+              <li><strong>Database & App:</strong> Retained by AthleticOS.</li>
+              <li><strong>Coaches Portal:</strong> Lifetime Free (Brand Locked).</li>
+              <li><strong>Financial:</strong> 75% discount applied to future DB purchase.</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h4>Metric Status</h4>
+            <ul class="requirements-list">
+              <li><strong>Facility Mapping:</strong> 100%</li>
+              <li><strong>Score Reporting:</strong> > 80%</li>
+              <li><strong>Rosters / Term 2:</strong> Opted out or Failed.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 3 -->
+      <div id="card-t3" class="tier-card" style="display:none; border-color: var(--t3);">
+        <div class="tier-header">
+          <div>
+            <h3 class="tier-title" style="color: var(--t3);">Tier 3</h3>
+            <div class="tier-subtitle" style="color: var(--t3);">Minimal Score-Tracking Only</div>
+          </div>
+          <div class="tier-badge" style="background: var(--t3-bg); color: var(--t3); border: 1px solid #fed7aa;">1-YEAR ACCESS ONLY</div>
+        </div>
+        
+        <div class="info-box" style="margin-bottom: 20px; background: var(--t3-bg); border-color: #fed7aa;">
+          <h4>The Penalty / Reward</h4>
+          <p style="color: var(--t3);">The league failed to utilize the scheduling tools (mapping facilities) and declined roster data. There is no lifetime handover. The portal remains free for the <strong>current year only</strong>. To keep the API alive next year, the league must transition to a standard SaaS subscription, with a 50% penalty discount applied.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="info-box">
+            <h4>Ownership & Branding</h4>
+            <ul class="requirements-list">
+              <li><strong>Database & App:</strong> No handover.</li>
+              <li><strong>Coaches Portal:</strong> Free for Year 1 only. Brand Locked.</li>
+              <li><strong>Financial:</strong> 50% SaaS Renewal Discount next year.</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h4>Metric Status</h4>
+            <ul class="requirements-list">
+              <li><strong>Score Reporting:</strong> > 75%</li>
+              <li><strong>Facility Mapping:</strong> < 100% (Matchmaker disabled)</li>
+              <li><strong>Rosters:</strong> 0%</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIER 4 -->
+      <div id="card-t4" class="tier-card" style="display:none; border-color: var(--t4);">
+        <div class="tier-header">
+          <div>
+            <h3 class="tier-title" style="color: var(--t4);">Tier 4</h3>
+            <div class="tier-subtitle" style="color: var(--t4);">Non-Compliance / Breach</div>
+          </div>
+          <div class="tier-badge" style="background: var(--t4-bg); color: var(--t4); border: 1px solid #fecaca;">AGREEMENT VOIDED</div>
+        </div>
+        
+        <div class="info-box" style="margin-bottom: 20px; background: var(--t4-bg); border-color: #fecaca;">
+          <h4>The Penalty</h4>
+          <p style="color: var(--t4);">The league failed to hit basic engagement metrics or actively splintered official league communications. The case study agreement is voided. All API access will be revoked at the end of the year. The league must transition to full retail SaaS pricing to maintain access.</p>
+        </div>
+
+        <div class="grid-2">
+          <div class="info-box">
+            <h4>Ownership & Branding</h4>
+            <ul class="requirements-list">
+              <li><strong>Portal & API:</strong> Severed at end of year.</li>
+              <li><strong>Financial:</strong> Full retail pricing required to reactivate.</li>
+            </ul>
+          </div>
+          <div class="info-box">
+            <h4>Metric Status</h4>
+            <ul class="requirements-list">
+              <li><strong>Score Reporting:</strong> < 75%</li>
+              <li><strong>Comms:</strong> Splintering detected.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function setPrimaryTrack(isYes) {
+      document.getElementById('btn-yes').classList.remove('active');
+      document.getElementById('btn-no').classList.remove('active');
+      
+      if (isYes) {
+        document.getElementById('btn-yes').classList.add('active');
+        document.getElementById('view-tier-1').style.display = 'block';
+        document.getElementById('view-restricted').style.display = 'none';
+      } else {
+        document.getElementById('btn-no').classList.add('active');
+        document.getElementById('view-tier-1').style.display = 'none';
+        document.getElementById('view-restricted').style.display = 'block';
+        setRestrictedTier(2); // Default to highest restricted
+      }
+    }
+
+    function setRestrictedTier(tierLevel) {
+      // Clear tabs
+      document.getElementById('tab-t2').classList.remove('active-t2');
+      document.getElementById('tab-t3').classList.remove('active-t3');
+      document.getElementById('tab-t4').classList.remove('active-t4');
+      
+      // Hide all restricted cards
+      document.getElementById('card-t2').style.display = 'none';
+      document.getElementById('card-t3').style.display = 'none';
+      document.getElementById('card-t4').style.display = 'none';
+
+      // Show selected
+      document.getElementById(`tab-t${tierLevel}`).classList.add(`active-t${tierLevel}`);
+      document.getElementById(`card-t${tierLevel}`).style.display = 'block';
+    }
+  </script>
+</body>
+</html>
