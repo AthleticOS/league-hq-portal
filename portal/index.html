@@ -326,13 +326,19 @@
 
       <div id="section-games-tournaments" class="sub-section">
         <div class="card" style="border-color: #BFDBFE; background-color: #EFF6FF;">
+          
+          <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+             <span style="color: #991B1B; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
+             <span style="background-color: #DC2626; color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; font-weight: 900; letter-spacing: 1px;">COMING SOON</span>
+          </div>
+
           <div class="card-header" style="color: #1E40AF;">🏆 Enterprise Event Management Suite</div>
           <div class="explainer-box" style="border-left-color: #3B82F6; background-color: #FFFFFF;">
             <strong>AthleticOS features a dedicated, desktop-optimized Tournament Manager</strong> specifically engineered to handle massive weekend jamborees, pool-play generators, and instant bracket seeding.
             <br><br>
             To prevent your mobile interface from becoming cluttered, you will use your same secure email and PIN to access the tournament portal on your computer.
           </div>
-          <button class="btn-submit" style="background-color: #2563EB; margin-top: 10px;" onclick="alert('The standalone FIBA-style Tournament Manager Web App is currently in deployment tracking. You will be notified when the portal is live.')">Launch Tournament Manager (Coming Soon)</button>
+          <button class="btn-submit" style="background-color: #2563EB; margin-top: 10px;" onclick="alert('The standalone FIBA-style Tournament Manager Web App is currently in deployment tracking. You will be notified when the portal is live.')">Launch Tournament Manager</button>
         </div>
       </div>
     </div>
@@ -547,18 +553,18 @@
           </div>
 
           <div>
-            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">3. Media & Content Deliverables</label>
+            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">3. Contractual SLAs / Agreements</label>
             <div style="background:#F8FAFC; border:1px solid var(--border); padding:12px; border-radius:6px; font-size:0.8rem;">
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:6px;">
-                <span>Official Highlight Tapes</span>
-                <span style="color:#C2410C; font-weight:bold;">Pending Compilation</span>
+                <span>Agreement Objective 1</span>
+                <span style="color:#C2410C; font-weight:bold;">Pending Execution</span>
               </div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:6px; margin-bottom:6px;">
-                <span>Championship Photo Galleries</span>
-                <span style="color:#C2410C; font-weight:bold;">Awaiting Finals</span>
+                <span>Agreement Objective 2</span>
+                <span style="color:#C2410C; font-weight:bold;">Awaiting Term 2</span>
               </div>
               <div style="display:flex; justify-content:space-between;">
-                <span>Platform B-Roll & Case Study</span>
+                <span>Agreement Objective 3</span>
                 <span style="color:#166534; font-weight:bold;">In Progress</span>
               </div>
             </div>
@@ -2453,11 +2459,11 @@
     }
 
     function switchSubTab(group, tabId) {
-      document.querySelectorAll(`#tab-${group} .sub-section`).forEach(el => el.classList.remove('active'));
-      document.querySelectorAll(`#tab-${group} .sub-nav-btn`).forEach(el => el.classList.remove('active'));
+      document.querySelectorAll(`#tab-${group === 'rosters' ? 'registration' : group} .sub-section`).forEach(el => el.classList.remove('active'));
+      document.querySelectorAll(`#tab-${group === 'rosters' ? 'registration' : group} .sub-nav-btn`).forEach(el => el.classList.remove('active'));
       
-      const targetSection = document.getElementById(`section-${group}-${tabId}`);
-      const targetBtn = document.getElementById(`btn-${group}-${tabId}`);
+      const targetSection = document.getElementById(`section-${group === 'rosters' ? 'registration' : group}-${tabId}`);
+      const targetBtn = document.getElementById(`btn-${group === 'rosters' ? 'registration' : group}-${tabId}`);
       
       if (targetSection) targetSection.classList.add('active');
       if (targetBtn) targetBtn.classList.add('active');
