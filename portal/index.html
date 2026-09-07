@@ -499,6 +499,17 @@
           </div>
 
           <div class="card">
+            <div class="card-header">📊 Ledger Integrity Metrics</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
+            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
+            </div>
+          </div>
+
+          <div class="card">
             <div class="card-header">🛠️ Engineering Toolbelt</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute global administrative transactions and master batch tasks directly.</p>
             <div style="margin-top: auto; display:flex; flex-direction:column; gap:8px;">
@@ -560,19 +571,19 @@
           <div class="card-header">Raw Platform Assets</div>
           <div class="grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
             <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-matches">0</span>
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-matches">0</span>
               <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Completed Matches</span>
             </div>
             <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-players">0</span>
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-players">0</span>
               <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Verified Athletes</span>
             </div>
             <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-venues">0</span>
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-venues">0</span>
               <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Mapped Facilities</span>
             </div>
             <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-teams">0</span>
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-teams">0</span>
               <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Active Teams</span>
             </div>
           </div>
@@ -1289,8 +1300,10 @@
           document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
 
           // Populate Asset Fulfillment Tracker KPIs (Fallback values before fetch)
-          document.getElementById('meta-stat-matches').innerText = "0";
-          document.getElementById('meta-stat-teams').innerText = globalTeamsData.length;
+          document.getElementById('kpi-stat-matches').innerText = "0";
+          document.getElementById('kpi-stat-teams').innerText = globalTeamsData.length;
+          document.getElementById('kpi-stat-players').innerText = globalRosterData.length;
+          document.getElementById('kpi-stat-venues').innerText = globalVenuesData.length;
 
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
@@ -1306,7 +1319,7 @@
                  if(res.status === "success" && res.data) {
                     const d = res.data;
                     
-                    document.getElementById('meta-stat-matches').innerText = d.scoreReporting.completed;
+                    document.getElementById('kpi-stat-matches').innerText = d.scoreReporting.completed;
                     
                     // Animate Score Progress Bar
                     const scoreBar = document.getElementById('kpi-bar-score');
