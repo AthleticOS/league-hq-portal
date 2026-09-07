@@ -225,6 +225,10 @@
     .sub-nav-btn.active { color: var(--primary); background: var(--card-bg); border-bottom: 3px solid var(--accent); }
     .sub-section { display: none; }
     .sub-section.active { display: block; }
+
+    /* KPI PROGRESS BARS */
+    .progress-container { background: #E2E8F0; border-radius: 8px; height: 12px; width: 100%; margin-top: 8px; overflow: hidden; }
+    .progress-bar { height: 100%; border-radius: 8px; transition: width 1s ease-in-out; }
   </style>
 </head>
 <body>
@@ -495,17 +499,6 @@
           </div>
 
           <div class="card">
-            <div class="card-header">📊 Ledger Integrity Metrics</div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
-            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
-            </div>
-          </div>
-
-          <div class="card">
             <div class="card-header">🛠️ Engineering Toolbelt</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute global administrative transactions and master batch tasks directly.</p>
             <div style="margin-top: auto; display:flex; flex-direction:column; gap:8px;">
@@ -517,49 +510,74 @@
       </div>
 
       <div id="section-admin-kpis" class="sub-section">
-        <div class="card" style="border-color: var(--accent);">
-          <div class="card-header">End-of-Year Asset Fulfillment Tracker</div>
-          <div class="explainer-box info">
-            <strong>Target Goals vs. Actuals</strong>
-            <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Monitor the live generation of assets that AthleticOS is contracted to deliver to the league board at the end of the competitive season.</p>
-          </div>
-          
-          <div style="margin-bottom: 20px;">
-            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">1. Operational Match Fulfillment</label>
-            <div style="display:flex; justify-content:space-between; align-items:center; background:#F8FAFC; border:1px solid var(--border); padding:12px; border-radius:6px;">
-              <div>
-                <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-completed-matches">0 / 0</span>
-                <span style="font-size:0.7rem; color:var(--text-muted);">Matches Completed</span>
-              </div>
-              <div style="text-align:right;">
-                <span style="display:block; font-size:1.2rem; font-weight:900; color:var(--accent);" id="kpi-match-percent">0%</span>
-                <span style="font-size:0.7rem; color:var(--text-muted);">Season Completion</span>
-              </div>
-            </div>
-          </div>
-
-          <div style="margin-bottom: 20px;">
-            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">2. Core Demographic Assets</label>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
-              <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-                <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-total-athletes">0</span>
-                <span style="font-size:0.7rem; color:var(--text-muted);">Verified Athletes</span>
-              </div>
-              <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-                <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-total-teams">0</span>
-                <span style="font-size:0.7rem; color:var(--text-muted);">Active Teams</span>
-              </div>
-            </div>
-          </div>
-
-          <div id="kpi-sla-container">
-            <label style="font-size:0.75rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px; text-transform:uppercase;">3. Contractual SLAs / Agreements</label>
-            <div style="background:#F8FAFC; border:1px solid var(--border); padding:12px; border-radius:6px; font-size:0.8rem;">
-              <div style="text-align:center; padding:10px; color:var(--text-muted);">Syncing Turnover Matrix...</div>
-            </div>
-          </div>
-
+        
+        <!-- Live Status Bar Injected Here -->
+        <div id="kpi-tier-container">
+           <div class="card" style="text-align:center; padding:30px;">
+              <p style="font-weight:800; color:var(--text-muted);">Syncing Turnover Matrix...</p>
+           </div>
         </div>
+
+        <div class="card">
+          <div class="card-header" style="color:var(--primary);">Core Metric Progress</div>
+          <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0; margin-bottom:15px;">Live completion rates powering the Turnover Algorithm.</p>
+          
+          <div style="margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800;">
+              <span>Roster Utilization</span>
+              <span id="kpi-bar-roster-text">0%</span>
+            </div>
+            <div class="progress-container">
+              <div id="kpi-bar-roster" class="progress-bar" style="width:0%; background:var(--text-muted);"></div>
+            </div>
+            <p style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Target: 100% (Required for Database Handover)</p>
+          </div>
+
+          <div style="margin-bottom:15px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800;">
+              <span>Facility Mapping</span>
+              <span id="kpi-bar-facility-text">0%</span>
+            </div>
+            <div class="progress-container">
+              <div id="kpi-bar-facility" class="progress-bar" style="width:0%; background:var(--text-muted);"></div>
+            </div>
+            <p style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Target: 100% (Required for Base Portal Unlocks)</p>
+          </div>
+
+          <div style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; font-size:0.8rem; font-weight:800;">
+              <span>Score Reporting</span>
+              <span id="kpi-bar-score-text">0%</span>
+            </div>
+            <div class="progress-container">
+              <div id="kpi-bar-score" class="progress-bar" style="width:0%; background:var(--text-muted);"></div>
+            </div>
+            <p style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Target: >80% (Required for Agreement Compliance)</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">Raw Platform Assets</div>
+          <div class="grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
+            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-matches">0</span>
+              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Completed Matches</span>
+            </div>
+            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-players">0</span>
+              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Verified Athletes</span>
+            </div>
+            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-venues">0</span>
+              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Mapped Facilities</span>
+            </div>
+            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
+              <span style="display:block; font-size:1.2rem; font-weight:900;" id="meta-stat-teams">0</span>
+              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Active Teams</span>
+            </div>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1271,8 +1289,8 @@
           document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
 
           // Populate Asset Fulfillment Tracker KPIs (Fallback values before fetch)
-          document.getElementById('kpi-total-athletes').innerText = globalRosterData.length;
-          document.getElementById('kpi-total-teams').innerText = globalTeamsData.length;
+          document.getElementById('meta-stat-matches').innerText = "0";
+          document.getElementById('meta-stat-teams').innerText = globalTeamsData.length;
 
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
@@ -1287,59 +1305,91 @@
              secureApiCall({ action: "fetchkpis", schoolId: targetSchoolID }).then(res => {
                  if(res.status === "success" && res.data) {
                     const d = res.data;
-                    document.getElementById('kpi-completed-matches').innerText = `${d.scoreReporting.completed} / ${d.scoreReporting.total}`;
-                    document.getElementById('kpi-match-percent').innerText = `${d.scoreReporting.percentage}%`;
                     
-                    document.getElementById('kpi-total-athletes').innerText = d.rosterUtilization.total > 0 ? `${d.rosterUtilization.percentage}% Utilized` : '0';
-                    document.getElementById('kpi-total-teams').innerText = d.facilityMapping.total > 0 ? `${d.facilityMapping.percentage}% Mapped` : '0';
+                    document.getElementById('meta-stat-matches').innerText = d.scoreReporting.completed;
                     
-                    let currentDesc = "";
-                    let nextActions = "";
-                    let nextBenefits = "";
+                    // Animate Score Progress Bar
+                    const scoreBar = document.getElementById('kpi-bar-score');
+                    const scoreText = document.getElementById('kpi-bar-score-text');
+                    scoreBar.style.width = `${d.scoreReporting.percentage}%`;
+                    scoreText.innerText = `${d.scoreReporting.percentage}%`;
+                    scoreBar.style.backgroundColor = d.scoreReporting.percentage >= 80 ? '#166534' : '#ea580c';
+                    
+                    // Animate Facility Progress Bar
+                    const facBar = document.getElementById('kpi-bar-facility');
+                    const facText = document.getElementById('kpi-bar-facility-text');
+                    facBar.style.width = `${d.facilityMapping.percentage}%`;
+                    facText.innerText = `${d.facilityMapping.percentage}%`;
+                    facBar.style.backgroundColor = d.facilityMapping.percentage === 100 ? '#166534' : '#ca8a04';
+                    
+                    // Animate Roster Progress Bar
+                    const rosBar = document.getElementById('kpi-bar-roster');
+                    const rosText = document.getElementById('kpi-bar-roster-text');
+                    rosBar.style.width = `${d.rosterUtilization.percentage}%`;
+                    rosText.innerText = `${d.rosterUtilization.percentage}%`;
+                    rosBar.style.backgroundColor = d.rosterUtilization.percentage === 100 ? '#166534' : '#991B1B';
+
+                    let currentUnlocks = "";
+                    let missingTargets = "";
+                    let nextAction = "";
                     let tierColor = "#166534";
 
                     if (d.tier.current.includes('Tier 1')) {
-                        currentDesc = "Fully Whitelabelled Portal/App, lifetime free API hosting, unlimited lifetime software seating, and full ownership transfer of the database.";
-                        nextActions = "Maintain >80% score reporting and 100% facility/roster compliance through the end of Term 2.";
-                        nextBenefits = "Maximum rewards unlocked. Keep metrics high to secure handover.";
+                        currentUnlocks = "<li>100% Whitelabelled Portal (No Branding)</li><li>Unlimited Software Seats For Life</li><li>Full Database Ownership Transferred</li><li>Free Lifetime API Hosting</li>";
+                        missingTargets = "<li><strong>Fully Unlocked!</strong> Keep engagement high to retain.</li>";
+                        nextAction = "Maintain >80% score reporting and 100% facility/roster compliance through the end of Term 2 to execute handover.";
                         tierColor = "#166534"; 
                     } else if (d.tier.current.includes('Tier 2')) {
-                        currentDesc = "Lifetime free portal access for up to 12 founding schools. Brand locked to AthleticOS. No AppSheet transfer.";
-                        nextActions = "Achieve 100% Roster Utilization across all active teams.";
-                        nextBenefits = "Unlocks Tier 1: Fully Whitelabelled UI, Unlimited Seats, and complete Database ownership transfer.";
+                        currentUnlocks = "<li>Lifetime Free API Hosting</li><li>12 Free Permanent Seats</li><li>Complete Score Tracking Toolkit</li>";
+                        missingTargets = "<li><strong>LOCKED:</strong> Portal Branding (AthleticOS Marketing)</li><li><strong>LOCKED:</strong> AppSheet Database Ownership</li>";
+                        nextAction = "Unlock Tier 1 by achieving 100% Roster Utilization across all active teams.";
                         tierColor = "#ca8a04"; 
                     } else if (d.tier.current.includes('Tier 3')) {
-                        currentDesc = "Free API connection for up to 5 core schools (current year only). 50% SaaS renewal discount next year. No lifetime handover.";
-                        nextActions = "Achieve 100% Facility Mapping and maintain >80% Score Reporting.";
-                        nextBenefits = "Unlocks Tier 2: 12 Lifetime Free Seats (no renewal fees).";
+                        currentUnlocks = "<li>Free API connection for 1 Year Only</li><li>5 Free Seats (Current Year Only)</li>";
+                        missingTargets = "<li><strong>PENALTY:</strong> 50% Renewal Cost Next Year</li><li><strong>LOCKED:</strong> Matchmaker Disabled (<100% Facilities)</li><li><strong>LOCKED:</strong> Brand Locked & No DB Ownership</li>";
+                        nextAction = "Unlock Tier 2 by finishing Facility Mapping (100%) and maintaining >80% Score Reporting.";
                         tierColor = "#ea580c"; 
                     } else {
-                        currentDesc = "Agreement Voided. API connection severed at year-end. 0 Free Seats. Transition to full retail pricing required to reactivate.";
-                        nextActions = "Critically low engagement. Increase Score Reporting to >75% immediately.";
-                        nextBenefits = "Unlocks Tier 3: 5 Free Seats for the current year and a 50% discount on standard SaaS renewal.";
+                        currentUnlocks = "<li>None. Default Retail Track.</li>";
+                        missingTargets = "<li><strong>VOID:</strong> All case study agreements voided.</li><li><strong>PENALTY:</strong> Portal disconnected at year-end.</li><li><strong>PENALTY:</strong> 100% Retail Pricing Required.</li>";
+                        nextAction = "CRITICAL: Immediately increase Score Reporting above 75% to restore Tier 3 access.";
                         tierColor = "#991B1B"; 
                     }
 
-                    const slaContainer = document.getElementById('kpi-sla-container');
-                    if (slaContainer) {
-                        slaContainer.innerHTML = `
-                          <div style="background:#F8FAFC; border:1px solid var(--border); padding:15px; border-radius:8px;">
-                             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                                <span style="font-size:1rem; font-weight:900; color:var(--primary);">${d.tier.current.split(':')[0]}</span>
-                                <span style="background-color:${tierColor}20; color:${tierColor}; padding:4px 10px; border-radius:12px; font-size:0.7rem; font-weight:800; text-transform:uppercase;">${d.tier.statusLabel}</span>
-                             </div>
-                             <div style="font-size:0.8rem; font-weight:700; color:var(--text-main); margin-bottom:4px;">${d.tier.current.split(':')[1].trim()}</div>
-                             <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0; line-height:1.4;">${currentDesc}</p>
-
-                             <div style="margin-top:15px; padding-top:15px; border-top:1px dashed var(--border);">
-                                <span style="display:block; font-size:0.75rem; font-weight:800; color:var(--text-main); text-transform:uppercase; margin-bottom:6px;">🚀 Path to Upgrade</span>
-                                <p style="font-size:0.75rem; color:var(--text-muted); margin:0 0 10px 0;"><strong>Required Action:</strong> ${nextActions}</p>
-                                <div style="background:#F0FDF4; border-left:3px solid var(--accent); padding:10px; border-radius:0 4px 4px 0;">
-                                   <span style="font-size:0.7rem; font-weight:900; color:#166534; display:block; margin-bottom:2px; text-transform:uppercase;">Upgrade Unlocks:</span>
-                                   <span style="font-size:0.75rem; color:#166534; line-height:1.4;">${nextBenefits}</span>
+                    const tierContainer = document.getElementById('kpi-tier-container');
+                    if (tierContainer) {
+                        tierContainer.innerHTML = `
+                          <div style="background:#FFFFFF; border:2px solid ${tierColor}; padding:20px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.05);">
+                             <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
+                                <div>
+                                  <span style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Current Projected Standing</span>
+                                  <span style="display:block; font-size:1.2rem; font-weight:900; color:var(--primary); line-height:1.2;">${d.tier.current.split(':')[0]}</span>
+                                  <span style="font-size:0.8rem; font-weight:700; color:var(--text-main);">${d.tier.current.split(':')[1].trim()}</span>
                                 </div>
+                                <span style="background-color:${tierColor}15; color:${tierColor}; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; border:1px solid ${tierColor}40;">${d.tier.statusLabel}</span>
                              </div>
-                             <a href="tier-matrix.html" target="_blank" class="btn-submit btn-small" style="background-color: var(--primary); text-align:center; display:block; text-decoration:none; margin-top:15px;">🔍 View Detailed Turnover Matrix</a>
+
+                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
+                               <div style="background:#F0FDF4; border:1px solid #BBF7D0; padding:10px; border-radius:6px;">
+                                 <span style="display:block; font-size:0.7rem; font-weight:900; color:#166534; text-transform:uppercase; margin-bottom:6px;">🔓 Currently Unlocked</span>
+                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#166534; line-height:1.4;">
+                                    ${currentUnlocks}
+                                 </ul>
+                               </div>
+                               <div style="background:#FEF2F2; border:1px solid #FECACA; padding:10px; border-radius:6px;">
+                                 <span style="display:block; font-size:0.7rem; font-weight:900; color:#991B1B; text-transform:uppercase; margin-bottom:6px;">🔒 At Risk / Locked</span>
+                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#991B1B; line-height:1.4;">
+                                    ${missingTargets}
+                                 </ul>
+                               </div>
+                             </div>
+
+                             <div style="background:#F8FAFC; border-left:3px solid ${tierColor}; padding:10px; border-radius:0 6px 6px 0;">
+                                <span style="font-size:0.7rem; font-weight:900; color:var(--text-main); display:block; margin-bottom:2px; text-transform:uppercase;">Action Required:</span>
+                                <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted); line-height:1.4;">${nextAction}</span>
+                             </div>
+                             
+                             <a href="tier-matrix.html" target="_blank" class="btn-submit btn-small" style="background-color: var(--primary); text-align:center; display:block; text-decoration:none; margin-top:15px;">🔍 View Contractual Matrix Document</a>
                           </div>
                         `;
                     }
