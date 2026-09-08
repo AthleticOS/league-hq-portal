@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V4.5 -->
+<!-- AthleticOS Coaches Portal V4.6 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -165,6 +165,13 @@
     .prop-status-text.approved { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
     .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
 
+    /* GAMES DASHBOARD SUMMARY GRID */
+    .games-summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+    @media (min-width: 768px) { .games-summary-grid { grid-template-columns: repeat(4, 1fr); } }
+    .summary-card { background: #fff; border: 1px solid var(--border); border-bottom-width: 4px; padding: 12px 5px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .summary-num { display: block; font-size: 1.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 4px; }
+    .summary-lbl { font-size: 0.65rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
+
     /* CALENDAR GRID LAYOUT */
     .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
     .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
@@ -315,8 +322,12 @@
 
   <div class="container" id="app-container">
     
-    <!-- GAMES TAB WITH PILL NAV -->
+    <!-- GAMES TAB WITH PILL NAV & SUMMARY DASHBOARD -->
     <div id="tab-games" class="tab-content active">
+      
+      <!-- GAMES SUMMARY DASHBOARD INJECTED HERE -->
+      <div id="games-summary-dashboard" class="games-summary-grid"></div>
+
       <div class="pill-sub-nav">
         <button class="sub-nav-btn active" id="btn-games-calendar" onclick="switchSubTab('games', 'calendar')">📅 Calendar View</button>
         <button class="sub-nav-btn" id="btn-games-matches" onclick="switchSubTab('games', 'matches')">📋 List View</button>
@@ -1363,7 +1374,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.5</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.6</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1676,6 +1687,40 @@
 
       // Save global reference for the calendar render & export
       window.currentSchoolGames = schoolGames;
+      
+      // Calculate Summary Dashboard Metrics
+      let cSched = 0, cPend = 0, cPost = 0, cComp = 0;
+      schoolGames.forEach(g => {
+         const st = readFlexibleObjectValue(g, "MatchStatus");
+         if(st === "Completed") cComp++;
+         else if(st === "Pending Verification" || st === "Disputed") cPend++;
+         else if(st === "Postponed") cPost++;
+         else cSched++; // Default to scheduled/in-progress
+      });
+
+      // Inject Dashboard Metrics
+      const sumDash = document.getElementById('games-summary-dashboard');
+      if(sumDash) {
+         sumDash.innerHTML = `
+           <div class="summary-card" style="border-bottom-color: var(--text-muted);">
+              <span class="summary-num" style="color: var(--text-main);">${cSched}</span>
+              <span class="summary-lbl" style="color: var(--text-muted);">Scheduled</span>
+           </div>
+           <div class="summary-card" style="border-bottom-color: #ca8a04; background: #fefce8;">
+              <span class="summary-num" style="color: #ca8a04;">${cPend}</span>
+              <span class="summary-lbl" style="color: #a16207;">Pending Verif.</span>
+           </div>
+           <div class="summary-card" style="border-bottom-color: #991B1B; background: #FEF2F2;">
+              <span class="summary-num" style="color: #991B1B;">${cPost}</span>
+              <span class="summary-lbl" style="color: #7F1D1D;">Postponed</span>
+           </div>
+           <div class="summary-card" style="border-bottom-color: #166534; background: #F0FDF4;">
+              <span class="summary-num" style="color: #166534;">${cComp}</span>
+              <span class="summary-lbl" style="color: #14532d;">Completed</span>
+           </div>
+         `;
+      }
+
       renderGameCalendar();
 
       if (schoolGames.length === 0) { container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`; return; }
@@ -1836,7 +1881,7 @@
             
             let evClass = 'game-ev';
             if(status === 'Completed') evClass += ' completed';
-            if(status === 'Pending Verification') evClass += ' pending';
+            if(status === 'Pending Verification' || status === 'Disputed') evClass += ' pending';
             if(status === 'Postponed') evClass += ' postponed';
 
             const time = readFlexibleObjectValue(g, "Time") || '';
