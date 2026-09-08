@@ -1,4 +1,4 @@
-<!-- AthleticOS Public Fan Portal V3.1 -->
+<!-- AthleticOS Public Fan Portal V3.2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -518,7 +518,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-bisal-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V13.4.1</p>
+        <p class="font-mono bg-bisal-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V3.2.0</p>
       </div>
     </div>
   </footer>
@@ -1155,6 +1155,7 @@
       if (rawSchools.length === 0) { container.innerHTML = `<div class="col-span-full p-12 text-center text-slate-400">Loading directory...</div>`; return; }
 
       const sortedSchools = [...rawSchools].filter(s => s.SchoolID && s.Name && String(s.SchoolID).toLowerCase() !== 'schoolid').sort((a, b) => String(a.Name).localeCompare(b.Name));
+      const approvedTeams = getApprovedTeams();
 
       sortedSchools.forEach(sch => {
         const schoolColor = getSchoolColor(sch.Name);
@@ -1162,19 +1163,22 @@
         const logoUrl = getSchoolLogo(sch);
         const logoHtml = logoUrl ? `<img src="${logoUrl}" class="h-16 w-16 object-contain shrink-0 bg-white rounded-lg border border-slate-200 shadow-sm p-1" alt="${sch.Name} logo" />` : `<div class="h-16 w-16 shrink-0 rounded-lg flex items-center justify-center font-bold text-xl ${schoolColor.bg}">${acronym}</div>`;
 
-        const rawSuper = String(readFlexibleObjectValue(sch, "Super-League_Member") || readFlexibleObjectValue(sch, "SuperLeague_Member")).trim().toLowerCase();
-        const isSuper = (rawSuper === "yes" || rawSuper === "true");
-        let badgeHtml = isSuper ? `<div class="mt-3 bg-gradient-to-r from-bisal-gold to-yellow-500 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-[0_2px_4px_rgba(245,158,11,0.3)] tracking-widest uppercase">⭐ Super-League Member</div>` : '';
+        // Calculate Super-League Status dynamically on the frontend
+        const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(sch.SchoolID).trim());
+        const isSuper = schoolTeams.length > 0;
+        let badgeHtml = isSuper ? `<div class="mt-2 bg-gradient-to-r from-bisal-gold to-yellow-500 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-sm tracking-widest uppercase w-fit inline-block">⭐ Super-League Member</div>` : '';
 
         container.innerHTML += `
-          <div onclick="openSchoolProfileModal('${String(sch.SchoolID).trim()}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-bisal-highlight/40 cursor-pointer transition-all flex flex-col items-center text-center">
-            ${logoHtml}
-            <div>
-              <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-200">${sch.Region || 'Conference'}</span>
-              <h3 class="text-base font-extrabold text-bisal-carbon mt-1.5">${sch.Name}</h3>
+          <div onclick="openSchoolProfileModal('${String(sch.SchoolID).trim()}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-bisal-highlight/40 cursor-pointer transition-all">
+            <div class="flex items-center space-x-4">
+              ${logoHtml}
+              <div>
+                <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-200">${sch.Region || 'Conference'}</span>
+                <h3 class="text-base font-extrabold text-bisal-carbon mt-0.5">${sch.Name}</h3>
+                ${badgeHtml}
+              </div>
             </div>
-            ${badgeHtml}
-            <div class="w-full space-y-2 text-xs border-t border-slate-100 pt-3 text-slate-600 font-medium mt-auto">
+            <div class="space-y-2 text-xs border-t border-slate-100 pt-3 text-slate-600 font-medium">
               <div class="flex justify-between"><span class="text-slate-400">Athletic Contact:</span><span class="font-bold text-slate-800">${sch.PrimaryContact || 'Staff Coordinator'}</span></div>
               <div class="flex justify-between"><span class="text-slate-400">Member Since:</span><span class="font-bold text-bisal-highlight">${sch["Year Joined"] || sch.YearJoined || "2024"}</span></div>
             </div>
