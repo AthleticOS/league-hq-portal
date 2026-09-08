@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V4.4 -->
+<!-- AthleticOS Coaches Portal V4.5 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -525,11 +525,11 @@
 
           <div class="card-header" style="color: var(--primary);">🎟️ Global Events & Invitationals Board</div>
           <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF;">
-            <strong>Stop sending blast emails to fill your tournaments.</strong>
+            <strong>Centralized Tournament Logistics & Polling</strong>
             <br><br>
-            Soon, you will be able to post upcoming Invitationals and Tournaments directly to this global board. Other ADs and coaches will receive targeted notifications based on their sports, and can "Register Interest" or commit with a single click.
+            Stop relying on blast emails to fill your weekend events. The upcoming Events Board will allow you to instantly gauge interest by creating a quick poll for other ADs to vote on potential dates or formats. 
             <br><br>
-            As an AthleticOS partner, all future platform modules are unlocked for your league automatically—no upgrades required.
+            Once confirmed, the board seamlessly integrates with the Tournament Manager, automatically pushing official tournament invites to targeted sports groups and populating committed teams directly into your bracket engine.
           </div>
           <button class="btn-submit" style="background-color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Events Board</button>
         </div>
@@ -1363,7 +1363,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.4</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.5</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1669,7 +1669,7 @@
         const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
         
         const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
-        const aSchool = aTeam ? String(readFlexibleObjectValue(aSchool, "SchoolID")).trim() : aTeamId;
+        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
         
         return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
       });
