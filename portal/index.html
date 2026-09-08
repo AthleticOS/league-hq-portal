@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V4.1 -->
+<!-- AthleticOS Coaches Portal V4.2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -350,14 +350,17 @@
       <!-- CALENDAR VIEW -->
       <div id="section-games-calendar" class="sub-section">
         <div class="explainer-box info" style="margin-bottom: 15px;">
-          <strong>Interactive Rescheduling</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, click and drag a Postponed match onto a new date to automatically draft a proposal to the opponent.</p>
+          <strong>Interactive Rescheduling & Export</strong>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
         </div>
         <div class="card" style="padding: 10px;">
           <div class="game-cal-controls">
-             <button onclick="navigateGameCalendar(-1)">◀ Prev</button>
-             <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary);">Month</span>
-             <button onclick="navigateGameCalendar(1)">Next ▶</button>
+             <div style="display:flex; gap:8px;">
+               <button onclick="navigateGameCalendar(-1)">◀</button>
+               <button onclick="navigateGameCalendar(1)">▶</button>
+             </div>
+             <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary); font-size:1.1rem;">Month</span>
+             <button onclick="exportCalendarToICS()" style="background:var(--accent); color:var(--primary); border:none; display:flex; align-items:center; gap:5px;">📥 Export iCal</button>
           </div>
           <div id="games-calendar-mesh" class="game-cal-grid"></div>
         </div>
@@ -1333,7 +1336,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.1</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.2</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1644,7 +1647,7 @@
         return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
       });
 
-      // Save global reference for the calendar render
+      // Save global reference for the calendar render & export
       window.currentSchoolGames = schoolGames;
       renderGameCalendar();
 
@@ -1866,6 +1869,92 @@
                 setTimeout(() => dateInput.focus(), 100);
             }
         }
+    }
+
+    // --- ICAL EXPORT LOGIC ---
+    function exportCalendarToICS() {
+      if (!window.currentSchoolGames || window.currentSchoolGames.length === 0) {
+        return alert("No active fixtures available to export.");
+      }
+
+      showGlobalLoader("Generating iCal File...");
+
+      setTimeout(() => {
+        let icsLines = [
+          "BEGIN:VCALENDAR",
+          "VERSION:2.0",
+          "PRODID:-//AthleticOS//League Schedule//EN",
+          "CALSCALE:GREGORIAN",
+          "METHOD:PUBLISH"
+        ];
+
+        window.currentSchoolGames.forEach(g => {
+          const gId = readFlexibleObjectValue(g, "GameID") || Math.random().toString(36).substr(2, 9);
+          let rawDate = readFlexibleObjectValue(g, "Date");
+          if (!rawDate) return;
+
+          let dParts = rawDate.split(/[-/]/);
+          if(dParts.length !== 3) return;
+          if(dParts[0].length === 2) dParts = [dParts[2], dParts[0], dParts[1]]; 
+          let dateStr = `${dParts[0]}${dParts[1].padStart(2, '0')}${dParts[2].padStart(2, '0')}`;
+
+          let rawTime = readFlexibleObjectValue(g, "Time") || "12:00";
+          let tParts = rawTime.split(':');
+          let hours = tParts[0] ? tParts[0].padStart(2, '0') : "12";
+          let mins = tParts[1] ? tParts[1].padStart(2, '0') : "00";
+          let timeStr = `${hours}${mins}00`;
+
+          let dtStart = `${dateStr}T${timeStr}`;
+
+          let endHours = (parseInt(hours) + 2).toString().padStart(2, '0');
+          if (parseInt(endHours) >= 24) endHours = "23"; 
+          let endStr = `${dateStr}T${endHours}${mins}00`;
+
+          const hTeamId = String(readFlexibleObjectValue(g, "HomeTeamID")).trim();
+          const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
+          const sId = readFlexibleObjectValue(g, "SportID");
+          const dId = readFlexibleObjectValue(g, "DivisionID");
+          const mStatus = readFlexibleObjectValue(g, "MatchStatus") || "Scheduled";
+
+          const hTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === hTeamId);
+          const aTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
+
+          const hSchoolId = hTeamObj ? readFlexibleObjectValue(hTeamObj, "SchoolID") : hTeamId;
+          const aSchoolId = aTeamObj ? readFlexibleObjectValue(aTeamObj, "SchoolID") : aTeamId;
+
+          const isHome = String(hSchoolId).includes(targetSchoolID);
+          const opponentId = isHome ? aSchoolId : hSchoolId;
+          const opponentName = getSchoolName(opponentId, globalSchoolsData); 
+          const myTeamName = getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData);
+
+          const summary = `${myTeamName}: ${isHome ? 'vs' : '@'} ${opponentName}`;
+          const description = `Match Status: ${mStatus}\\nGame ID: ${gId}`;
+
+          icsLines.push("BEGIN:VEVENT");
+          icsLines.push(`UID:${gId}@athleticos.net`);
+          icsLines.push(`DTSTAMP:${dateStr}T000000Z`);
+          icsLines.push(`DTSTART;TZID=Local:${dtStart}`);
+          icsLines.push(`DTEND;TZID=Local:${endStr}`);
+          icsLines.push(`SUMMARY:${summary}`);
+          icsLines.push(`DESCRIPTION:${description}`);
+          icsLines.push("END:VEVENT");
+        });
+
+        icsLines.push("END:VCALENDAR");
+
+        const icsData = icsLines.join("\r\n");
+        const blob = new Blob([icsData], { type: 'text/calendar;charset=utf-8' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `AthleticOS_Schedule_${targetSchoolName.replace(/[^a-z0-9]/gi, '_')}.ics`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+        
+        hideGlobalLoader();
+      }, 500);
     }
 
     // --- UNIFIED MODAL LOGIC ---
