@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V4.0 -->
+<!-- AthleticOS Coaches Portal V4.1 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -67,7 +67,7 @@
     @keyframes glitch-text { 0%, 100% { text-shadow: 0 0 0px rgba(82,201,32,0); } 50% { text-shadow: 0 0 10px rgba(82,201,32,0.6); } }
     @keyframes pulse-opacity { 50% { opacity: .5; } }
 
-    /* HEADER: 3-Part Flexbox Layout */
+    /* HEADER STYLES */
     header {
       background-color: var(--primary);
       color: #fff;
@@ -97,7 +97,6 @@
     header .header-text h1 { margin: 0; font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
     header .header-text p { margin: 4px 0 0 0; font-size: 0.8rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     
-    /* SCALED SCHOOL LOGO STYLING */
     .header-school-logo {
       height: 65px;
       width: 65px;
@@ -111,7 +110,6 @@
     /* STATE SCREENS */
     #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
     
-    /* SECURITY IDENTITY SCREEN */
     #pin-screen { display: none; padding: 40px 20px; text-align: center; }
     .pin-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 350px; margin: 0 auto; }
     .pin-box h2 { margin-top: 0; font-size: 1.3rem; }
@@ -138,23 +136,19 @@
     .btn-submit:disabled { background-color: #94A3B8; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
 
-    /* RESPONSIVE GRID FOR HELP & ADMIN TABS */
     .action-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
     @media (min-width: 768px) {
       .action-grid { grid-template-columns: repeat(3, 1fr); }
       .action-grid .card { margin-bottom: 0; display: flex; flex-direction: column; }
     }
 
-    /* CONTEXTUAL EXPLAINER BOXES */
     .explainer-box { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 15px; font-size: 0.8rem; line-height: 1.4; color: #334155; }
     .explainer-box.info { background-color: #F0FDF4; border-left-color: var(--accent); color: #166534; }
     .explainer-box strong { display: block; margin-bottom: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
 
-    /* WIZARD TRACK ELEMENTS */
     .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
     .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
 
-    /* PROPOSAL INTERACTIVE OBJECTS */
     .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
     .proposal-title { font-size: 0.8rem; color: #C2410C; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
     .proposal-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
@@ -202,16 +196,13 @@
     .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
     .status-badge.withdrawn { background: #FEE2E2; color: #991B1B; }
 
-    /* DYNAMIC NAVIGATION MATRIX */
     .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; z-index: 200; }
     .nav-item { flex: 1; text-align: center; padding: 10px 0; font-size: 0.6rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
     .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
     
-    /* God Mode highlight */
     #nav-admin-link { display: none; color: #C2410C; }
     #nav-admin-link.active { background-color: #FFF7ED; border-top-color: #C2410C; }
 
-    /* FAQ ACCORDION STYLES */
     .faq-category { font-weight: 800; font-size: 0.9rem; color: var(--primary); margin: 15px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 5px; text-transform: uppercase; }
     details.faq-item { margin-bottom: 10px; background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.2s ease; }
     details.faq-item summary { font-size: 0.85rem; font-weight: 700; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; }
@@ -220,17 +211,41 @@
     details.faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
     details.faq-item p { margin: 0; padding: 0 12px 12px; font-size: 0.8rem; color: var(--text-muted); line-height: 1.5; border-top: 1px solid var(--border); padding-top: 10px; }
     
-    /* UNIVERSAL SUB-NAVIGATION PILLS */
     .pill-sub-nav { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid var(--border); overflow-x: auto; padding-bottom: 0px; }
-    .pill-sub-nav::-webkit-scrollbar { display: none; } /* Hide scrollbar for clean mobile look */
+    .pill-sub-nav::-webkit-scrollbar { display: none; } 
     .sub-nav-btn { background: transparent; border: none; font-family: inherit; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); cursor: pointer; padding: 10px 15px; white-space: nowrap; transition: all 0.2s; border-radius: 8px 8px 0 0; text-transform: uppercase; letter-spacing: 0.5px; }
     .sub-nav-btn.active { color: var(--primary); background: var(--card-bg); border-bottom: 3px solid var(--accent); }
     .sub-section { display: none; }
     .sub-section.active { display: block; }
 
-    /* KPI PROGRESS BARS */
     .progress-container { background: #E2E8F0; border-radius: 8px; height: 12px; width: 100%; margin-top: 8px; overflow: hidden; }
     .progress-bar { height: 100%; border-radius: 8px; transition: width 1s ease-in-out; }
+
+    /* UNIFIED MODAL FOR SCORING & RESCHEDULING */
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(2px); }
+    .modal-content { background: var(--bg); border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; }
+    .modal-close { position: absolute; top: 15px; right: 15px; background: #E2E8F0; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 900; cursor: pointer; color: #1A1A1A; z-index: 10; display:flex; align-items:center; justify-content:center;}
+    .modal-close:hover { background: #cbd5e1; }
+
+    /* GAMES CALENDAR CSS */
+    .game-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+    .game-cal-dow { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; text-align: center; padding-bottom: 5px; }
+    .game-cal-day { background: #F8FAFC; border-radius: 6px; min-height: 85px; padding: 4px; display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; transition: all 0.2s; }
+    .game-cal-day.empty { background: transparent; border: none; }
+    .game-cal-day.today { border-color: var(--primary); background: #F0FDF4; }
+    .game-cal-day.drag-over { background: var(--wizard-step-bg); border: 2px dashed var(--accent); }
+    .game-cal-dnum { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-align: right; padding-right: 2px; }
+    
+    .game-ev { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 4px; padding: 4px; cursor: pointer; font-size: 0.65rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.1s; }
+    .game-ev:hover { transform: translateY(-1px); border-color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .game-ev.completed { border-left-color: #166534; background: #F0FDF4; }
+    .game-ev.pending { border-left-color: #ca8a04; background: #fefce8; }
+    .game-ev.postponed { border-left-color: #991B1B; background: #FEF2F2; }
+    .game-ev.dragging { opacity: 0.5; }
+    
+    .game-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+    .game-cal-controls button { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-weight: 800; cursor: pointer; color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: background 0.2s; }
+    .game-cal-controls button:hover { background: #F1F5F9; }
   </style>
 </head>
 <body>
@@ -303,10 +318,12 @@
     <!-- GAMES TAB WITH PILL NAV -->
     <div id="tab-games" class="tab-content active">
       <div class="pill-sub-nav">
-        <button class="sub-nav-btn active" id="btn-games-matches" onclick="switchSubTab('games', 'matches')">🏀 League Matches</button>
+        <button class="sub-nav-btn active" id="btn-games-matches" onclick="switchSubTab('games', 'matches')">📋 List View</button>
+        <button class="sub-nav-btn" id="btn-games-calendar" onclick="switchSubTab('games', 'calendar')">📅 Calendar View</button>
         <button class="sub-nav-btn" id="btn-games-tournaments" onclick="switchSubTab('games', 'tournaments')">🏆 Tournaments</button>
       </div>
 
+      <!-- LIST VIEW -->
       <div id="section-games-matches" class="sub-section active">
         <div class="explainer-box info" style="margin-bottom: 15px;">
           <strong>Match Day Operations</strong>
@@ -327,6 +344,22 @@
             <summary>Players</summary>
             <p id="coc-players-text">Loading...</p>
           </details>
+        </div>
+      </div>
+
+      <!-- CALENDAR VIEW -->
+      <div id="section-games-calendar" class="sub-section">
+        <div class="explainer-box info" style="margin-bottom: 15px;">
+          <strong>Interactive Rescheduling</strong>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, click and drag a <strong>Postponed</strong> match onto a new date to automatically draft a proposal to the opponent.</p>
+        </div>
+        <div class="card" style="padding: 10px;">
+          <div class="game-cal-controls">
+             <button onclick="navigateGameCalendar(-1)">◀ Prev</button>
+             <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary);">Month</span>
+             <button onclick="navigateGameCalendar(1)">Next ▶</button>
+          </div>
+          <div id="games-calendar-mesh" class="game-cal-grid"></div>
         </div>
       </div>
 
@@ -972,6 +1005,14 @@
     <div class="nav-item" onclick="switchTab('help')">Help</div>
   </div>
 
+  <!-- UNIFIED ACTION MODAL -->
+  <div id="unified-action-modal" class="modal-overlay" onclick="if(event.target===this) closeUnifiedModal()">
+    <div class="modal-content">
+      <button class="modal-close" onclick="closeUnifiedModal()">✕</button>
+      <div id="unified-modal-body"></div>
+    </div>
+  </div>
+
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbyKw4AJEzTjoTr4xmT1iFVTMvq8-zfS9TMQ9Ys7YW5v-d7HumQ-fFShP9kA3um7EeXQ/exec";
     const SHEET_ID = "1HwgLjambTNhiXJ4GB6lzbgJa2aUWC845WKcjQai6yhA"; 
@@ -987,12 +1028,18 @@
     let globalTeamsData = []; let globalDivisionsData = [];
     let globalVenuesData = [];
     let globalAvailabilityData = []; let globalSportsData = [];
+    let globalSchoolsData = [];
     let leagueYear = 2026; let cutoffMonth = 1; let cutoffDay = 1;
     let calFocusDate = new Date();
     const statusOptions = ["Scheduled", "In-Progress", "Completed", "Postponed", "Cancelled", "Forfeited"];
     
     let activeRosterTeamId = "";
     
+    // Calendar specific logic
+    let gameCalendarDate = new Date();
+    window.currentSchoolGames = [];
+    let currentlyOpenGameId = null;
+
     // Staging logic variables
     let stagedExceptions = [];
     let calSelectStart = null;
@@ -1208,6 +1255,7 @@
         globalVenuesData = data.Venues || []; 
         globalAvailabilityData = data.School_Availability || [];
         globalSportsData = data.Sports || [];
+        globalSchoolsData = data.Schools || [];
         
         const savedEmail = sessionStorage.getItem(`auth_email`);
         let userSchoolRole = String(sessionStorage.getItem(`userRole`)).toLowerCase();
@@ -1272,8 +1320,8 @@
           document.getElementById('coc-players-text').innerText = readFlexibleObjectValue(globalSettingsData, "CoC_Players") || "Players must follow the referee's instructions.";
         }
 
-        if (data.Schools && data.Schools.length > 0 && targetSchoolID) {
-          const schoolData = data.Schools.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() || String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase());
+        if (globalSchoolsData.length > 0 && targetSchoolID) {
+          const schoolData = globalSchoolsData.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() || String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase());
           if (schoolData) {
             targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
             targetSchoolRegion = readFlexibleObjectValue(schoolData, "Region") || ''; 
@@ -1285,9 +1333,9 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.0</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.1</span>`;
 
-        renderGames(appFixtures, data.Schools || [], globalSportsData, globalDivisionsData, globalTeamsData);
+        renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
         renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData);
 
@@ -1596,15 +1644,25 @@
         return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
       });
 
+      // Save global reference for the calendar render
+      window.currentSchoolGames = schoolGames;
+      renderGameCalendar();
+
       if (schoolGames.length === 0) { container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`; return; }
 
       schoolGames.forEach(game => {
-        const card = document.createElement('div'); card.className = 'card';
+        const wrapper = document.createElement('div');
+        const gId = readFlexibleObjectValue(game, "GameID");
+        wrapper.id = `game-wrapper-${gId}`;
+        
+        const card = document.createElement('div'); 
+        card.className = 'card';
+        card.id = `game-card-${gId}`;
+
         let optionsHtml = '';
         
         const mStatus = readFlexibleObjectValue(game, "MatchStatus");
         const cStatus = readFlexibleObjectValue(game, "ConflictStatus") || "✅ Clear";
-        const gId = readFlexibleObjectValue(game, "GameID");
         const sId = readFlexibleObjectValue(game, "SportID");
         const dId = readFlexibleObjectValue(game, "DivisionID");
         
@@ -1693,8 +1751,142 @@
         }
         
         card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hSchoolId, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aSchoolId, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
-        container.appendChild(card);
+        
+        wrapper.appendChild(card);
+        container.appendChild(wrapper);
       });
+    }
+
+    // --- GAMES CALENDAR LOGIC ---
+    function renderGameCalendar() {
+       const container = document.getElementById('games-calendar-mesh');
+       if(!container) return;
+       container.innerHTML = '';
+       const year = gameCalendarDate.getFullYear();
+       const month = gameCalendarDate.getMonth();
+       document.getElementById('game-cal-month-title').innerText = `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][month]} ${year}`;
+
+       const firstDayIdx = new Date(year, month, 1).getDay();
+       const totalDays = new Date(year, month + 1, 0).getDate();
+
+       ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(d => {
+          container.innerHTML += `<div class="game-cal-dow">${d}</div>`;
+       });
+
+       for (let i = 0; i < firstDayIdx; i++) {
+           container.innerHTML += `<div class="game-cal-day empty"></div>`;
+       }
+
+       const todayStr = new Date().toISOString().split('T')[0];
+
+       for (let day = 1; day <= totalDays; day++) {
+         const loopDateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+         const isToday = loopDateStr === todayStr ? 'today' : '';
+         
+         const dayGames = (window.currentSchoolGames || []).filter(g => {
+            let gDate = readFlexibleObjectValue(g, "Date");
+            return gDate && gDate.startsWith(loopDateStr);
+         });
+
+         let eventsHtml = '';
+         dayGames.forEach(g => {
+            const gId = readFlexibleObjectValue(g, "GameID");
+            const status = readFlexibleObjectValue(g, "MatchStatus");
+            
+            const hTeamId = String(readFlexibleObjectValue(g, "HomeTeamID")).trim();
+            const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
+            const hTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(hTeamId).trim());
+            const aTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(aTeamId).trim());
+            const hSchoolId = hTeamObj ? readFlexibleObjectValue(hTeamObj, "SchoolID") : hTeamId;
+            const aSchoolId = aTeamObj ? readFlexibleObjectValue(aTeamObj, "SchoolID") : aTeamId;
+            const isHome = String(hSchoolId).includes(targetSchoolID);
+            
+            const opponentId = isHome ? aSchoolId : hSchoolId;
+            const opponentName = getSchoolName(opponentId, globalSchoolsData); 
+            
+            let evClass = 'game-ev';
+            if(status === 'Completed') evClass += ' completed';
+            if(status === 'Pending Verification') evClass += ' pending';
+            if(status === 'Postponed') evClass += ' postponed';
+
+            const time = readFlexibleObjectValue(g, "Time") || '';
+            
+            eventsHtml += `
+            <div class="${evClass}" 
+                 draggable="true" 
+                 ondragstart="handleEventDragStart(event, '${gId}')" 
+                 ondragend="handleEventDragEnd(event)"
+                 onclick="openUnifiedGameModal('${gId}')" 
+                 title="${opponentName} (${status})">
+              ${isHome ? 'vs' : '@'} ${opponentName}
+            </div>`;
+         });
+
+         container.innerHTML += `
+         <div class="game-cal-day ${isToday}" 
+              ondragover="handleDayDragOver(event)" 
+              ondragleave="handleDayDragLeave(event)" 
+              ondrop="handleDayDrop(event, '${loopDateStr}')">
+            <div class="game-cal-dnum">${day}</div>
+            ${eventsHtml}
+         </div>`;
+       }
+    }
+
+    function navigateGameCalendar(dir) {
+       gameCalendarDate.setMonth(gameCalendarDate.getMonth() + dir);
+       renderGameCalendar();
+    }
+
+    // --- DRAG AND DROP HANDLERS ---
+    function handleEventDragStart(e, gId) {
+        e.dataTransfer.setData("text/plain", gId);
+        setTimeout(() => e.target.classList.add('dragging'), 0);
+    }
+    function handleEventDragEnd(e) {
+        e.target.classList.remove('dragging');
+    }
+    function handleDayDragOver(e) {
+        e.preventDefault();
+        e.currentTarget.classList.add('drag-over');
+    }
+    function handleDayDragLeave(e) {
+        e.currentTarget.classList.remove('drag-over');
+    }
+    function handleDayDrop(e, targetDate) {
+        e.preventDefault();
+        e.currentTarget.classList.remove('drag-over');
+        const gId = e.dataTransfer.getData("text/plain");
+        if(gId) {
+            openUnifiedGameModal(gId);
+            
+            const dateInput = document.getElementById(`custom-date-${gId}`);
+            if(dateInput) {
+                dateInput.value = targetDate;
+                setTimeout(() => dateInput.focus(), 100);
+            }
+        }
+    }
+
+    // --- UNIFIED MODAL LOGIC ---
+    function openUnifiedGameModal(gId) {
+        const card = document.getElementById(`game-card-${gId}`);
+        if(!card) return;
+        currentlyOpenGameId = gId;
+        document.getElementById('unified-modal-body').appendChild(card);
+        document.getElementById('unified-action-modal').style.display = 'flex';
+    }
+
+    function closeUnifiedModal() {
+        if(currentlyOpenGameId) {
+            const card = document.getElementById(`game-card-${currentlyOpenGameId}`);
+            const wrapper = document.getElementById(`game-wrapper-${currentlyOpenGameId}`);
+            if(card && wrapper) {
+                wrapper.appendChild(card);
+            }
+        }
+        currentlyOpenGameId = null;
+        document.getElementById('unified-action-modal').style.display = 'none';
     }
 
     function renderLeagueDivisions(divisions, sports) {
@@ -2502,9 +2694,11 @@
       try {
         await secureApiCall({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, vote: voteType });
         alert(voteType === 'confirm' ? "✅ Score officially verified and locked." : "⚠️ Score disputed. A league admin has been notified.");
+        closeUnifiedModal();
         initApp();
       } catch(e) {
         alert("Transmission dropped.");
+        closeUnifiedModal();
         initApp(); 
       }
     }
@@ -2519,9 +2713,11 @@
       try {
         await secureApiCall({ action: "voteProposal", schoolId: targetSchoolID, gameId: gameId, proposalNum: proposalNum, vote: voteType });
         alert("✅ Reschedule voting parameter logged.");
+        closeUnifiedModal();
         initApp();
       } catch(e) {
         alert("Network Exception.");
+        closeUnifiedModal();
         initApp();
       }
     }
@@ -2537,9 +2733,11 @@
       try {
         const result = await secureApiCall({ action: "proposecustomdate", schoolId: targetSchoolID, gameId: gameId, customDate: cDate, customTime: cTime });
         alert(result.message || "✅ Custom proposal sent to opponent successfully.");
+        closeUnifiedModal();
         initApp();
       } catch(e) {
         alert("Network dropped during submission.");
+        closeUnifiedModal();
         initApp();
       }
     }
@@ -2558,6 +2756,7 @@
         const result = await secureApiCall({ action: "updateScore", schoolId: targetSchoolID, gameId: gameId, homeScore: hScore, awayScore: aScore, status: status });
         if(result.status === "success") {
            alert("✅ Match metadata successfully updated.");
+           closeUnifiedModal();
            initApp();
         } else {
            alert(result.message);
