@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V4.2 -->
+<!-- AthleticOS Coaches Portal V4.3 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -318,13 +318,32 @@
     <!-- GAMES TAB WITH PILL NAV -->
     <div id="tab-games" class="tab-content active">
       <div class="pill-sub-nav">
-        <button class="sub-nav-btn active" id="btn-games-matches" onclick="switchSubTab('games', 'matches')">📋 List View</button>
-        <button class="sub-nav-btn" id="btn-games-calendar" onclick="switchSubTab('games', 'calendar')">📅 Calendar View</button>
+        <button class="sub-nav-btn active" id="btn-games-calendar" onclick="switchSubTab('games', 'calendar')">📅 Calendar View</button>
+        <button class="sub-nav-btn" id="btn-games-matches" onclick="switchSubTab('games', 'matches')">📋 List View</button>
         <button class="sub-nav-btn" id="btn-games-tournaments" onclick="switchSubTab('games', 'tournaments')">🏆 Tournaments</button>
       </div>
 
+      <!-- CALENDAR VIEW (DEFAULT) -->
+      <div id="section-games-calendar" class="sub-section active">
+        <div class="explainer-box info" style="margin-bottom: 15px;">
+          <strong>Interactive Rescheduling & Export</strong>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
+        </div>
+        <div class="card" style="padding: 10px;">
+          <div class="game-cal-controls">
+             <div style="display:flex; gap:8px;">
+               <button onclick="navigateGameCalendar(-1)">◀</button>
+               <button onclick="navigateGameCalendar(1)">▶</button>
+             </div>
+             <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary); font-size:1.1rem;">Month</span>
+             <button onclick="exportCalendarToICS()" style="background:var(--accent); color:var(--primary); border:none; display:flex; align-items:center; gap:5px;">📥 Export iCal</button>
+          </div>
+          <div id="games-calendar-mesh" class="game-cal-grid"></div>
+        </div>
+      </div>
+
       <!-- LIST VIEW -->
-      <div id="section-games-matches" class="sub-section active">
+      <div id="section-games-matches" class="sub-section">
         <div class="explainer-box info" style="margin-bottom: 15px;">
           <strong>Match Day Operations</strong>
           <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 0.8rem;">
@@ -347,25 +366,7 @@
         </div>
       </div>
 
-      <!-- CALENDAR VIEW -->
-      <div id="section-games-calendar" class="sub-section">
-        <div class="explainer-box info" style="margin-bottom: 15px;">
-          <strong>Interactive Rescheduling & Export</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
-        </div>
-        <div class="card" style="padding: 10px;">
-          <div class="game-cal-controls">
-             <div style="display:flex; gap:8px;">
-               <button onclick="navigateGameCalendar(-1)">◀</button>
-               <button onclick="navigateGameCalendar(1)">▶</button>
-             </div>
-             <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary); font-size:1.1rem;">Month</span>
-             <button onclick="exportCalendarToICS()" style="background:var(--accent); color:var(--primary); border:none; display:flex; align-items:center; gap:5px;">📥 Export iCal</button>
-          </div>
-          <div id="games-calendar-mesh" class="game-cal-grid"></div>
-        </div>
-      </div>
-
+      <!-- TOURNAMENTS VIEW -->
       <div id="section-games-tournaments" class="sub-section">
         <div class="card" style="border-color: var(--accent); background-color: #F0FDF4;">
           
@@ -1336,7 +1337,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.2</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.3</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
