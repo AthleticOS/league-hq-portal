@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V4.3 -->
+<!-- AthleticOS Coaches Portal V4.4 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -327,7 +327,7 @@
       <div id="section-games-calendar" class="sub-section active">
         <div class="explainer-box info" style="margin-bottom: 15px;">
           <strong>Interactive Rescheduling & Export</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a Postponed match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
         </div>
         <div class="card" style="padding: 10px;">
           <div class="game-cal-controls">
@@ -500,14 +500,40 @@
       </div>
     </div>
 
-    <!-- MESSAGES TAB -->
+    <!-- MESSAGES & EVENTS TAB -->
     <div id="tab-messages" class="tab-content">
-      <div class="card">
-        <div class="card-header" style="color:var(--primary);">💬 Live Chat Rooms</div>
-        <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">Access your dedicated Google Chat spaces below. (Links activate based on your registered teams).</p>
-        <div id="chat-launchers-container"></div>
+      <div class="pill-sub-nav">
+        <button class="sub-nav-btn active" id="btn-messages-comms" onclick="switchSubTab('messages', 'comms')">💬 Comms Hub</button>
+        <button class="sub-nav-btn" id="btn-messages-events" onclick="switchSubTab('messages', 'events')">🎟️ Events Board</button>
       </div>
-      <div id="messages-list"></div>
+
+      <div id="section-messages-comms" class="sub-section active">
+        <div class="card">
+          <div class="card-header" style="color:var(--primary);">💬 Live Chat Rooms</div>
+          <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">Access your dedicated Google Chat spaces below. (Links activate based on your registered teams).</p>
+          <div id="chat-launchers-container"></div>
+        </div>
+        <div id="messages-list"></div>
+      </div>
+
+      <div id="section-messages-events" class="sub-section">
+        <div class="card" style="border-color: var(--accent); background-color: #F0FDF4;">
+          <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+             <span style="color: #991B1B; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
+             <span style="background-color: #DC2626; color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; font-weight: 900; letter-spacing: 1px;">COMING SOON</span>
+          </div>
+
+          <div class="card-header" style="color: var(--primary);">🎟️ Global Events & Invitationals Board</div>
+          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF;">
+            <strong>Stop sending blast emails to fill your tournaments.</strong>
+            <br><br>
+            Soon, you will be able to post upcoming Invitationals and Tournaments directly to this global board. Other ADs and coaches will receive targeted notifications based on their sports, and can "Register Interest" or commit with a single click.
+            <br><br>
+            As an AthleticOS partner, all future platform modules are unlocked for your league automatically—no upgrades required.
+          </div>
+          <button class="btn-submit" style="background-color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Events Board</button>
+        </div>
+      </div>
     </div>
 
     <!-- ADMIN TAB WITH PILL NAV -->
@@ -1337,7 +1363,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.3</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V4.4</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1643,7 +1669,7 @@
         const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
         
         const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
-        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
+        const aSchool = aTeam ? String(readFlexibleObjectValue(aSchool, "SchoolID")).trim() : aTeamId;
         
         return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
       });
@@ -2580,6 +2606,7 @@
 
     function renderMessages(messages) {
       const container = document.getElementById('messages-list');
+      if(!container) return;
       container.innerHTML = '';
       if (!messages || messages.length === 0) {
         container.innerHTML = '<div class="card"><p style="font-size: 0.9rem; text-align:center; color: var(--text-muted);">No new messages.</p></div>';
