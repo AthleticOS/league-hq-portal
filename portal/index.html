@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.1 -->
+<!-- AthleticOS Coaches Portal V5.2 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -348,9 +348,7 @@
       <div id="section-games-calendar" class="sub-section active">
         <div class="explainer-box" style="margin-bottom: 15px;">
           <strong>Interactive Rescheduling & Export</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. 
-            To propose a reschedule, drag a Postponed match onto a new date. 
-            Click 'Export iCal' to download an iCal file of your schedule.</p>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
         </div>
         <div class="card" style="padding: 10px;">
           <div class="game-cal-controls">
@@ -571,7 +569,7 @@
         </div>
 
         <div class="action-grid">
-          <div class="card" id="admin-card-scheduler" style="border-color: var(--primary);">
+          <div class="card" id="admin-card-scheduler" style="border-color: var(--primary); display: flex; flex-direction: column;">
             <div class="card-header">📅 Seasonal Round-Robin Engine</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Triggers the dynamic matrix pairing loop to populate empty division slots with home/away fixtures.</p>
             <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; margin-bottom:4px; display:block;">TARGET BRACKET LEAGUE</label>
@@ -1466,7 +1464,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.1</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.2</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1504,6 +1502,7 @@
           if(validAdmins.includes(userLeagueRole)) {
             // League HQ View
             document.getElementById('admin-card-scheduler').style.display = 'flex';
+            document.getElementById('admin-card-scheduler').style.flexDirection = 'column'; // FIXED MOBILE VIEW
             document.getElementById('btn-sheet-link').style.display = 'block';
             document.getElementById('btn-audit-scores').innerText = "Run Global Ledger Audit";
             document.getElementById('btn-audit-scores').onclick = () => triggerScoreAudit("global");
@@ -1769,7 +1768,7 @@
         const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
         
         const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
-        const aSchool = aTeam ? String(readFlexibleObjectValue(aSchool, "SchoolID")).trim() : aTeamId;
+        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
         
         return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
       });
