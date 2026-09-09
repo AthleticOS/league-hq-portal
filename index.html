@@ -1,4 +1,4 @@
-<!-- AthleticOS Public Fan Portal V3.2 -->
+<!-- AthleticOS Public Fan Portal V3.3 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -173,20 +173,22 @@
       </div>
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto custom-scrollbar">
-          <table class="min-w-full divide-y divide-slate-200 text-sm">
+          <table class="min-w-full divide-y divide-slate-200 text-sm relative">
             <thead class="bg-slate-50 font-bold text-slate-700">
               <tr>
-                <th scope="col" class="px-6 py-4 text-left">Rank</th>
-                <th scope="col" class="px-6 py-4 text-left">School / Team</th>
-                <th scope="col" class="px-6 py-4 text-center">Played</th>
-                <th scope="col" class="px-6 py-4 text-center">Won</th>
-                <th scope="col" class="px-6 py-4 text-center">Lost</th>
-                <th scope="col" class="px-6 py-4 text-center">Points For</th>
-                <th scope="col" class="px-6 py-4 text-center">Points Against</th>
-                <th scope="col" class="px-6 py-4 text-center">Difference</th>
+                <th scope="col" class="px-4 py-3 text-left sticky left-0 z-10 bg-slate-50 border-r border-slate-200 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)] whitespace-nowrap">School</th>
+                <th scope="col" class="px-3 py-3 text-center" title="Games Played">GP</th>
+                <th scope="col" class="px-3 py-3 text-center" title="Wins">W</th>
+                <th scope="col" class="px-3 py-3 text-center" title="Draws">D</th>
+                <th scope="col" class="px-3 py-3 text-center" title="Losses">L</th>
+                <th scope="col" class="px-3 py-3 text-center" title="Points For">PF</th>
+                <th scope="col" class="px-3 py-3 text-center" title="Points Against">PA</th>
+                <th scope="col" class="px-3 py-3 text-center" title="Point Differential">DIFF</th>
+                <th scope="col" class="px-3 py-3 text-center text-bisal-navy font-black" title="League Points">PTS</th>
               </tr>
             </thead>
-            <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600">
+            <tbody id="standingsBody" class="divide-y divide-slate-200 text-slate-600 bg-white">
+              <tr><td colspan="9" class="px-6 py-12 text-center text-slate-400 font-medium">Select a division to view standings.</td></tr>
             </tbody>
           </table>
         </div>
@@ -518,7 +520,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-bisal-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V3.2.0</p>
+        <p class="font-mono bg-bisal-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V3.3.0</p>
       </div>
     </div>
   </footer>
@@ -1064,7 +1066,7 @@
       const tbody = document.getElementById('standingsBody');
       if (!tbody) return;
       tbody.innerHTML = '';
-      if (!sportVal || !divVal) { tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 font-medium">Select a sport bracket above to display ranking tallies.</td></tr>`; return; }
+      if (!sportVal || !divVal) { tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-12 text-center text-slate-400 font-medium">Select a sport bracket above to display ranking tallies.</td></tr>`; return; }
 
       const approvedTeams = getApprovedTeams();
       let targetTeams = approvedTeams.filter(t => String(t.SportID).trim() === sportVal && String(t.DivisionID).trim() === divVal);
@@ -1077,7 +1079,9 @@
         if (currentStandingsConference === 'North' && !schoolRegion.includes('north')) regionMatch = false;
         if (currentStandingsConference === 'South' && !schoolRegion.includes('south')) regionMatch = false;
 
-        if (regionMatch) teamStats[String(team.TeamID).trim()] = { name: school ? school.Name : 'Team Name', played: 0, won: 0, lost: 0, pointsFor: 0, pointsAgainst: 0, schoolObj: school };
+        const acronym = school ? (school.Acronym || school.Name.split(' ').map(w => w[0]).join('').substring(0, 3).toUpperCase()) : 'TBA';
+        
+        if (regionMatch) teamStats[String(team.TeamID).trim()] = { name: school ? school.Name : 'Team Name', acronym: acronym, played: 0, won: 0, lost: 0, draws: 0, pointsFor: 0, pointsAgainst: 0, pts: 0, schoolObj: school };
       });
 
       const fixtures = activeDatabase.Fixtures || [];
@@ -1091,14 +1095,17 @@
             teamStats[hId].played++; teamStats[aId].played++;
             teamStats[hId].pointsFor += hScore; teamStats[hId].pointsAgainst += aScore;
             teamStats[aId].pointsFor += aScore; teamStats[aId].pointsAgainst += hScore;
-            if (hScore > aScore) { teamStats[hId].won++; teamStats[aId].lost++; }
-            else if (aScore > hScore) { teamStats[aId].won++; teamStats[hId].lost++; }
+            
+            if (hScore > aScore) { teamStats[hId].won++; teamStats[aId].lost++; teamStats[hId].pts += 3; }
+            else if (aScore > hScore) { teamStats[aId].won++; teamStats[hId].lost++; teamStats[aId].pts += 3; }
+            else { teamStats[hId].draws++; teamStats[aId].draws++; teamStats[hId].pts += 1; teamStats[aId].pts += 1; }
           }
         }
       });
 
       const statsList = Object.keys(teamStats).map(id => ({ id, ...teamStats[id] }));
       statsList.sort((a,b) => {
+        if (b.pts !== a.pts) return b.pts - a.pts;
         if (b.won !== a.won) return b.won - a.won;
         const diffA = a.pointsFor - a.pointsAgainst;
         const diffB = b.pointsFor - b.pointsAgainst;
@@ -1106,24 +1113,26 @@
         return b.pointsFor - a.pointsFor;
       });
 
-      if (statsList.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="px-6 py-12 text-center text-slate-400 font-medium">No registered teams found for this selection bracket or region context.</td></tr>`; return; }
+      if (statsList.length === 0) { tbody.innerHTML = `<tr><td colspan="9" class="px-6 py-12 text-center text-slate-400 font-medium">No registered teams found for this selection bracket or region context.</td></tr>`; return; }
 
       statsList.forEach((stat, idx) => {
         const diff = stat.pointsFor - stat.pointsAgainst;
         const logo = getSchoolLogo(stat.schoolObj);
         tbody.innerHTML += `
           <tr class="hover:bg-slate-50 transition-all">
-            <td class="px-6 py-4 font-black text-bisal-carbon text-left">${idx + 1}</td>
-            <td class="px-6 py-4 font-extrabold text-bisal-carbon flex items-center gap-3">
-              <img src="${logo}" class="h-6 w-6 object-contain rounded bg-white p-0.5 border border-slate-200">
-              ${stat.name}
+            <td class="px-4 py-3 font-extrabold text-bisal-carbon flex items-center gap-2 sticky left-0 z-10 bg-white border-r border-slate-100 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">
+              <span class="text-slate-400 w-4 text-right text-xs">${idx + 1}.</span>
+              <img src="${logo}" class="h-6 w-6 object-contain rounded bg-white p-0.5 border border-slate-200 shrink-0">
+              <span class="truncate">${stat.acronym}</span>
             </td>
-            <td class="px-6 py-4 text-center font-bold">${stat.played}</td>
-            <td class="px-6 py-4 text-center text-emerald-600 font-extrabold">${stat.won}</td>
-            <td class="px-6 py-4 text-center text-rose-500 font-extrabold">${stat.lost}</td>
-            <td class="px-6 py-4 text-center font-mono">${stat.pointsFor}</td>
-            <td class="px-6 py-4 text-center font-mono">${stat.pointsAgainst}</td>
-            <td class="px-6 py-4 text-center font-mono font-bold ${diff >= 0 ? 'text-emerald-600' : 'text-rose-500'}">${diff > 0 ? `+${diff}` : diff}</td>
+            <td class="px-3 py-3 text-center font-bold">${stat.played}</td>
+            <td class="px-3 py-3 text-center text-emerald-600 font-extrabold">${stat.won}</td>
+            <td class="px-3 py-3 text-center font-bold text-slate-500">${stat.draws}</td>
+            <td class="px-3 py-3 text-center text-rose-500 font-extrabold">${stat.lost}</td>
+            <td class="px-3 py-3 text-center font-mono text-xs">${stat.pointsFor}</td>
+            <td class="px-3 py-3 text-center font-mono text-xs">${stat.pointsAgainst}</td>
+            <td class="px-3 py-3 text-center font-mono font-bold text-xs ${diff >= 0 ? 'text-emerald-600' : 'text-rose-500'}">${diff > 0 ? `+${diff}` : diff}</td>
+            <td class="px-3 py-3 text-center font-black text-bisal-navy text-base">${stat.pts}</td>
           </tr>`;
       });
     }
@@ -1169,18 +1178,17 @@
         let badgeHtml = isSuper ? `<div class="mt-2 bg-gradient-to-r from-bisal-gold to-yellow-500 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-sm tracking-widest uppercase w-fit inline-block">⭐ Super-League Member</div>` : '';
 
         container.innerHTML += `
-          <div onclick="openSchoolProfileModal('${String(sch.SchoolID).trim()}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-bisal-highlight/40 cursor-pointer transition-all">
-            <div class="flex items-center space-x-4">
-              ${logoHtml}
-              <div>
-                <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-200">${sch.Region || 'Conference'}</span>
-                <h3 class="text-base font-extrabold text-bisal-carbon mt-0.5">${sch.Name}</h3>
-                ${badgeHtml}
-              </div>
+          <div onclick="openSchoolProfileModal('${String(sch.SchoolID).trim()}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-bisal-highlight/40 cursor-pointer transition-all flex flex-col items-center text-center">
+            ${logoHtml}
+            <div>
+              <span class="text-[10px] bg-slate-100 text-slate-500 font-bold px-2 py-0.5 rounded border border-slate-200">${sch.Region || 'Conference'}</span>
+              <h3 class="text-base font-extrabold text-bisal-carbon mt-1.5">${sch.Name}</h3>
             </div>
-            <div class="space-y-2 text-xs border-t border-slate-100 pt-3 text-slate-600 font-medium">
+            ${badgeHtml}
+            <div class="w-full space-y-2 text-xs border-t border-slate-100 pt-3 text-slate-600 font-medium mt-auto">
               <div class="flex justify-between"><span class="text-slate-400">Athletic Contact:</span><span class="font-bold text-slate-800">${sch.PrimaryContact || 'Staff Coordinator'}</span></div>
               <div class="flex justify-between"><span class="text-slate-400">Member Since:</span><span class="font-bold text-bisal-highlight">${sch["Year Joined"] || sch.YearJoined || "2024"}</span></div>
+              <div class="text-center pt-2"><span class="text-[10px] font-black tracking-widest text-slate-400 uppercase bg-slate-100 px-3 py-1 rounded-full border border-slate-200">Acronym: ${acronym}</span></div>
             </div>
           </div>`;
       });
