@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.4 -->
+<!-- AthleticOS Coaches Portal V5.5 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -606,6 +606,17 @@
             </div>
           </div>
 
+          <div class="card" id="admin-card-metrics">
+            <div class="card-header">📊 Ledger Integrity Metrics</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
+            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
+            </div>
+          </div>
+
           <div class="card" id="admin-card-tools">
             <div class="card-header">🛠️ Engineering Toolbelt</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute administrative transactions and master batch tasks directly.</p>
@@ -618,6 +629,13 @@
       </div>
 
       <div id="section-admin-kpis" class="sub-section">
+        
+        <!-- EXTERNAL KPI MATRIX LAUNCHER -->
+        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
+          <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
+          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
+          <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
+        </div>
         
         <!-- Live Status Bar Injected Here -->
         <div id="kpi-tier-container">
@@ -662,13 +680,6 @@
             </div>
             <p style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Target: >80% (Required for Ledger Accuracy)</p>
           </div>
-        </div>
-
-        <!-- EXTERNAL KPI MATRIX LAUNCHER -->
-        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
-          <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
-          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
-          <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
         </div>
 
       </div>
@@ -1438,7 +1449,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.4</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.5</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1491,6 +1502,11 @@
             document.getElementById('admin-staff-name').innerText = staffDisplayName + " (Local AD)";
             document.getElementById('btn-admin-kpis').style.display = 'none';
           }
+
+          document.getElementById('meta-stat-players').innerText = globalRosterData.length;
+          document.getElementById('meta-stat-venues').innerText = globalVenuesData.length;
+          document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
+          document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
           
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
@@ -1923,8 +1939,8 @@
             const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
             const hTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(hTeamId).trim());
             const aTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(aTeamId).trim());
-            const hSchoolId = hTeamObj ? readFlexibleObjectValue(hTeamObj, "SchoolID") : hTeamId;
-            const aSchoolId = aTeamObj ? readFlexibleObjectValue(aTeamObj, "SchoolID") : aTeamId;
+            const hSchoolId = hTeamObj ? readFlexibleObjectValue(hSchoolId, "SchoolID") : hTeamId;
+            const aSchoolId = aTeamObj ? readFlexibleObjectValue(aSchoolId, "SchoolID") : aTeamId;
             const isHome = String(hSchoolId).includes(targetSchoolID);
             
             const opponentId = isHome ? aSchoolId : hSchoolId;
