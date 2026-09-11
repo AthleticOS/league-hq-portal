@@ -1,4 +1,4 @@
-<!-- AthleticOS Public Fan Portal V3.4 -->
+<!-- AthleticOS Public Fan Portal V3.5 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -258,6 +258,7 @@
         <p class="text-slate-500 text-sm">Geographic mapping and directory of all league schools. Click any profile card to view operational teams and rosters.</p>
       </div>
       
+      <!-- STATIC GOOGLE MY MAPS IFRAME -->
       <div class="w-full h-64 md:h-96 bg-slate-200 rounded-xl mb-6 relative overflow-hidden flex items-center justify-center border border-slate-300 shadow-inner">
         <iframe src="https://www.google.com/maps/d/u/3/embed?mid=107FCpyg8pFXbLQH1pZQ6Roe1bFI0yS4&ehbc=2E312F&noprof=1" width="100%" height="100%" frameborder="0" style="border:0;" allowfullscreen="" aria-hidden="false" tabindex="0"></iframe>
       </div>
@@ -520,7 +521,7 @@
       </div>
       <div class="flex flex-col sm:flex-row justify-between items-center pt-6 text-[11px] text-slate-500 font-medium gap-2">
         <p>© 2026 AthleticOS Infrastructure Services. All rights reserved.</p>
-        <p class="font-mono bg-bisal-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V3.4.0</p>
+        <p class="font-mono bg-bisal-carbon/30 px-2 py-0.5 rounded border border-slate-800/60">HQ Engine: V3.5.0</p>
       </div>
     </div>
   </footer>
@@ -1175,7 +1176,7 @@
         // Calculate Super-League Status dynamically on the frontend
         const schoolTeams = approvedTeams.filter(t => String(t.SchoolID).trim() === String(sch.SchoolID).trim());
         const isSuper = schoolTeams.length > 0;
-        let badgeHtml = isSuper ? `<div class="mt-2 bg-gradient-to-r from-bisal-gold to-yellow-500 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-[0_2px_4px_rgba(245,158,11,0.3)] tracking-widest uppercase inline-block">⭐ Super-League Member</div>` : '';
+        let badgeHtml = isSuper ? `<div class="mt-2 bg-gradient-to-r from-bisal-gold to-yellow-500 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-[0_2px_4px_rgba(245,158,11,0.3)] tracking-widest uppercase w-fit inline-block">⭐ Super-League Member</div>` : '';
 
         container.innerHTML += `
           <div onclick="openSchoolProfileModal('${String(sch.SchoolID).trim()}')" class="bg-white rounded-xl border border-slate-200 p-6 space-y-4 shadow-sm hover:shadow-md hover:border-bisal-highlight/40 cursor-pointer transition-all flex flex-col justify-between">
