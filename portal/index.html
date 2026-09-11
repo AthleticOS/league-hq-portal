@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.2 -->
+<!-- AthleticOS Coaches Portal V5.3 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -348,7 +348,7 @@
       <div id="section-games-calendar" class="sub-section active">
         <div class="explainer-box" style="margin-bottom: 15px;">
           <strong>Interactive Rescheduling & Export</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a Postponed match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
         </div>
         <div class="card" style="padding: 10px;">
           <div class="game-cal-controls">
@@ -629,6 +629,13 @@
       </div>
 
       <div id="section-admin-kpis" class="sub-section">
+        
+        <!-- EXTERNAL KPI MATRIX LAUNCHER -->
+        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
+          <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
+          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
+          <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
+        </div>
         
         <!-- Live Status Bar Injected Here -->
         <div id="kpi-tier-container">
@@ -1464,7 +1471,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.2</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.3</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
