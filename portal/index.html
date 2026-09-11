@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.5 -->
+<!-- AthleticOS Coaches Portal V5.6 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -630,13 +630,6 @@
 
       <div id="section-admin-kpis" class="sub-section">
         
-        <!-- EXTERNAL KPI MATRIX LAUNCHER -->
-        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
-          <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
-          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
-          <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
-        </div>
-        
         <!-- Live Status Bar Injected Here -->
         <div id="kpi-tier-container">
            <div class="card" style="text-align:center; padding:30px;">
@@ -680,6 +673,13 @@
             </div>
             <p style="font-size:0.7rem; color:var(--text-muted); margin-top:4px;">Target: >80% (Required for Ledger Accuracy)</p>
           </div>
+        </div>
+
+        <!-- EXTERNAL KPI MATRIX LAUNCHER -->
+        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
+          <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
+          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
+          <a href="https://bisal.athleticos.net/portal/tier-matrix.html" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
         </div>
 
       </div>
@@ -1449,7 +1449,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.5</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.6</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1939,8 +1939,8 @@
             const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
             const hTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(hTeamId).trim());
             const aTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(aTeamId).trim());
-            const hSchoolId = hTeamObj ? readFlexibleObjectValue(hSchoolId, "SchoolID") : hTeamId;
-            const aSchoolId = aTeamObj ? readFlexibleObjectValue(aSchoolId, "SchoolID") : aTeamId;
+            const hSchoolId = hTeamObj ? readFlexibleObjectValue(hTeamObj, "SchoolID") : hTeamId;
+            const aSchoolId = aTeamObj ? readFlexibleObjectValue(aTeamObj, "SchoolID") : aTeamId;
             const isHome = String(hSchoolId).includes(targetSchoolID);
             
             const opponentId = isHome ? aSchoolId : hSchoolId;
