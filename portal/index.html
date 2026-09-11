@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.3 -->
+<!-- AthleticOS Coaches Portal V5.4 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -606,17 +606,6 @@
             </div>
           </div>
 
-          <div class="card" id="admin-card-metrics">
-            <div class="card-header">📊 Ledger Integrity Metrics</div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
-            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
-            </div>
-          </div>
-
           <div class="card" id="admin-card-tools">
             <div class="card-header">🛠️ Engineering Toolbelt</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute administrative transactions and master batch tasks directly.</p>
@@ -629,13 +618,6 @@
       </div>
 
       <div id="section-admin-kpis" class="sub-section">
-        
-        <!-- EXTERNAL KPI MATRIX LAUNCHER -->
-        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
-          <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
-          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
-          <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
-        </div>
         
         <!-- Live Status Bar Injected Here -->
         <div id="kpi-tier-container">
@@ -682,26 +664,11 @@
           </div>
         </div>
 
-        <div class="card">
-          <div class="card-header">Raw Platform Assets</div>
-          <div class="grid-2" style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:10px;">
-            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-matches">0</span>
-              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Completed Matches</span>
-            </div>
-            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-players">0</span>
-              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Verified Athletes</span>
-            </div>
-            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-venues">0</span>
-              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Mapped Facilities</span>
-            </div>
-            <div style="background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; text-align:center;">
-              <span style="display:block; font-size:1.2rem; font-weight:900;" id="kpi-stat-teams">0</span>
-              <span style="font-size:0.7rem; color:var(--text-muted); text-transform:uppercase; font-weight:800;">Active Teams</span>
-            </div>
-          </div>
+        <!-- EXTERNAL KPI MATRIX LAUNCHER -->
+        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
+          <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
+          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
+          <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
         </div>
 
       </div>
@@ -1471,7 +1438,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.3</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.4</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1525,17 +1492,6 @@
             document.getElementById('btn-admin-kpis').style.display = 'none';
           }
           
-          document.getElementById('meta-stat-players').innerText = globalRosterData.length;
-          document.getElementById('meta-stat-venues').innerText = globalVenuesData.length;
-          document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
-          document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
-
-          // Populate Asset Fulfillment Tracker KPIs (Fallback values before fetch)
-          document.getElementById('kpi-stat-matches').innerText = "0";
-          document.getElementById('kpi-stat-teams').innerText = globalTeamsData.length;
-          document.getElementById('kpi-stat-players').innerText = globalRosterData.length;
-          document.getElementById('kpi-stat-venues').innerText = globalVenuesData.length;
-
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
           globalDivisionsData.forEach(div => {
@@ -1548,8 +1504,6 @@
              secureApiCall({ action: "fetchkpis", schoolId: targetSchoolID }).then(res => {
                  if(res.status === "success" && res.data) {
                     const d = res.data;
-                    
-                    document.getElementById('kpi-stat-matches').innerText = d.scoreReporting.completed;
                     
                     // Animate Score Progress Bar
                     const scoreBar = document.getElementById('kpi-bar-score');
@@ -1572,19 +1526,21 @@
                     rosText.innerText = `${d.rosterUtilization.percentage}%`;
                     rosBar.style.backgroundColor = d.rosterUtilization.percentage === 100 ? '#166534' : '#991B1B';
 
-                    let overallHealth = "Needs Attention";
+                    let tierName = "Tier 3: Standard";
                     let healthColor = "#ea580c";
                     let completedTasks = "";
                     let missingTasks = "";
                     let nextAction = "";
 
                     if (d.facilityMapping.percentage === 100 && d.rosterUtilization.percentage === 100 && d.scoreReporting.percentage >= 80) {
-                        overallHealth = "Excellent";
+                        tierName = "Tier 1: Enterprise Auto-Pilot";
                         healthColor = "#166534";
                         completedTasks = "<li>100% Facility Mapping</li><li>100% Roster Utilization</li><li>>80% Score Reporting</li>";
                         missingTasks = "<li>None! You are fully compliant.</li>";
                         nextAction = "Keep up the great work! Your league is running at peak automation efficiency.";
                     } else {
+                        if (d.facilityMapping.percentage === 100 && d.scoreReporting.percentage >= 80) tierName = "Tier 2: Core Operational";
+                        
                         if (d.facilityMapping.percentage === 100) completedTasks += "<li>100% Facility Mapping</li>";
                         else missingTasks += "<li>Complete Facility Mapping</li>";
 
@@ -1605,8 +1561,8 @@
                           <div style="background:#FFFFFF; border:2px solid ${healthColor}; padding:20px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.05);">
                              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
                                 <div>
-                                  <span style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">Overall League Health</span>
-                                  <span style="display:block; font-size:1.2rem; font-weight:900; color:var(--primary); line-height:1.2;">${overallHealth}</span>
+                                  <span style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">League Compliance Tier</span>
+                                  <span style="display:block; font-size:1.2rem; font-weight:900; color:var(--primary); line-height:1.2;">${tierName}</span>
                                 </div>
                                 <span style="background-color:${healthColor}15; color:${healthColor}; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; border:1px solid ${healthColor}40;">${d.scoreReporting.percentage >= 80 ? 'Active' : 'Warning'}</span>
                              </div>
@@ -1775,7 +1731,7 @@
         const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
         
         const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
-        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
+        const aSchool = aTeam ? String(readFlexibleObjectValue(aSchool, "SchoolID")).trim() : aTeamId;
         
         return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
       });
