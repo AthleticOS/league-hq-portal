@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V6.2 -->
+<!-- AthleticOS Coaches Portal V6.3 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -126,6 +126,12 @@
     .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
     .card-header { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .matchup { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; }
+    
+    /* MATCHUP CARD SCHOOL BRANDING */
+    .matchup-team-box { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; }
+    .matchup-logo-img { height: 48px; width: 48px; object-fit: contain; margin-bottom: 6px; border-radius: 6px; background-color: #FAFAFA; border: 1px solid var(--border); padding: 2px; }
+    .matchup-acronym-text { font-size: 1.1rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.1; }
+
     .score-input, .text-input, .status-select { border: 2px solid var(--border); border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; background-color: #fff; }
     .score-input { width: 50px; padding: 8px; font-size: 1.1rem; text-align: center; font-weight: 800; }
     .status-select { width: 100%; padding: 10px; margin-bottom: 15px; }
@@ -1541,7 +1547,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.2</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.3</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1796,6 +1802,15 @@
       return match ? readFlexibleObjectValue(match, "Name") : id;
     }
 
+    function getSchoolAcronym(id, schoolsData) {
+      if (!id) return 'TBA';
+      const match = schoolsData.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(id).trim().toLowerCase());
+      if (match) {
+        return readFlexibleObjectValue(match, "Acronym") || readFlexibleObjectValue(match, "Name") || id;
+      }
+      return id;
+    }
+
     function getTeamDisplayName(sportId, divisionId, sportsData, divisionsData) {
       const sport = sportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sportId).trim().toLowerCase());
       const sportName = sport ? readFlexibleObjectValue(sport, "Name") : (sportId || 'Unknown Sport');
@@ -1963,6 +1978,18 @@
         const hSchoolId = hTeamObj ? readFlexibleObjectValue(hTeamObj, "SchoolID") : hTeamId;
         const aSchoolId = aTeamObj ? readFlexibleObjectValue(aTeamObj, "SchoolID") : aTeamId;
 
+        const hSchoolObj = globalSchoolsData.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(hSchoolId).trim().toLowerCase());
+        const aSchoolObj = globalSchoolsData.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(aSchoolId).trim().toLowerCase());
+
+        const hLogo = getSchoolLogo(hSchoolObj);
+        const aLogo = getSchoolLogo(aSchoolObj);
+
+        const hAcr = getSchoolAcronym(hSchoolId, globalSchoolsData);
+        const aAcr = getSchoolAcronym(aSchoolId, globalSchoolsData);
+
+        const hLogoHtml = hLogo ? `<img src="${hLogo}" class="matchup-logo-img" alt="${hAcr}">` : '';
+        const aLogoHtml = aLogo ? `<img src="${aLogo}" class="matchup-logo-img" alt="${aAcr}">` : '';
+
         statusOptions.forEach(status => { optionsHtml += `<option value="${status}" ${(mStatus === status) ? 'selected' : ''}>${status}</option>`; });
 
         let currentSide = String(hSchoolId).includes(targetSchoolID) ? "Home" : "Away";
@@ -2038,7 +2065,7 @@
           proposalsHtml += `</div>`;
         }
         
-        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hSchoolId, globalSchoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aSchoolId, globalSchoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
+        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div class="matchup-team-box">${hLogoHtml}<div class="matchup-acronym-text">${hAcr}</div><div style="font-size: 0.65rem; color: #64748B; font-weight:800; margin-top:2px;">HOME</div></div><div style="color: #E2E8F0; padding: 0 10px; font-weight:900;">VS</div><div class="matchup-team-box">${aLogoHtml}<div class="matchup-acronym-text">${aAcr}</div><div style="font-size: 0.65rem; color: #64748B; font-weight:800; margin-top:2px;">AWAY</div></div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
         
         wrapper.appendChild(card);
         container.appendChild(wrapper);
