@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V6.0 -->
+<!-- AthleticOS Coaches Portal V6.1 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -622,7 +622,7 @@
         <div class="action-grid">
           
           <div class="card" id="admin-card-demographics" style="border-color: var(--accent); background-color: #F0FDF4; display:none; flex-direction:column;">
-            <div class="card-header" style="color: var(--primary);">🏫 Program Demographics</div>
+            <div class="card-header" id="demo-card-header" style="color: var(--primary);">🏫 Program Demographics</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Visual success metrics for your school's athletic portfolio.</p>
             <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-600">
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Athletes:</span><b id="demo-total-athletes" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
@@ -1209,6 +1209,7 @@
     const urlParams = new URLSearchParams(window.location.search);
     let targetSchoolID = urlParams.get('school') || '';
     let targetSchoolName = targetSchoolID; 
+    let targetSchoolAcronym = targetSchoolID;
     let targetSchoolRegion = ''; 
     
     let globalSettingsData = {};
@@ -1523,6 +1524,7 @@
           const schoolData = globalSchoolsData.find(s => String(readFlexibleObjectValue(s, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase() || String(readFlexibleObjectValue(s, "Name")).trim().toLowerCase() === String(targetSchoolName).trim().toLowerCase());
           if (schoolData) {
             targetSchoolName = readFlexibleObjectValue(schoolData, "Name") || targetSchoolName;
+            targetSchoolAcronym = readFlexibleObjectValue(schoolData, "Acronym") || readFlexibleObjectValue(schoolData, "Name") || targetSchoolID;
             targetSchoolRegion = readFlexibleObjectValue(schoolData, "Region") || ''; 
             const logoUrl = getSchoolLogo(schoolData);
             const logoContainer = document.getElementById('dynamic-school-logo-container');
@@ -1532,7 +1534,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.0</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.1</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1659,6 +1661,7 @@
           });
 
           const demoAgeStr = Array.from(demoAges).sort((a,b) => parseInt(a.substring(1)) - parseInt(b.substring(1))).join(", ") || "None";
+          document.getElementById('demo-card-header').innerHTML = `🏫 ${targetSchoolAcronym.toUpperCase()} Program Demographics`;
           document.getElementById('demo-total-athletes').innerText = schoolDemoAthletes.length;
           document.getElementById('demo-gender-split').innerText = `${demoBoys} / ${demoGirls}`;
           document.getElementById('demo-total-teams').innerText = schoolDemographicsTeams.length;
