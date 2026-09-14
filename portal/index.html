@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.7 -->
+<!-- AthleticOS Coaches Portal V5.8 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -350,7 +350,7 @@
       <div id="section-games-calendar" class="sub-section active">
         <div class="explainer-box" style="margin-bottom: 15px;">
           <strong>Interactive Rescheduling & Export</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a Postponed match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
         </div>
         <div class="card" style="padding: 10px;">
           <div class="game-cal-controls">
@@ -360,6 +360,13 @@
              </div>
              <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary); font-size:1.1rem;">Month</span>
              <button onclick="exportCalendarToICS()" style="background:var(--accent); color:var(--primary); border:none; display:flex; align-items:center; gap:5px;">📥 Export iCal</button>
+          </div>
+          <div id="game-cal-status-legend" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; font-size: 0.65rem; font-weight: 800; justify-content: center; color: var(--text-muted); text-transform: uppercase;">
+            <span>✅ Completed</span>
+            <span>⚠️ Pending/Disputed</span>
+            <span>⏱ Postponed</span>
+            <span>❌ Cancelled</span>
+            <span>(Blank) Scheduled</span>
           </div>
           <div id="game-cal-legend" class="calendar-legend"></div>
           <div id="games-calendar-mesh" class="game-cal-grid"></div>
@@ -619,6 +626,18 @@
                 <button class="btn-submit btn-small" id="btn-confirm-schedule" onclick="confirmScheduleGeneration()">Execute</button>
                 <button class="btn-submit btn-small" style="background-color:var(--text-muted);" onclick="document.getElementById('schedule-wizard-modal').style.display='none'">Cancel</button>
               </div>
+            </div>
+          </div>
+
+          <div class="card" id="admin-card-demographics" style="border-color: var(--accent); background-color: #F0FDF4; display:none;">
+            <div class="card-header" style="color: var(--primary);">🏫 Program Demographics</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Visual success metrics for your school's athletic portfolio.</p>
+            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-600">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Athletes:</span><b id="demo-total-athletes" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Boys / Girls:</span><b id="demo-gender-split" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Teams:</span><b id="demo-total-teams" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Sports Competing:</span><b id="demo-total-sports" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Age Groups:</span><b id="demo-age-groups" style="font-family:monospace; color:var(--primary); text-align:right; max-width:60%;">-</b></div>
             </div>
           </div>
 
@@ -1475,7 +1494,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.7</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.8</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1534,6 +1553,52 @@
           document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
           document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
           
+          // Calculate School Demographics (For the Admin Console)
+          let schoolDemographicsTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+          let schoolDemoTeamIds = schoolDemographicsTeams.map(t => readFlexibleObjectValue(t, "TeamID"));
+          
+          let schoolDemoAthletes = globalRosterData.filter(p => {
+             const tId = readFlexibleObjectValue(p, "TeamID");
+             const status = String(readFlexibleObjectValue(p, "EligibilityStatus")).trim();
+             return schoolDemoTeamIds.includes(tId) && status !== "Archived";
+          });
+          
+          let demoBoys = 0;
+          let demoGirls = 0;
+          let demoSports = new Set();
+          let demoAges = new Set();
+
+          schoolDemoAthletes.forEach(p => {
+             const pTeam = schoolDemographicsTeams.find(t => readFlexibleObjectValue(t, "TeamID") === readFlexibleObjectValue(p, "TeamID"));
+             if (pTeam) {
+                 const div = globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") === readFlexibleObjectValue(pTeam, "DivisionID"));
+                 if (div) {
+                     const gender = String(readFlexibleObjectValue(div, "Gender")).toLowerCase();
+                     if (gender.includes("boy") || gender.includes("men") || gender === "m") demoBoys++;
+                     else if (gender.includes("girl") || gender.includes("women") || gender === "f") demoGirls++;
+                 }
+             }
+          });
+
+          schoolDemographicsTeams.forEach(t => {
+             const div = globalDivisionsData.find(d => readFlexibleObjectValue(d, "DivisionID") === readFlexibleObjectValue(t, "DivisionID"));
+             if(div) {
+                 const age = readFlexibleObjectValue(div, "Age_Limit");
+                 if(age) demoAges.add("U" + String(age).replace(/\D/g, ''));
+                 
+                 const sportId = readFlexibleObjectValue(div, "SportID");
+                 if(sportId) demoSports.add(sportId);
+             }
+          });
+
+          const demoAgeStr = Array.from(demoAges).sort((a,b) => parseInt(a.substring(1)) - parseInt(b.substring(1))).join(", ") || "None";
+          document.getElementById('demo-total-athletes').innerText = schoolDemoAthletes.length;
+          document.getElementById('demo-gender-split').innerText = `${demoBoys} / ${demoGirls}`;
+          document.getElementById('demo-total-teams').innerText = schoolDemographicsTeams.length;
+          document.getElementById('demo-total-sports').innerText = demoSports.size;
+          document.getElementById('demo-age-groups').innerText = demoAgeStr;
+          document.getElementById('admin-card-demographics').style.display = 'block';
+
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
           globalDivisionsData.forEach(div => {
