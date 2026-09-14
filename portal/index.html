@@ -1746,8 +1746,9 @@
         const hTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === hTeamId);
         const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
         
+        // FIXED A_SCHOOL VARIABLE BUG HERE
         const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
-        const aSchool = aTeam ? String(readFlexibleObjectValue(aSchool, "SchoolID")).trim() : aTeamId;
+        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
         
         return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
       });
