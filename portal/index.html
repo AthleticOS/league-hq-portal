@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.6 -->
+<!-- AthleticOS Coaches Portal V5.7 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -182,6 +182,11 @@
     .cal-day-node.has-travel-only { background: #FFEDD5; color: #C2410C; }
     .cal-day-node.empty-spacer { background: transparent; cursor: default; }
 
+    /* CALENDAR COLOR LEGEND */
+    .calendar-legend { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; font-size: 0.75rem; font-weight: 800; justify-content: center; }
+    .legend-item { display: flex; align-items: center; gap: 5px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+
     @keyframes pulse {
       0% { opacity: 1; }
       50% { opacity: 0.7; }
@@ -245,9 +250,6 @@
     
     .game-ev { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 4px; padding: 4px; cursor: pointer; font-size: 0.65rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.1s; }
     .game-ev:hover { transform: translateY(-1px); border-color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-    .game-ev.completed { border-left-color: #166534; background: #F0FDF4; }
-    .game-ev.pending { border-left-color: #ca8a04; background: #fefce8; }
-    .game-ev.postponed { border-left-color: #991B1B; background: #FEF2F2; }
     .game-ev.dragging { opacity: 0.5; }
     
     .game-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
@@ -359,12 +361,26 @@
              <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary); font-size:1.1rem;">Month</span>
              <button onclick="exportCalendarToICS()" style="background:var(--accent); color:var(--primary); border:none; display:flex; align-items:center; gap:5px;">📥 Export iCal</button>
           </div>
+          <div id="game-cal-legend" class="calendar-legend"></div>
           <div id="games-calendar-mesh" class="game-cal-grid"></div>
         </div>
       </div>
 
       <!-- LIST VIEW -->
       <div id="section-games-matches" class="sub-section">
+        <div class="card" style="padding: 10px; margin-bottom: 15px; border-color: var(--accent); background-color: #F0FDF4;">
+          <div style="display:flex; gap:10px; flex-wrap:wrap;">
+            <select id="filter-sport" class="status-select" style="margin-bottom:0; flex:1; padding:8px;" onchange="applyGamesFilter()"><option value="">All Sports</option></select>
+            <select id="filter-team" class="status-select" style="margin-bottom:0; flex:1; padding:8px;" onchange="applyGamesFilter()"><option value="">All Teams</option></select>
+            <select id="filter-status" class="status-select" style="margin-bottom:0; flex:1; padding:8px;" onchange="applyGamesFilter()">
+              <option value="">All Statuses</option>
+              <option value="Scheduled">Scheduled</option>
+              <option value="Completed">Completed</option>
+              <option value="Pending Verification">Pending Verif.</option>
+              <option value="Postponed">Postponed</option>
+            </select>
+          </div>
+        </div>
         <div id="games-list"></div>
       </div>
 
@@ -1156,6 +1172,16 @@
     window.currentSchoolGames = [];
     let currentlyOpenGameId = null;
 
+    // Filter UI Logic
+    let sportColors = {};
+    const PALETTE = ['#3B82F6', '#F97316', '#A855F7', '#14B8A6', '#EC4899', '#6366F1', '#EAB308', '#EF4444'];
+    function hexToRgba(hex, alpha) {
+      let r = parseInt(hex.slice(1, 3), 16),
+          g = parseInt(hex.slice(3, 5), 16),
+          b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+    }
+
     // Staging logic variables
     let stagedExceptions = [];
     let calSelectStart = null;
@@ -1449,7 +1475,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.6</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.7</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1735,65 +1761,40 @@
       });
     }
 
-    function renderGames(fixtures, schoolsData, sportsData, divisionsData, teamsData) {
+    function applyGamesFilter() {
+        const sportVal = document.getElementById('filter-sport').value;
+        const teamVal = document.getElementById('filter-team').value;
+        const statusVal = document.getElementById('filter-status').value;
+
+        let filtered = window.currentSchoolGames;
+        
+        if (sportVal) {
+            filtered = filtered.filter(g => readFlexibleObjectValue(g, "SportID") === sportVal);
+        }
+        if (teamVal) {
+            filtered = filtered.filter(g => readFlexibleObjectValue(g, "HomeTeamID") === teamVal || readFlexibleObjectValue(g, "AwayTeamID") === teamVal);
+        }
+        if (statusVal) {
+            if (statusVal === 'Pending Verification') {
+                filtered = filtered.filter(g => readFlexibleObjectValue(g, "MatchStatus") === 'Pending Verification' || readFlexibleObjectValue(g, "MatchStatus") === 'Disputed');
+            } else {
+                filtered = filtered.filter(g => readFlexibleObjectValue(g, "MatchStatus") === statusVal);
+            }
+        }
+        
+        renderGamesList(filtered);
+    }
+
+    function renderGamesList(fixturesToRender) {
       const container = document.getElementById('games-list');
       container.innerHTML = '';
-      
-      const schoolGames = fixtures.filter(game => {
-        const hTeamId = String(readFlexibleObjectValue(game, "HomeTeamID")).trim();
-        const aTeamId = String(readFlexibleObjectValue(game, "AwayTeamID")).trim();
-        
-        const hTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === hTeamId);
-        const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
-        
-        // FIXED A_SCHOOL VARIABLE BUG HERE
-        const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
-        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
-        
-        return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
-      });
 
-      // Save global reference for the calendar render & export
-      window.currentSchoolGames = schoolGames;
-      
-      // Calculate Summary Dashboard Metrics
-      let cSched = 0, cPend = 0, cPost = 0, cComp = 0;
-      schoolGames.forEach(g => {
-         const st = readFlexibleObjectValue(g, "MatchStatus");
-         if(st === "Completed") cComp++;
-         else if(st === "Pending Verification" || st === "Disputed") cPend++;
-         else if(st === "Postponed") cPost++;
-         else cSched++; // Default to scheduled/in-progress
-      });
-
-      // Inject Dashboard Metrics
-      const sumDash = document.getElementById('games-summary-dashboard');
-      if(sumDash) {
-         sumDash.innerHTML = `
-           <div class="summary-card" style="border-bottom-color: var(--text-muted);">
-              <span class="summary-num" style="color: var(--text-main);">${cSched}</span>
-              <span class="summary-lbl" style="color: var(--text-muted);">Scheduled</span>
-           </div>
-           <div class="summary-card" style="border-bottom-color: #ca8a04; background: #fefce8;">
-              <span class="summary-num" style="color: #ca8a04;">${cPend}</span>
-              <span class="summary-lbl" style="color: #a16207;">Pending Verif.</span>
-           </div>
-           <div class="summary-card" style="border-bottom-color: #991B1B; background: #FEF2F2;">
-              <span class="summary-num" style="color: #991B1B;">${cPost}</span>
-              <span class="summary-lbl" style="color: #7F1D1D;">Postponed</span>
-           </div>
-           <div class="summary-card" style="border-bottom-color: #166534; background: #F0FDF4;">
-              <span class="summary-num" style="color: #166534;">${cComp}</span>
-              <span class="summary-lbl" style="color: #14532d;">Completed</span>
-           </div>
-         `;
+      if (fixturesToRender.length === 0) { 
+        container.innerHTML = `<div class="card"><p style="text-align:center; color:var(--text-muted);">No games match the current filters.</p></div>`; 
+        return; 
       }
 
-      renderGameCalendar();
-
-      if (schoolGames.length === 0) { container.innerHTML = `<div class="card"><p style="text-align:center;">No games scheduled.</p></div>`; return; }
-
-      schoolGames.forEach(game => {
+      fixturesToRender.forEach(game => {
         const wrapper = document.createElement('div');
         const gId = readFlexibleObjectValue(game, "GameID");
         wrapper.id = `game-wrapper-${gId}`;
@@ -1812,8 +1813,8 @@
         const hTeamId = readFlexibleObjectValue(game, "HomeTeamID");
         const aTeamId = readFlexibleObjectValue(game, "AwayTeamID");
         
-        const hTeamObj = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(hTeamId).trim());
-        const aTeamObj = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(aTeamId).trim());
+        const hTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(hTeamId).trim());
+        const aTeamObj = globalTeamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === String(aTeamId).trim());
         
         const hSchoolId = hTeamObj ? readFlexibleObjectValue(hTeamObj, "SchoolID") : hTeamId;
         const aSchoolId = aTeamObj ? readFlexibleObjectValue(aTeamObj, "SchoolID") : aTeamId;
@@ -1893,21 +1894,132 @@
           proposalsHtml += `</div>`;
         }
         
-        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, sportsData, divisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hSchoolId, schoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aSchoolId, schoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
+        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">HOME</div>${getSchoolName(hSchoolId, globalSchoolsData)}</div><div style="color: #E2E8F0; padding: 0 10px;">VS</div><div style="text-align: center; flex: 1;"><div style="font-size: 0.8rem; color: #64748B;">AWAY</div>${getSchoolName(aSchoolId, globalSchoolsData)}</div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
         
         wrapper.appendChild(card);
         container.appendChild(wrapper);
       });
     }
 
+    function renderGames(fixtures, schoolsData, sportsData, divisionsData, teamsData) {
+      const schoolGames = fixtures.filter(game => {
+        const hTeamId = String(readFlexibleObjectValue(game, "HomeTeamID")).trim();
+        const aTeamId = String(readFlexibleObjectValue(game, "AwayTeamID")).trim();
+        
+        const hTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === hTeamId);
+        const aTeam = teamsData.find(t => String(readFlexibleObjectValue(t, "TeamID")).trim() === aTeamId);
+        
+        const hSchool = hTeam ? String(readFlexibleObjectValue(hTeam, "SchoolID")).trim() : hTeamId;
+        const aSchool = aTeam ? String(readFlexibleObjectValue(aTeam, "SchoolID")).trim() : aTeamId;
+        
+        return hSchool.includes(targetSchoolID) || aSchool.includes(targetSchoolID) || hTeamId.includes(targetSchoolID) || aTeamId.includes(targetSchoolID);
+      });
+
+      // Save global reference for the calendar render, filtering & export
+      window.currentSchoolGames = schoolGames;
+
+      // Assign global sport colors
+      let colorIdx = 0;
+      sportsData.forEach(s => {
+         const sid = readFlexibleObjectValue(s, "SportID");
+         if (!sportColors[sid]) {
+            sportColors[sid] = PALETTE[colorIdx % PALETTE.length];
+            colorIdx++;
+         }
+      });
+      
+      // Calculate Summary Dashboard Metrics
+      let cSched = 0, cPend = 0, cPost = 0, cComp = 0;
+      schoolGames.forEach(g => {
+         const st = readFlexibleObjectValue(g, "MatchStatus");
+         if(st === "Completed") cComp++;
+         else if(st === "Pending Verification" || st === "Disputed") cPend++;
+         else if(st === "Postponed") cPost++;
+         else cSched++; 
+      });
+
+      // Inject Dashboard Metrics
+      const sumDash = document.getElementById('games-summary-dashboard');
+      if(sumDash) {
+         sumDash.innerHTML = `
+           <div class="summary-card" style="border-bottom-color: var(--text-muted);">
+              <span class="summary-num" style="color: var(--text-main);">${cSched}</span>
+              <span class="summary-lbl" style="color: var(--text-muted);">Scheduled</span>
+           </div>
+           <div class="summary-card" style="border-bottom-color: #ca8a04; background: #fefce8;">
+              <span class="summary-num" style="color: #ca8a04;">${cPend}</span>
+              <span class="summary-lbl" style="color: #a16207;">Pending Verif.</span>
+           </div>
+           <div class="summary-card" style="border-bottom-color: #991B1B; background: #FEF2F2;">
+              <span class="summary-num" style="color: #991B1B;">${cPost}</span>
+              <span class="summary-lbl" style="color: #7F1D1D;">Postponed</span>
+           </div>
+           <div class="summary-card" style="border-bottom-color: #166534; background: #F0FDF4;">
+              <span class="summary-num" style="color: #166534;">${cComp}</span>
+              <span class="summary-lbl" style="color: #14532d;">Completed</span>
+           </div>
+         `;
+      }
+
+      // Populate Filter Dropdowns
+      const fSport = document.getElementById('filter-sport');
+      const fTeam = document.getElementById('filter-team');
+      
+      const currSport = fSport.value;
+      const currTeam = fTeam.value;
+      
+      fSport.innerHTML = '<option value="">All Sports</option>';
+      fTeam.innerHTML = '<option value="">All Teams</option>';
+      
+      const uniqueSports = [...new Set(window.currentSchoolGames.map(g => readFlexibleObjectValue(g, "SportID")))];
+      uniqueSports.forEach(sId => {
+        const sObj = sportsData.find(s => readFlexibleObjectValue(s, "SportID") == sId);
+        const sName = sObj ? readFlexibleObjectValue(sObj, "Name") : sId;
+        fSport.innerHTML += `<option value="${sId}">${sName}</option>`;
+      });
+
+      const uniqueTeams = [...new Set(window.currentSchoolGames.flatMap(g => [readFlexibleObjectValue(g, "HomeTeamID"), readFlexibleObjectValue(g, "AwayTeamID")]))].filter(id => {
+         const tObj = teamsData.find(t => readFlexibleObjectValue(t, "TeamID") == id);
+         return tObj && String(readFlexibleObjectValue(tObj, "SchoolID")).includes(targetSchoolID);
+      });
+
+      uniqueTeams.forEach(tId => {
+         const tObj = teamsData.find(t => readFlexibleObjectValue(t, "TeamID") == tId);
+         if(tObj) {
+             const dName = getTeamDisplayName(readFlexibleObjectValue(tObj, "SportID"), readFlexibleObjectValue(tObj, "DivisionID"), sportsData, divisionsData);
+             fTeam.innerHTML += `<option value="${tId}">${dName}</option>`;
+         }
+      });
+      
+      fSport.value = currSport || "";
+      fTeam.value = currTeam || "";
+
+      renderGameCalendar();
+      applyGamesFilter(); 
+    }
+
     // --- GAMES CALENDAR LOGIC ---
     function renderGameCalendar() {
        const container = document.getElementById('games-calendar-mesh');
+       const legendContainer = document.getElementById('game-cal-legend');
        if(!container) return;
        container.innerHTML = '';
+       
        const year = gameCalendarDate.getFullYear();
        const month = gameCalendarDate.getMonth();
        document.getElementById('game-cal-month-title').innerText = `${["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"][month]} ${year}`;
+
+       // Render Dynamic Legend
+       if (legendContainer) {
+          legendContainer.innerHTML = '';
+          const activeSports = [...new Set(window.currentSchoolGames.map(g => readFlexibleObjectValue(g, "SportID")))];
+          activeSports.forEach(sId => {
+              const color = sportColors[sId] || '#333';
+              const sObj = globalSportsData.find(s => readFlexibleObjectValue(s, "SportID") == sId);
+              const sName = sObj ? readFlexibleObjectValue(sObj, "Name") : sId;
+              legendContainer.innerHTML += `<div class="legend-item"><div class="legend-color" style="background:${color};"></div>${sName}</div>`;
+          });
+       }
 
        const firstDayIdx = new Date(year, month, 1).getDay();
        const totalDays = new Date(year, month + 1, 0).getDate();
@@ -1935,6 +2047,9 @@
          dayGames.forEach(g => {
             const gId = readFlexibleObjectValue(g, "GameID");
             const status = readFlexibleObjectValue(g, "MatchStatus");
+            const sId = readFlexibleObjectValue(g, "SportID");
+            const sColor = sportColors[sId] || '#333';
+            const bgRgba = hexToRgba(sColor, 0.1);
             
             const hTeamId = String(readFlexibleObjectValue(g, "HomeTeamID")).trim();
             const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
@@ -1947,21 +2062,21 @@
             const opponentId = isHome ? aSchoolId : hSchoolId;
             const opponentName = getSchoolName(opponentId, globalSchoolsData); 
             
-            let evClass = 'game-ev';
-            if(status === 'Completed') evClass += ' completed';
-            if(status === 'Pending Verification' || status === 'Disputed') evClass += ' pending';
-            if(status === 'Postponed') evClass += ' postponed';
-
-            const time = readFlexibleObjectValue(g, "Time") || '';
+            let statusEmoji = '';
+            if(status === 'Completed') statusEmoji = '✅ ';
+            if(status === 'Pending Verification' || status === 'Disputed') statusEmoji = '⚠️ ';
+            if(status === 'Postponed') statusEmoji = '⏱ ';
+            if(status === 'Cancelled') statusEmoji = '❌ ';
             
             eventsHtml += `
-            <div class="${evClass}" 
+            <div class="game-ev" 
+                 style="border-left-color: ${sColor}; background-color: ${bgRgba};"
                  draggable="true" 
                  ondragstart="handleEventDragStart(event, '${gId}')" 
                  ondragend="handleEventDragEnd(event)"
                  onclick="openUnifiedGameModal('${gId}')" 
                  title="${opponentName} (${status})">
-              ${isHome ? 'vs' : '@'} ${opponentName}
+              ${statusEmoji}${isHome ? 'vs' : '@'} ${opponentName}
             </div>`;
          });
 
