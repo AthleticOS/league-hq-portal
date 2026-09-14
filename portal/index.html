@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.8 -->
+<!-- AthleticOS Coaches Portal V5.9 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -136,9 +136,10 @@
     .btn-submit:disabled { background-color: #94A3B8; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
 
+    /* 2x2 ACTION GRID LOGIC */
     .action-grid { display: grid; grid-template-columns: 1fr; gap: 15px; margin-bottom: 15px; }
     @media (min-width: 768px) {
-      .action-grid { grid-template-columns: repeat(3, 1fr); }
+      .action-grid { grid-template-columns: repeat(2, 1fr); }
       .action-grid .card { margin-bottom: 0; display: flex; flex-direction: column; }
     }
 
@@ -350,7 +351,7 @@
       <div id="section-games-calendar" class="sub-section active">
         <div class="explainer-box" style="margin-bottom: 15px;">
           <strong>Interactive Rescheduling & Export</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a Postponed match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
+          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
         </div>
         <div class="card" style="padding: 10px;">
           <div class="game-cal-controls">
@@ -592,6 +593,34 @@
         </div>
 
         <div class="action-grid">
+          
+          <div class="card" id="admin-card-demographics" style="border-color: var(--accent); background-color: #F0FDF4; display:none; flex-direction:column;">
+            <div class="card-header" style="color: var(--primary);">🏫 Program Demographics</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Visual success metrics for your school's athletic portfolio.</p>
+            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-600">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Athletes:</span><b id="demo-total-athletes" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Boys / Girls:</span><b id="demo-gender-split" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Teams:</span><b id="demo-total-teams" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Sports Competing:</span><b id="demo-total-sports" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Age Groups:</span><b id="demo-age-groups" style="font-family:monospace; color:var(--primary); text-align:right; max-width:60%;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Games Played:</span><b id="demo-games-played" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Overall Record (W-L-D):</span><b id="demo-overall-record" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+            </div>
+          </div>
+
+          <div class="card" id="admin-card-metrics" style="display: flex; flex-direction: column;">
+            <div class="card-header">📊 Ledger Integrity Metrics</div>
+            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
+            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Teams:</span><b id="meta-stat-teams" style="font-family:monospace;">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Total Divisions:</span><b id="meta-stat-divisions" style="font-family:monospace;">-</b></div>
+            </div>
+          </div>
+
           <div class="card" id="admin-card-scheduler" style="border-color: var(--primary); display: flex; flex-direction: column;">
             <div class="card-header">📅 Seasonal Round-Robin Engine</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Triggers the dynamic matrix pairing loop to populate empty division slots with home/away fixtures.</p>
@@ -629,30 +658,7 @@
             </div>
           </div>
 
-          <div class="card" id="admin-card-demographics" style="border-color: var(--accent); background-color: #F0FDF4; display:none;">
-            <div class="card-header" style="color: var(--primary);">🏫 Program Demographics</div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Visual success metrics for your school's athletic portfolio.</p>
-            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-600">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Athletes:</span><b id="demo-total-athletes" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Boys / Girls:</span><b id="demo-gender-split" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Teams:</span><b id="demo-total-teams" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Sports Competing:</span><b id="demo-total-sports" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Age Groups:</span><b id="demo-age-groups" style="font-family:monospace; color:var(--primary); text-align:right; max-width:60%;">-</b></div>
-            </div>
-          </div>
-
-          <div class="card" id="admin-card-metrics">
-            <div class="card-header">📊 Ledger Integrity Metrics</div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
-            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
-            </div>
-          </div>
-
-          <div class="card" id="admin-card-tools">
+          <div class="card" id="admin-card-tools" style="display: flex; flex-direction: column;">
             <div class="card-header">🛠️ Engineering Toolbelt</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute administrative transactions and master batch tasks directly.</p>
             <div style="margin-top: auto; display:flex; flex-direction:column; gap:8px;">
@@ -1494,7 +1500,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.8</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.9</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1552,6 +1558,8 @@
           document.getElementById('meta-stat-venues').innerText = globalVenuesData.length;
           document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
           document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
+          document.getElementById('meta-stat-teams').innerText = globalTeamsData.length;
+          document.getElementById('meta-stat-divisions').innerText = globalDivisionsData.length;
           
           // Calculate School Demographics (For the Admin Console)
           let schoolDemographicsTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
@@ -1591,13 +1599,42 @@
              }
           });
 
+          let gamesPlayed = 0;
+          let wins = 0, losses = 0, draws = 0;
+
+          window.currentSchoolGames.forEach(g => {
+              const status = readFlexibleObjectValue(g, "MatchStatus");
+              if (status === "Completed") {
+                  gamesPlayed++;
+                  const hTeamId = String(readFlexibleObjectValue(g, "HomeTeamID")).trim();
+                  const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
+                  const hScore = parseInt(readFlexibleObjectValue(g, "HomeScore")) || 0;
+                  const aScore = parseInt(readFlexibleObjectValue(g, "AwayScore")) || 0;
+                  
+                  const isHome = schoolDemoTeamIds.includes(hTeamId);
+                  const isAway = schoolDemoTeamIds.includes(aTeamId);
+
+                  if (isHome) {
+                      if (hScore > aScore) wins++;
+                      else if (hScore < aScore) losses++;
+                      else draws++;
+                  } else if (isAway) {
+                      if (aScore > hScore) wins++;
+                      else if (aScore < hScore) losses++;
+                      else draws++;
+                  }
+              }
+          });
+
           const demoAgeStr = Array.from(demoAges).sort((a,b) => parseInt(a.substring(1)) - parseInt(b.substring(1))).join(", ") || "None";
           document.getElementById('demo-total-athletes').innerText = schoolDemoAthletes.length;
           document.getElementById('demo-gender-split').innerText = `${demoBoys} / ${demoGirls}`;
           document.getElementById('demo-total-teams').innerText = schoolDemographicsTeams.length;
           document.getElementById('demo-total-sports').innerText = demoSports.size;
           document.getElementById('demo-age-groups').innerText = demoAgeStr;
-          document.getElementById('admin-card-demographics').style.display = 'block';
+          document.getElementById('demo-games-played').innerText = gamesPlayed;
+          document.getElementById('demo-overall-record').innerText = `${wins}-${losses}-${draws}`;
+          document.getElementById('admin-card-demographics').style.display = 'flex';
 
           const adminSchedSelect = document.getElementById('admin-schedule-division');
           adminSchedSelect.innerHTML = "";
