@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V6.3 -->
+<!-- AthleticOS Coaches Portal V6.4 (Dark Mode) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,16 +9,17 @@
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
     :root {
-      --primary: #012300;
+      --primary: #52C920;
+      --primary-dark: #012300;
       --accent: #52C920;
-      --bg: #F8FAFC;
-      --card-bg: #FFFFFF;
-      --text-main: #1A1A1A;
-      --text-muted: #64748B;
-      --border: #E2E8F0;
-      --wizard-step-bg: #F0FDF4;
-      --wizard-step-border: #BBF7D0;
-      --wizard-step-text: #166534;
+      --bg: #0F172A;
+      --card-bg: #1E293B;
+      --text-main: #F8FAFC;
+      --text-muted: #94A3B8;
+      --border: #334155;
+      --wizard-step-bg: #064E3B;
+      --wizard-step-border: #059669;
+      --wizard-step-text: #A7F3D0;
     }
 
     body {
@@ -32,7 +33,7 @@
 
     /* ATHLETICOS ANIMATED PRELOADER */
     #athleticos-preloader {
-      position: fixed; inset: 0; z-index: 9999; background-color: #1A1A1A;
+      position: fixed; inset: 0; z-index: 9999; background-color: #0B0F19;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       transition: opacity 0.7s ease; opacity: 1; font-family: 'Plus Jakarta Sans', sans-serif;
     }
@@ -69,7 +70,7 @@
 
     /* HEADER STYLES */
     header {
-      background-color: var(--primary);
+      background-color: #0B0F19;
       color: #fff;
       padding: 15px 20px;
       display: flex;
@@ -94,27 +95,28 @@
     header .header-text {
       text-align: left;
     }
-    header .header-text h1 { margin: 0; font-size: 1.3rem; font-weight: 800; line-height: 1.1; }
+    header .header-text h1 { margin: 0; font-size: 1.3rem; font-weight: 800; line-height: 1.1; color: #F8FAFC; }
     header .header-text p { margin: 4px 0 0 0; font-size: 0.8rem; color: var(--accent); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
     
     .header-school-logo {
       height: 65px;
       width: 65px;
       object-fit: contain;
-      background-color: #fff;
+      background-color: #1E293B;
       border-radius: 8px;
       padding: 2px;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 6px rgba(0,0,0,0.4);
     }
 
     /* STATE SCREENS */
-    #error-screen { display: none; padding: 40px 20px; text-align: center; background: #fff; margin: 20px; border-radius: 12px; border: 1px solid red; }
+    #error-screen { display: none; padding: 40px 20px; text-align: center; background: var(--card-bg); margin: 20px; border-radius: 12px; border: 1px solid red; }
     
     #pin-screen { display: none; padding: 40px 20px; text-align: center; }
-    .pin-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); max-width: 350px; margin: 0 auto; }
-    .pin-box h2 { margin-top: 0; font-size: 1.3rem; }
+    .pin-box { background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 30px 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); max-width: 350px; margin: 0 auto; }
+    .pin-box h2 { margin-top: 0; font-size: 1.3rem; color: var(--text-main); }
     .pin-box p { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 20px; }
-    .pin-input { font-size: 1.5rem; text-align: center; letter-spacing: 5px; font-weight: 800; width: 100%; max-width: 200px; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 20px; outline: none; }
+    .pin-input { font-size: 1.5rem; text-align: center; letter-spacing: 5px; font-weight: 800; width: 100%; max-width: 200px; padding: 10px; border: 2px solid var(--border); border-radius: 8px; margin-bottom: 20px; outline: none; background: #0F172A; color: var(--text-main); }
     .pin-input:focus { border-color: var(--accent); }
 
     /* APP CONTAINER & DESKTOP MAX-WIDTH LOCK */
@@ -123,23 +125,23 @@
     .tab-content.active { display: block; }
 
     /* CARDS & INPUTS */
-    .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .card { background-color: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .card-header { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
     .matchup { display: flex; justify-content: space-between; align-items: center; font-weight: 800; font-size: 1.1rem; margin-bottom: 15px; }
     
     /* MATCHUP CARD SCHOOL BRANDING */
     .matchup-team-box { display: flex; flex-direction: column; align-items: center; justify-content: center; flex: 1; text-align: center; }
-    .matchup-logo-img { height: 48px; width: 48px; object-fit: contain; margin-bottom: 6px; border-radius: 6px; background-color: #FAFAFA; border: 1px solid var(--border); padding: 2px; }
-    .matchup-acronym-text { font-size: 1.1rem; font-weight: 900; color: var(--primary); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.1; }
+    .matchup-logo-img { height: 48px; width: 48px; object-fit: contain; margin-bottom: 6px; border-radius: 6px; background-color: #0F172A; border: 1px solid var(--border); padding: 2px; }
+    .matchup-acronym-text { font-size: 1.1rem; font-weight: 900; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; line-height: 1.1; }
 
-    .score-input, .text-input, .status-select { border: 2px solid var(--border); border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; background-color: #fff; }
+    .score-input, .text-input, .status-select { border: 2px solid var(--border); border-radius: 6px; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 600; background-color: #0F172A; color: var(--text-main); }
     .score-input { width: 50px; padding: 8px; font-size: 1.1rem; text-align: center; font-weight: 800; }
     .status-select { width: 100%; padding: 10px; margin-bottom: 15px; }
     .text-input { width: 100%; padding: 10px; margin-bottom: 10px; box-sizing: border-box; }
     
-    .btn-submit { width: 100%; background-color: var(--primary); color: #fff; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s, opacity 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
-    .btn-submit:active { background-color: var(--accent); color: var(--primary); }
-    .btn-submit:disabled { background-color: #94A3B8; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
+    .btn-submit { width: 100%; background-color: var(--accent); color: #012300; border: none; padding: 12px; border-radius: 6px; font-size: 1rem; font-weight: 800; cursor: pointer; transition: background 0.2s, opacity 0.2s; display: block; text-decoration: none; text-align: center; box-sizing: border-box; }
+    .btn-submit:active { background-color: #F9FF00; color: #012300; }
+    .btn-submit:disabled { background-color: #334155; color: #64748B; cursor: not-allowed; opacity: 0.6; pointer-events: none; }
     .btn-small { padding: 8px; font-size: 0.85rem; margin-top: 5px; }
 
     /* RESPONSIVE DESKTOP GRIDS */
@@ -162,21 +164,21 @@
       .explainer-accordion-grid { grid-template-columns: repeat(2, 1fr); }
     }
 
-    details.explainer-accordion { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 10px 12px; border-radius: 0 8px 8px 0; border: 1px solid var(--border); border-left-width: 4px; transition: all 0.2s ease; }
-    details.explainer-accordion.info { background-color: #F0FDF4; border-left-color: var(--accent); }
+    details.explainer-accordion { background-color: #0F172A; border-left: 4px solid var(--text-muted); padding: 10px 12px; border-radius: 0 8px 8px 0; border: 1px solid var(--border); border-left-width: 4px; transition: all 0.2s ease; }
+    details.explainer-accordion.info { background-color: #064E3B; border-left-color: var(--accent); }
     details.explainer-accordion summary { font-size: 0.8rem; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; text-transform: uppercase; letter-spacing: 0.5px; }
-    details.explainer-accordion.info summary { color: #166534; }
+    details.explainer-accordion.info summary { color: #A7F3D0; }
     details.explainer-accordion summary::-webkit-details-marker { display: none; }
     details.explainer-accordion summary::after { content: '▼'; font-size: 0.7rem; transition: transform 0.2s; font-weight: 400; color: var(--text-muted); }
     details.explainer-accordion[open] summary::after { transform: rotate(180deg); }
-    details.explainer-accordion .accordion-content { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 0.8rem; line-height: 1.4; color: #334155; }
+    details.explainer-accordion .accordion-content { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 0.8rem; line-height: 1.4; color: #CBD5E1; }
 
-    .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
+    .wizard-card { border: 2px solid var(--wizard-step-border); background-color: var(--card-bg); }
     .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
 
-    .proposal-box { background: #FFF7ED; border: 1px solid #FFEDD5; border-radius: 8px; padding: 12px; margin-top: 15px; }
-    .proposal-title { font-size: 0.8rem; color: #C2410C; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
-    .proposal-row { display: flex; justify-content: space-between; align-items: center; background: #fff; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
+    .proposal-box { background: #451A03; border: 1px solid #78350F; border-radius: 8px; padding: 12px; margin-top: 15px; }
+    .proposal-title { font-size: 0.8rem; color: #F97316; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 0.5px; }
+    .proposal-row { display: flex; justify-content: space-between; align-items: center; background: #0F172A; border: 1px solid var(--border); padding: 8px; border-radius: 6px; margin-bottom: 8px; font-size: 0.85rem; }
     .proposal-row:last-child { margin-bottom: 0; }
     .prop-actions { display: flex; gap: 5px; }
     .btn-prop-accept { background: #166534; color: #fff; border: none; padding: 6px 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; cursor: pointer; transition: opacity 0.2s; }
@@ -185,26 +187,26 @@
     .btn-prop-decline:disabled { opacity: 0.6; cursor: not-allowed; }
     
     .prop-status-text { font-size: 0.75rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; text-transform: uppercase; }
-    .prop-status-text.waiting { background: #FEF3C7; color: #92400E; border: 1px solid #FCD34D; }
-    .prop-status-text.action-needed { background: #FCE7F3; color: #9D174D; border: 1px dashed #F472B6; }
-    .prop-status-text.approved { background: #D1FAE5; color: #065F46; border: 1px solid #A7F3D0; }
-    .prop-status-text.too-old { background: #FEE2E2; color: #991B1B; border: 1px solid #FCA5A5; animation: pulse 2s infinite; }
+    .prop-status-text.waiting { background: #78350F; color: #FDE68A; border: 1px solid #D97706; }
+    .prop-status-text.action-needed { background: #831843; color: #FBCFE8; border: 1px dashed #DB2777; }
+    .prop-status-text.approved { background: #064E3B; color: #A7F3D0; border: 1px solid #059669; }
+    .prop-status-text.too-old { background: #7F1D1D; color: #FECACA; border: 1px solid #DC2626; animation: pulse 2s infinite; }
 
     /* GAMES DASHBOARD SUMMARY GRID */
     .games-summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
     @media (min-width: 768px) { .games-summary-grid { grid-template-columns: repeat(4, 1fr); } }
-    .summary-card { background: #fff; border: 1px solid var(--border); border-bottom-width: 4px; padding: 12px 5px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+    .summary-card { background: var(--card-bg); border: 1px solid var(--border); border-bottom-width: 4px; padding: 12px 5px; border-radius: 8px; text-align: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
     .summary-num { display: block; font-size: 1.5rem; font-weight: 900; line-height: 1.1; margin-bottom: 4px; }
     .summary-lbl { font-size: 0.65rem; text-transform: uppercase; font-weight: 800; letter-spacing: 0.5px; }
 
     /* CALENDAR GRID LAYOUT */
     .cal-header-row { grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 0.7rem; font-weight: 800; color: var(--text-muted); margin-bottom: 6px; display: grid; }
     .cal-grid-mesh { grid-template-columns: repeat(7, 1fr); gap: 4px; display: grid; }
-    .cal-day-node { background: #F1F5F9; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; }
-    .cal-day-node.active-selected { border-color: var(--primary); background: #F5F8F1; font-weight: 800; }
-    .cal-day-node.in-range { background: #E2E8F0; opacity: 0.8; }
-    .cal-day-node.has-blackout { background: #FEE2E2; color: #991B1B; }
-    .cal-day-node.has-travel-only { background: #FFEDD5; color: #C2410C; }
+    .cal-day-node { background: #0F172A; border-radius: 6px; text-align: center; padding: 8px 0; font-size: 0.85rem; font-weight: 600; cursor: pointer; position: relative; border: 2px solid transparent; transition: all 0.15s; color: var(--text-main); }
+    .cal-day-node.active-selected { border-color: var(--accent); background: #064E3B; font-weight: 800; }
+    .cal-day-node.in-range { background: #334155; opacity: 0.8; }
+    .cal-day-node.has-blackout { background: #7F1D1D; color: #FECACA; }
+    .cal-day-node.has-travel-only { background: #78350F; color: #FED7AA; }
     .cal-day-node.empty-spacer { background: transparent; cursor: default; }
 
     /* CALENDAR COLOR LEGEND */
@@ -220,29 +222,29 @@
 
     .message-item { border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 10px; }
     .message-item:last-child { border-bottom: none; }
-    .message-title { font-weight: 800; font-size: 1rem; }
+    .message-title { font-weight: 800; font-size: 1rem; color: var(--text-main); }
     .message-date { font-size: 0.75rem; color: var(--accent); font-weight: 600; margin-top: 2px; }
-    .message-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; background: #F8FAFC; padding: 10px; border-radius: 6px; border-left: 3px solid var(--border); }
+    .message-body { font-size: 0.9rem; color: var(--text-muted); margin-top: 8px; background: #0F172A; padding: 10px; border-radius: 6px; border-left: 3px solid var(--border); }
 
-    .player-card, .team-card { border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 10px; background: #F8FAFC; }
+    .player-card, .team-card { border: 1px solid var(--border); padding: 12px; border-radius: 8px; margin-bottom: 10px; background: #0F172A; }
     .team-card { font-weight: 800; display: flex; justify-content: space-between; align-items: center; }
     .player-meta { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 8px; display: flex; justify-content: space-between; }
     
-    .status-badge { background: #E2E8F0; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #1A1A1A; text-transform: uppercase; font-size: 0.7rem; }
-    .status-badge.pending { background: #FEF08A; color: #854D0E; }
-    .status-badge.approved, .status-badge.active { background: #bbf7d0; color: #166534; }
-    .status-badge.withdrawn { background: #FEE2E2; color: #991B1B; }
+    .status-badge { background: #334155; padding: 2px 6px; border-radius: 4px; font-weight: 800; color: #F8FAFC; text-transform: uppercase; font-size: 0.7rem; }
+    .status-badge.pending { background: #78350F; color: #FEF08A; }
+    .status-badge.approved, .status-badge.active { background: #064E3B; color: #A7F3D0; }
+    .status-badge.withdrawn { background: #7F1D1D; color: #FECACA; }
 
-    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: var(--card-bg); border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.05); display: none; z-index: 200; }
+    .bottom-nav { position: fixed; bottom: 0; width: 100%; background: #0B0F19; border-top: 1px solid var(--border); box-shadow: 0 -2px 10px rgba(0,0,0,0.5); display: none; z-index: 200; }
     .nav-item { flex: 1; text-align: center; padding: 10px 0; font-size: 0.6rem; font-weight: 800; color: var(--text-muted); cursor: pointer; text-transform: uppercase; display: flex; flex-direction: column; align-items: center; justify-content: center; overflow: hidden; }
-    .nav-item.active { color: var(--primary); border-top: 3px solid var(--accent); background-color: #F5F8F1; }
+    .nav-item.active { color: var(--accent); border-top: 3px solid var(--accent); background-color: #0F172A; }
     
-    #nav-admin-link { display: none; color: #C2410C; }
-    #nav-admin-link.active { background-color: #FFF7ED; border-top-color: #C2410C; }
+    #nav-admin-link { display: none; color: #F97316; }
+    #nav-admin-link.active { background-color: #451A03; border-top-color: #F97316; }
 
-    .faq-category { font-weight: 800; font-size: 0.9rem; color: var(--primary); margin: 15px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 5px; text-transform: uppercase; }
-    details.faq-item { margin-bottom: 10px; background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.2s ease; }
-    details.faq-item summary { font-size: 0.85rem; font-weight: 700; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; }
+    .faq-category { font-weight: 800; font-size: 0.9rem; color: var(--accent); margin: 15px 0 10px; border-bottom: 2px solid var(--border); padding-bottom: 5px; text-transform: uppercase; }
+    details.faq-item { margin-bottom: 10px; background: #0F172A; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; transition: all 0.2s ease; }
+    details.faq-item summary { font-size: 0.85rem; font-weight: 700; padding: 12px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; color: var(--text-main); }
     details.faq-item summary::-webkit-details-marker { display: none; }
     details.faq-item summary::after { content: '+'; font-size: 1.2rem; color: var(--accent); transition: transform 0.2s; font-weight: 400; }
     details.faq-item[open] summary::after { content: '−'; transform: rotate(180deg); }
@@ -251,35 +253,35 @@
     .pill-sub-nav { display: flex; gap: 8px; margin-bottom: 15px; border-bottom: 2px solid var(--border); overflow-x: auto; padding-bottom: 0px; }
     .pill-sub-nav::-webkit-scrollbar { display: none; } 
     .sub-nav-btn { background: transparent; border: none; font-family: inherit; font-size: 0.8rem; font-weight: 800; color: var(--text-muted); cursor: pointer; padding: 10px 15px; white-space: nowrap; transition: all 0.2s; border-radius: 8px 8px 0 0; text-transform: uppercase; letter-spacing: 0.5px; }
-    .sub-nav-btn.active { color: var(--primary); background: var(--card-bg); border-bottom: 3px solid var(--accent); }
+    .sub-nav-btn.active { color: var(--accent); background: var(--card-bg); border-bottom: 3px solid var(--accent); }
     .sub-section { display: none; }
     .sub-section.active { display: block; }
 
-    .progress-container { background: #E2E8F0; border-radius: 8px; height: 12px; width: 100%; margin-top: 8px; overflow: hidden; }
+    .progress-container { background: #334155; border-radius: 8px; height: 12px; width: 100%; margin-top: 8px; overflow: hidden; }
     .progress-bar { height: 100%; border-radius: 8px; transition: width 1s ease-in-out; }
 
     /* UNIFIED MODAL FOR SCORING & RESCHEDULING */
-    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(2px); }
-    .modal-content { background: var(--bg); border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); position: relative; }
-    .modal-close { position: absolute; top: 15px; right: 15px; background: #E2E8F0; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 900; cursor: pointer; color: #1A1A1A; z-index: 10; display:flex; align-items:center; justify-content:center;}
-    .modal-close:hover { background: #cbd5e1; }
+    .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 1000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+    .modal-content { background: var(--bg); border-radius: 12px; width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); position: relative; border: 1px solid var(--border); }
+    .modal-close { position: absolute; top: 15px; right: 15px; background: #334155; border: none; border-radius: 50%; width: 30px; height: 30px; font-weight: 900; cursor: pointer; color: #F8FAFC; z-index: 10; display:flex; align-items:center; justify-content:center;}
+    .modal-close:hover { background: #475569; }
 
     /* GAMES CALENDAR CSS */
-    .game-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; background: #fff; border: 1px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.02); }
+    .game-cal-grid { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 4px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 12px; padding: 10px; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
     .game-cal-dow { font-size: 0.65rem; text-transform: uppercase; color: var(--text-muted); font-weight: 800; text-align: center; padding-bottom: 5px; }
-    .game-cal-day { background: #F8FAFC; border-radius: 6px; min-height: 85px; padding: 4px; display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; transition: all 0.2s; }
+    .game-cal-day { background: #0F172A; border-radius: 6px; min-height: 85px; padding: 4px; display: flex; flex-direction: column; gap: 4px; border: 2px solid transparent; transition: all 0.2s; }
     .game-cal-day.empty { background: transparent; border: none; }
-    .game-cal-day.today { border-color: var(--primary); background: #F0FDF4; }
-    .game-cal-day.drag-over { background: var(--wizard-step-bg); border: 2px dashed var(--accent); }
+    .game-cal-day.today { border-color: var(--accent); background: #064E3B; }
+    .game-cal-day.drag-over { background: #064E3B; border: 2px dashed var(--accent); }
     .game-cal-dnum { font-size: 0.75rem; font-weight: 800; color: var(--text-muted); text-align: right; padding-right: 2px; }
     
-    .game-ev { background: #fff; border: 1px solid var(--border); border-left: 3px solid var(--primary); border-radius: 4px; padding: 4px; cursor: pointer; font-size: 0.65rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 3px rgba(0,0,0,0.05); transition: transform 0.1s; }
-    .game-ev:hover { transform: translateY(-1px); border-color: var(--primary); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+    .game-ev { background: #1E293B; border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 4px; padding: 4px; cursor: pointer; font-size: 0.65rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; box-shadow: 0 1px 3px rgba(0,0,0,0.3); transition: transform 0.1s; color: var(--text-main); }
+    .game-ev:hover { transform: translateY(-1px); border-color: var(--accent); box-shadow: 0 2px 5px rgba(0,0,0,0.4); }
     .game-ev.dragging { opacity: 0.5; }
     
     .game-cal-controls { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-    .game-cal-controls button { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-weight: 800; cursor: pointer; color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.02); transition: background 0.2s; }
-    .game-cal-controls button:hover { background: #F1F5F9; }
+    .game-cal-controls button { background: var(--card-bg); border: 1px solid var(--border); border-radius: 6px; padding: 6px 12px; font-weight: 800; cursor: pointer; color: var(--text-main); box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: background 0.2s; }
+    .game-cal-controls button:hover { background: #334155; }
   </style>
 </head>
 <body>
@@ -317,14 +319,14 @@
     </div>
   </header>
 
-  <div id="portal-crash-terminal" style="display:none; margin:20px; padding:20px; border:2px solid red; background:#FFF5F5; border-radius:8px; font-family:monospace;">
-    <h4 style="margin:0 0 10px 0; color:red;">🛑 CLIENT-SIDE WORKSPACE EXCEPTION</h4>
-    <p id="crash-log-text" style="font-size:0.85rem; margin:0; white-space:pre-wrap; color:#333;"></p>
+  <div id="portal-crash-terminal" style="display:none; margin:20px; padding:20px; border:2px solid red; background:#7F1D1D; border-radius:8px; font-family:monospace; color:#FECACA;">
+    <h4 style="margin:0 0 10px 0; color:#FCA5A5;">🛑 CLIENT-SIDE WORKSPACE EXCEPTION</h4>
+    <p id="crash-log-text" style="font-size:0.85rem; margin:0; white-space:pre-wrap; color:#F8FAFC;"></p>
   </div>
 
   <div id="error-screen">
-    <h2 style="color: red;">Unauthorized Access</h2>
-    <p>This link is invalid. Please use the exact link provided to your Athletic Department.</p>
+    <h2 style="color: #FCA5A5;">Unauthorized Access</h2>
+    <p style="color: #CBD5E1;">This link is invalid. Please use the exact link provided to your Athletic Department.</p>
   </div>
 
   <div id="pin-screen">
@@ -390,8 +392,8 @@
                <button onclick="navigateGameCalendar(-1)">◀</button>
                <button onclick="navigateGameCalendar(1)">▶</button>
              </div>
-             <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--primary); font-size:1.1rem;">Month</span>
-             <button onclick="exportCalendarToICS()" style="background:var(--accent); color:var(--primary); border:none; display:flex; align-items:center; gap:5px;">📥 Export iCal</button>
+             <span id="game-cal-month-title" style="font-weight:900; text-transform:uppercase; color:var(--accent); font-size:1.1rem;">Month</span>
+             <button onclick="exportCalendarToICS()" style="background:var(--accent); color:#012300; border:none; display:flex; align-items:center; gap:5px;">📥 Export iCal</button>
           </div>
           <div id="game-cal-status-legend" style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 8px; font-size: 0.65rem; font-weight: 800; justify-content: center; color: var(--text-muted); text-transform: uppercase;">
             <span>✅ Completed</span>
@@ -407,7 +409,7 @@
 
       <!-- LIST VIEW (RESPONSIVE CARD GRID) -->
       <div id="section-games-matches" class="sub-section">
-        <div class="card" style="padding: 10px; margin-bottom: 15px; border-color: var(--accent); background-color: #F0FDF4;">
+        <div class="card" style="padding: 10px; margin-bottom: 15px; border-color: var(--accent); background-color: #064E3B;">
           <div style="display:flex; gap:10px; flex-wrap:wrap;">
             <select id="filter-sport" class="status-select" style="margin-bottom:0; flex:1; padding:8px;" onchange="applyGamesFilter()"><option value="">All Sports</option></select>
             <select id="filter-team" class="status-select" style="margin-bottom:0; flex:1; padding:8px;" onchange="applyGamesFilter()"><option value="">All Teams</option></select>
@@ -425,20 +427,20 @@
 
       <!-- TOURNAMENTS VIEW -->
       <div id="section-games-tournaments" class="sub-section">
-        <div class="card" style="border-color: var(--accent); background-color: #F0FDF4;">
+        <div class="card" style="border-color: var(--accent); background-color: #064E3B;">
           
-          <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
-             <span style="color: #991B1B; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
+          <div style="background-color: #7F1D1D; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+             <span style="color: #FECACA; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
              <span style="background-color: #DC2626; color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; font-weight: 900; letter-spacing: 1px;">COMING SOON</span>
           </div>
 
-          <div class="card-header" style="color: var(--primary);">🏆 Enterprise Event Management Suite</div>
-          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF;">
+          <div class="card-header" style="color: var(--accent);">🏆 Enterprise Event Management Suite</div>
+          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #0F172A;">
             <strong>AthleticOS features a dedicated, desktop-optimized Tournament Manager</strong> Specifically engineered to handle massive weekend jamborees, pool-play generators, and instant bracket seeding.
             <br><br>
             To prevent your mobile interface from becoming cluttered, you will use your same secure email and PIN to access the tournament portal on your computer.
           </div>
-          <button class="btn-submit" style="background-color: var(--primary); margin-top: 10px;" onclick="alert('The standalone FIBA-style Tournament Manager Web App is currently in deployment tracking. You will be notified when the portal is live.')">Launch Tournament Manager</button>
+          <button class="btn-submit" style="margin-top: 10px;" onclick="alert('The standalone FIBA-style Tournament Manager Web App is currently in deployment tracking. You will be notified when the portal is live.')">Launch Tournament Manager</button>
         </div>
       </div>
 
@@ -477,7 +479,7 @@
         
         <div class="card">
           <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
-            <span>Your Registered Teams <span id="registered-teams-tally" style="color:var(--primary); font-weight:800;">(0)</span></span>
+            <span>Your Registered Teams <span id="registered-teams-tally" style="color:var(--accent); font-weight:800;">(0)</span></span>
             <div style="display:flex; align-items:center; gap:6px;">
               <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">Sort By:</span>
               <select id="sort-registered-teams" class="status-select" style="margin-bottom:0; width:auto; padding:4px 8px; font-size:0.75rem;" onchange="renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData)">
@@ -491,23 +493,23 @@
       </div>
 
       <div id="section-teams-staff" class="sub-section">
-        <div class="card" id="admin-staff-management-card" style="border-color: var(--primary); background-color: #F8FAFC;">
-          <div class="card-header" style="color: var(--primary);">🛡️ Manage Coaching Staff (AD Only)</div>
-          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF; font-size:0.75rem;">
+        <div class="card" id="admin-staff-management-card" style="border-color: var(--accent); background-color: var(--card-bg);">
+          <div class="card-header" style="color: var(--accent);">🛡️ Manage Coaching Staff (AD Only)</div>
+          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #0F172A; font-size:0.75rem;">
             Provision a secure portal account for a new coach. An automated email with their secure PIN will be dispatched immediately.
           </div>
           
           <input type="text" class="text-input" id="new-staff-name" placeholder="Coach Full Name" style="margin-bottom:10px;">
           <input type="email" class="text-input" id="new-staff-email" placeholder="Coach Email Address" style="margin-bottom:10px;">
           
-          <label style="font-size:0.7rem; color:var(--primary); font-weight:800; display:block; margin-bottom:6px;">ASSIGN VISIBILITY PERMISSIONS (TEAMS)</label>
-          <div id="dynamic-staff-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#FFFFFF; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
+          <label style="font-size:0.7rem; color:var(--accent); font-weight:800; display:block; margin-bottom:6px;">ASSIGN VISIBILITY PERMISSIONS (TEAMS)</label>
+          <div id="dynamic-staff-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#0F172A; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;">
             </div>
 
-          <button class="btn-submit btn-small" id="btn-add-staff" onclick="submitNewStaff()" style="background-color: var(--primary);">+ Provision Secure Account</button>
+          <button class="btn-submit btn-small" id="btn-add-staff" onclick="submitNewStaff()">+ Provision Secure Account</button>
           
           <hr style="border: 1px solid var(--border); margin: 20px 0;">
-          <div class="card-header" style="color: var(--primary);">📋 Existing Staff Roster</div>
+          <div class="card-header" style="color: var(--accent);">📋 Existing Staff Roster</div>
           <div id="existing-staff-list" class="space-y-2"></div>
         </div>
       </div>
@@ -534,7 +536,7 @@
             </label>
           </div>
           <select class="status-select" id="manage-team" onchange="renderRosterList(this.value)"><option value="">Select Team to View Roster...</option></select>
-          <div id="dynamic-roster-compliance" class="explainer-box" style="display: none; border-left-color: #C2410C; background-color: #FFF7ED; color: #9A3412;"></div>
+          <div id="dynamic-roster-compliance" class="explainer-box" style="display: none; border-left-color: #F97316; background-color: #451A03; color: #FED7AA;"></div>
           <div id="roster-list"><p style="font-size: 0.85rem; text-align: center; color: var(--text-muted);">Select a team above to view players.</p></div>
         </div>
       </div>
@@ -556,7 +558,7 @@
           </select>
           
           <div style="display:flex; gap: 10px; margin-bottom: 10px;">
-            <a href="https://docs.google.com/spreadsheets/d/1fVTn9053v9e7Wne3avQ78apWY_K-B1vISig-4hhRT90/copy" target="_blank" class="btn-submit btn-small" style="background-color: var(--text-muted); flex: 1; text-align:center;">📄 Copy Google Sheet Template</a>
+            <a href="https://docs.google.com/spreadsheets/d/1fVTn9053v9e7Wne3avQ78apWY_K-B1vISig-4hhRT90/copy" target="_blank" class="btn-submit btn-small" style="background-color: var(--border); color: var(--text-main); flex: 1; text-align:center;">📄 Copy Google Sheet Template</a>
             
             <input type="file" id="csv-file-input" accept=".csv" style="display:none;" onchange="handleCSVUpload(event)">
             <button id="btn-upload-csv-trigger" class="btn-submit btn-small" style="flex: 1;" onclick="document.getElementById('csv-file-input').click()">⬆️ Upload CSV Roster</button>
@@ -589,7 +591,7 @@
 
       <div id="section-messages-comms" class="sub-section active">
         <div class="card">
-          <div class="card-header" style="color:var(--primary);">💬 Live Chat Rooms</div>
+          <div class="card-header" style="color:var(--accent);">💬 Live Chat Rooms</div>
           <p style="font-size:0.8rem; color:var(--text-muted); margin-top:0;">Access your dedicated Google Chat spaces below. (Links activate based on your registered teams).</p>
           <div id="chat-launchers-container"></div>
         </div>
@@ -597,21 +599,21 @@
       </div>
 
       <div id="section-messages-events" class="sub-section">
-        <div class="card" style="border-color: var(--accent); background-color: #F0FDF4;">
-          <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
-             <span style="color: #991B1B; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
+        <div class="card" style="border-color: var(--accent); background-color: #064E3B;">
+          <div style="background-color: #7F1D1D; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+             <span style="color: #FECACA; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
              <span style="background-color: #DC2626; color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; font-weight: 900; letter-spacing: 1px;">COMING SOON</span>
           </div>
 
-          <div class="card-header" style="color: var(--primary);">🎟️ Global Events & Invitationals Board</div>
-          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF;">
+          <div class="card-header" style="color: var(--accent);">🎟️ Global Events & Invitationals Board</div>
+          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #0F172A;">
             <strong>Centralized Tournament Logistics & Polling</strong>
             <br><br>
             Stop relying on blast emails to fill your weekend events. The upcoming Events Board will allow you to instantly gauge interest by creating a quick poll for other ADs to vote on potential dates or formats. 
             <br><br>
             Once confirmed, the board seamlessly integrates with the Tournament Manager, automatically pushing official tournament invites to targeted sports groups and populating committed teams directly into your bracket engine.
           </div>
-          <button class="btn-submit" style="background-color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Events Board</button>
+          <button class="btn-submit" style="background-color: var(--border); color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Events Board</button>
         </div>
       </div>
     </div>
@@ -624,9 +626,9 @@
       </div>
 
       <div id="section-admin-console" class="sub-section active">
-        <div class="card" style="border-color: #BFDBFE; background-color: #EFF6FF;">
-          <div class="card-header" style="color: #1E40AF;">🛡️ Sovereign League Governance Command Console</div>
-          <div class="explainer-box" style="border-left-color: #1E40AF; background-color: #FFFFFF;">
+        <div class="card" style="border-color: #1D4ED8; background-color: #1E3A8A;">
+          <div class="card-header" style="color: #93C5FD;">🛡️ Sovereign League Governance Command Console</div>
+          <div class="explainer-box" style="border-left-color: #3B82F6; background-color: #0F172A; color: #DBEAFE;">
             <strong>Security Protocol Level: Elevated Staff Session</strong>
             Welcome, <span id="admin-staff-name" style="font-weight:700;">System Administrator</span>. You have passed the database identity handshake loop. The engine parameters below execute directly against the active spreadsheet workspace.
           </div>
@@ -634,39 +636,39 @@
 
         <div class="action-grid">
           
-          <div class="card" id="admin-card-demographics" style="border-color: var(--accent); background-color: #F0FDF4; display:none; flex-direction:column;">
-            <div class="card-header" id="demo-card-header" style="color: var(--primary);">🏫 Program Demographics</div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Visual success metrics for your school's athletic portfolio.</p>
-            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-600">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Athletes:</span><b id="demo-total-athletes" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Boys / Girls:</span><b id="demo-gender-split" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Teams:</span><b id="demo-total-teams" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Sports Competing:</span><b id="demo-total-sports" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Age Groups:</span><b id="demo-age-groups" style="font-family:monospace; color:var(--primary); text-align:right; max-width:60%;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Games Played:</span><b id="demo-games-played" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
-              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Overall Record (W-L-D):</span><b id="demo-overall-record" style="font-family:monospace; color:var(--primary); font-size:0.9rem;">-</b></div>
+          <div class="card" id="admin-card-demographics" style="border-color: var(--accent); background-color: #064E3B; display:none; flex-direction:column;">
+            <div class="card-header" id="demo-card-header" style="color: var(--accent);">🏫 Program Demographics</div>
+            <p style="font-size: 0.8rem; color: #A7F3D0; margin-top: 0; margin-bottom:10px;">Visual success metrics for your school's athletic portfolio.</p>
+            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-300">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid #047857; padding-bottom:4px;"><span>Total Athletes:</span><b id="demo-total-athletes" style="font-family:monospace; color:#A7F3D0; font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid #047857; padding:4px 0;"><span>Boys / Girls:</span><b id="demo-gender-split" style="font-family:monospace; color:#A7F3D0; font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid #047857; padding:4px 0;"><span>Active Teams:</span><b id="demo-total-teams" style="font-family:monospace; color:#A7F3D0; font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid #047857; padding:4px 0;"><span>Sports Competing:</span><b id="demo-total-sports" style="font-family:monospace; color:#A7F3D0; font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid #047857; padding:4px 0;"><span>Age Groups:</span><b id="demo-age-groups" style="font-family:monospace; color:#A7F3D0; text-align:right; max-width:60%;">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid #047857; padding:4px 0;"><span>Games Played:</span><b id="demo-games-played" style="font-family:monospace; color:#A7F3D0; font-size:0.9rem;">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Overall Record (W-L-D):</span><b id="demo-overall-record" style="font-family:monospace; color:#A7F3D0; font-size:0.9rem;">-</b></div>
             </div>
           </div>
 
           <div class="card" id="admin-card-metrics" style="display: flex; flex-direction: column;">
             <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
               <span>📊 Ledger Integrity Metrics</span>
-              <span style="font-size:0.6rem; background:#DBEAFE; color:#1E40AF; padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid #BFDBFE;">🌐 LEAGUE-WIDE SCOPE</span>
+              <span style="font-size:0.6rem; background:#1E3A8A; color:#93C5FD; padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid #3B82F6;">🌐 LEAGUE-WIDE SCOPE</span>
             </div>
             <div class="explainer-box info" style="margin-bottom:10px; font-size:0.7rem; padding:8px;">
               <strong>Note:</strong> These metrics reflect the total active rows sitting across the entire league ledger.
             </div>
-            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-600">
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Teams:</span><b id="meta-stat-teams" style="font-family:monospace;">-</b></div>
-              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Total Divisions:</span><b id="meta-stat-divisions" style="font-family:monospace;">-</b></div>
+            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-300">
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace; color:var(--text-main);">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace; color:var(--text-main);">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace; color:var(--text-main);">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>School Affiliates:</span><b id="meta-stat-schools" style="font-family:monospace; color:var(--text-main);">-</b></div>
+              <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Teams:</span><b id="meta-stat-teams" style="font-family:monospace; color:var(--text-main);">-</b></div>
+              <div style="display:flex; justify-content:space-between; padding-top:4px;"><span>Total Divisions:</span><b id="meta-stat-divisions" style="font-family:monospace; color:var(--text-main);">-</b></div>
             </div>
           </div>
 
-          <div class="card" id="admin-card-scheduler" style="border-color: var(--primary); display: flex; flex-direction: column;">
+          <div class="card" id="admin-card-scheduler" style="border-color: var(--border); display: flex; flex-direction: column;">
             <div class="card-header">📅 Seasonal Round-Robin Engine</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0;">Triggers the dynamic matrix pairing loop to populate empty division slots with home/away fixtures.</p>
             <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; margin-bottom:4px; display:block;">TARGET BRACKET LEAGUE</label>
@@ -676,8 +678,8 @@
             </div>
             
             <!-- SCHEDULING WIZARD MODAL -->
-            <div id="schedule-wizard-modal" style="display:none; background:#fff; border:2px solid var(--accent); border-radius:8px; padding:15px; margin-top:15px; box-shadow:0 4px 10px rgba(0,0,0,0.1);">
-              <h4 style="margin-top:0; margin-bottom:10px; color:var(--primary); text-transform:uppercase;">⚙️ Engine Parameters</h4>
+            <div id="schedule-wizard-modal" style="display:none; background:#0F172A; border:2px solid var(--accent); border-radius:8px; padding:15px; margin-top:15px; box-shadow:0 4px 10px rgba(0,0,0,0.5);">
+              <h4 style="margin-top:0; margin-bottom:10px; color:var(--accent); text-transform:uppercase;">⚙️ Engine Parameters</h4>
               
               <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">1. MATRIX SCOPE</label>
               <select id="sched-scope" class="status-select" style="margin-bottom:12px;">
@@ -698,7 +700,7 @@
 
               <div style="display:flex; gap:10px;">
                 <button class="btn-submit btn-small" id="btn-confirm-schedule" onclick="confirmScheduleGeneration()">Execute</button>
-                <button class="btn-submit btn-small" style="background-color:var(--text-muted);" onclick="document.getElementById('schedule-wizard-modal').style.display='none'">Cancel</button>
+                <button class="btn-submit btn-small" style="background-color:var(--border); color: var(--text-main);" onclick="document.getElementById('schedule-wizard-modal').style.display='none'">Cancel</button>
               </div>
             </div>
           </div>
@@ -707,8 +709,8 @@
             <div class="card-header">🛠️ Engineering Toolbelt</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Execute administrative transactions and master batch tasks directly.</p>
             <div style="margin-top: auto; display:flex; flex-direction:column; gap:8px;">
-              <button class="btn-submit btn-small" id="btn-audit-scores" style="background-color: var(--primary);">Run Conflict Watchdog</button>
-              <button class="btn-submit btn-small" id="btn-sheet-link" style="background-color:#64748B;" onclick="window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID, '_blank')">📂 Open Google Sheet Ledger</button>
+              <button class="btn-submit btn-small" id="btn-audit-scores">Run Conflict Watchdog</button>
+              <button class="btn-submit btn-small" id="btn-sheet-link" style="background-color:#334155; color: var(--text-main);" onclick="window.open('https://docs.google.com/spreadsheets/d/' + SHEET_ID, '_blank')">📂 Open Google Sheet Ledger</button>
             </div>
           </div>
         </div>
@@ -724,7 +726,7 @@
         </div>
 
         <div class="card">
-          <div class="card-header" style="color:var(--primary);">Core Metric Progress</div>
+          <div class="card-header" style="color:var(--accent);">Core Metric Progress</div>
           <p style="font-size:0.75rem; color:var(--text-muted); margin-top:0; margin-bottom:15px;">Live completion rates powering the Turnover Algorithm.</p>
           
           <div style="margin-bottom:15px;">
@@ -762,10 +764,10 @@
         </div>
 
         <!-- EXTERNAL KPI MATRIX LAUNCHER -->
-        <div class="card" style="border-color: var(--primary); background-color: var(--primary); color: white; text-align: center;">
+        <div class="card" style="border-color: var(--accent); background-color: #064E3B; color: white; text-align: center;">
           <h3 style="margin-top: 0; color: var(--accent); text-transform: uppercase; font-weight: 900; letter-spacing: 1px;">Enterprise KPI Matrix</h3>
-          <p style="font-size: 0.8rem; color: #cbd5e1; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
-          <a href="https://bisal.athleticos.net/portal/tier-matrix.html" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
+          <p style="font-size: 0.8rem; color: #A7F3D0; margin-bottom: 15px;">Access the comprehensive, standalone case study tracker.</p>
+          <a href="https://bisal.athleticos.net/portal/tier-matrix.html" target="_blank" class="btn-submit" style="text-decoration: none; max-width: 250px; margin: 0 auto;">Launch Master KPI Dashboard</a>
         </div>
 
       </div>
@@ -782,21 +784,21 @@
       
       <!-- SECTION 1: MATCHMAKING -->
       <div id="section-availability-matchmaking" class="sub-section active">
-        <div class="card" style="border-color: var(--accent); background-color: #F0FDF4;">
-          <div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
-             <span style="color: #991B1B; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
+        <div class="card" style="border-color: var(--accent); background-color: #064E3B;">
+          <div style="background-color: #7F1D1D; border-left: 4px solid #DC2626; padding: 10px; border-radius: 0 6px 6px 0; margin-bottom: 15px; display: flex; align-items: center; justify-content: space-between;">
+             <span style="color: #FECACA; font-weight: 800; font-size: 0.85rem; text-transform: uppercase;">🚀 Feature In Development</span>
              <span style="background-color: #DC2626; color: #fff; font-size: 0.65rem; padding: 3px 8px; border-radius: 12px; font-weight: 900; letter-spacing: 1px;">COMING SOON</span>
           </div>
 
-          <div class="card-header" style="color: var(--primary);">🤝 Smart Friendly Matchmaking Exchange</div>
-          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #FFFFFF;">
+          <div class="card-header" style="color: var(--accent);">🤝 Smart Friendly Matchmaking Exchange</div>
+          <div class="explainer-box" style="border-left-color: var(--accent); background-color: #0F172A;">
             <strong>Automated Global Scheduling</strong>
             <br><br>
             Tired of sending dozens of blind emails to find friendly games? AthleticOS is finalizing an inverted query engine that will read the white space across every school's calendar. 
             <br><br>
             Soon, you'll be able to click a button to instantly pair your available squads with opponents who have open facilities—turning scheduling into a 1-click process.
           </div>
-          <button class="btn-submit" style="background-color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Matchmaker Exchange</button>
+          <button class="btn-submit" style="background-color: var(--border); color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Matchmaker Exchange</button>
         </div>
       </div>
 
@@ -809,17 +811,17 @@
         <div class="card">
           <div class="card-header">📅 Interactive Availability Calendar</div>
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-            <button onclick="navigateCalendarMonth(-1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">◀</button>
+            <button onclick="navigateCalendarMonth(-1)" style="background:#334155; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer; color:#F8FAFC;">◀</button>
             <span id="cal-month-title" style="font-weight:800; font-size:0.95rem; text-transform:uppercase;">June 2026</span>
-            <button onclick="navigateCalendarMonth(1)" style="background:#E2E8F0; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer;">▶</button>
+            <button onclick="navigateCalendarMonth(1)" style="background:#334155; border:none; padding:4px 10px; border-radius:4px; font-weight:800; cursor:pointer; color:#F8FAFC;">▶</button>
           </div>
           <div class="cal-header-row">
             <span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
           </div>
           <div class="cal-grid-mesh" id="calendar-days-mesh"></div>
           <div style="margin-top:12px; display:flex; gap:12px; font-size:0.65rem; font-weight:800; text-transform:uppercase; color:var(--text-muted);">
-            <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FEE2E2; border-radius:3px;"></span>Blackout / Holiday</div>
-            <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#FFEDD5; border-radius:3px;"></span>Travel Only</div>
+            <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#7F1D1D; border-radius:3px;"></span>Blackout / Holiday</div>
+            <div style="display:flex; align-items:center; gap:4px;"><span style="display:inline-block; height:10px; width:10px; background:#78350F; border-radius:3px;"></span>Travel Only</div>
           </div>
         </div>
 
@@ -835,7 +837,7 @@
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET VENUE</label>
             <select class="status-select" id="ex-venue-id" style="margin-bottom:0;"></select>
           </div>
-          <div id="ex-division-container" style="display:none; margin-bottom:10px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
+          <div id="ex-division-container" style="display:none; margin-bottom:10px; background:#0F172A; padding:10px; border:1px solid var(--border); border-radius:6px;">
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">TARGET TEAM / DIVISION</label>
             <select class="status-select" id="ex-div-id" style="margin-bottom:0;"></select>
           </div>
@@ -860,10 +862,10 @@
           <button class="btn-submit btn-small" id="btn-stage-exemption" onclick="stageAvailabilityException()">➕ Add to Batch Queue</button>
         </div>
 
-        <div class="card" style="border-color: var(--accent); background-color: #F0FDF4;">
-          <div class="card-header" style="color: var(--primary);">📋 Step 2: Staged Constraints Queue</div>
+        <div class="card" style="border-color: var(--accent); background-color: #064E3B;">
+          <div class="card-header" style="color: var(--accent);">📋 Step 2: Staged Constraints Queue</div>
           <div id="staged-exceptions-list" style="font-size:0.85rem;" class="space-y-2">
-            <p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Queue is empty.</p>
+            <p style="font-size:0.8rem; color:#A7F3D0; text-align:center;">Queue is empty.</p>
           </div>
           <button class="btn-submit" id="btn-sync-staged" style="display:none; margin-top:15px;" onclick="submitBulkAvailability()">Sync Batch to Database</button>
         </div>
@@ -876,8 +878,8 @@
 
       <!-- SECTION 3: FACILITY MAPPING -->
       <div id="section-availability-mapping" class="sub-section">
-        <div class="card" style="border-color: #E2E8F0; background-color: #F8FAFC;">
-          <div class="card-header" style="color: var(--primary);">📡 Air Traffic Control Optimization Warning</div>
+        <div class="card" style="border-color: var(--border); background-color: #0F172A;">
+          <div class="card-header" style="color: var(--accent);">📡 Air Traffic Control Optimization Warning</div>
           <div class="explainer-box info">
             <strong>Why precision mapping matters:</strong>
             Our league engine uses automated geometric allocation loops. If your facility houses multiple overlapping lines (such as a Gymnasium that supports Basketball layouts OR simultaneous Badminton nets), the database must protect those spaces from clashing. By walking through our step-by-step gateway below, the system ensures your school will never be double-booked for home matches.<br><br>
@@ -900,7 +902,7 @@
             <option value="complex">Multi-Court Complex Shell (e.g. Building D - Gymnasium)</option>
           </select>
 
-          <div id="complex-action-toggle" style="display:none; margin-bottom:12px; background:#F8FAFC; padding:10px; border:1px solid var(--border); border-radius:6px;">
+          <div id="complex-action-toggle" style="display:none; margin-bottom:12px; background:#0F172A; padding:10px; border:1px solid var(--border); border-radius:6px;">
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">COMPLEX ACTION</label>
             <select class="status-select" id="complex-action-type" onchange="toggleComplexInput(this.value, 'complex')" style="margin-bottom:0;">
               <option value="new">Register a Brand New Complex</option>
@@ -912,8 +914,8 @@
           <input type="text" class="text-input" id="new-venue-name" placeholder="e.g. Building D - Gymnasium, Main Turf Field">
           <select class="status-select" id="existing-parent-select" style="display:none; margin-bottom:10px;"></select>
 
-          <div id="complex-split-wizard-gate" style="display:none; margin-top:10px; background-color:#F0FDF4; border:1px solid #BBF7D0; padding:12px; border-radius:8px; margin-bottom:12px;">
-            <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">MAX SIMULTANEOUS LOGISTICAL CAPACITY</label>
+          <div id="complex-split-wizard-gate" style="display:none; margin-top:10px; background-color:#064E3B; border:1px solid #059669; padding:12px; border-radius:8px; margin-bottom:12px;">
+            <label style="font-size:0.7rem; color:#A7F3D0; font-weight:800; display:block; margin-bottom:4px;">MAX SIMULTANEOUS LOGISTICAL CAPACITY</label>
             <select class="status-select" id="complex-layout-style" onchange="calculateComplexUnitCapacity(this.value)" style="margin-bottom:0;">
               <option value="1">1 Main Premier Court (Takes up the whole building capacity)</option>
               <option value="2">2 Side-by-Side Courts (Allows 2 games to match concurrently)</option>
@@ -922,19 +924,19 @@
             </select>
             <input type="hidden" id="new-venue-unit-count" value="1">
 
-            <div id="main-court-toggle-container" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #BBF7D0;">
+            <div id="main-court-toggle-container" style="margin-top: 15px; padding-top: 15px; border-top: 1px dashed #059669;">
               <label style="display:flex; align-items:flex-start; gap:10px; cursor:pointer;">
                 <input type="checkbox" id="new-venue-has-main" style="margin-top:2px; transform:scale(1.2);" checked>
                 <div>
-                  <span style="font-size:0.75rem; color:#166534; font-weight:800; display:block;">GENERATE 100% MAIN COURT OVERLAY</span>
-                  <span style="font-size:0.65rem; color:#166534; display:block; margin-top:4px; line-height:1.4;">Leave checked if this building is used as a single large court for Varsity games. Uncheck if this facility is ONLY used as separate partitioned courts (like a massive fieldhouse).</span>
+                  <span style="font-size:0.75rem; color:#A7F3D0; font-weight:800; display:block;">GENERATE 100% MAIN COURT OVERLAY</span>
+                  <span style="font-size:0.65rem; color:#A7F3D0; display:block; margin-top:4px; line-height:1.4;">Leave checked if this building is used as a single large court for Varsity games. Uncheck if this facility is ONLY used as separate partitioned courts (like a massive fieldhouse).</span>
                 </div>
               </label>
             </div>
           </div>
 
           <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">COMPATIBLE TOURNEY CARRIER CAPACITIES</label>
-          <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;"></div>
+          <div id="new-venue-sports-checkboxes" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; background:#0F172A; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:12px;"></div>
 
           <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:8px;">
             <div>
@@ -972,8 +974,8 @@
           
           <div id="venue-hours-form" style="display:none;" class="space-y-2">
             
-            <div style="margin-bottom:12px; padding:10px; background:#F0FDF4; border:1px solid #BBF7D0; border-radius:6px;">
-              <label style="font-size:0.7rem; color:#166534; font-weight:800; display:block; margin-bottom:4px;">FACILITY STATUS (SOFT DELETE)</label>
+            <div style="margin-bottom:12px; padding:10px; background:#064E3B; border:1px solid #059669; border-radius:6px;">
+              <label style="font-size:0.7rem; color:#A7F3D0; font-weight:800; display:block; margin-bottom:4px;">FACILITY STATUS (SOFT DELETE)</label>
               <div style="display:flex; gap:10px;">
                 <select class="status-select" id="hours-v-status" style="margin-bottom:0; flex:1;">
                   <option value="Active">🟢 Active</option>
@@ -1023,11 +1025,11 @@
       <div id="section-help-dev" class="sub-section active">
         <div class="action-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
           <div class="card" style="border-color: var(--accent);">
-            <div class="card-header" style="color: var(--primary);">🚀 AthleticOS Command Hub</div>
+            <div class="card-header" style="color: var(--accent);">🚀 AthleticOS Command Hub</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom: 15px;">Your essential tools for platform setup and continued league success.</p>
             <div style="margin-top: auto;">
-              <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="background-color: var(--accent); color: var(--primary); margin-bottom: 10px;">Step 1: Map Your Facilities</a>
-              <a href="https://portal.athleticos.net/login" target="_blank" class="btn-submit" style="background-color: var(--primary);">Access Masterclass & Community</a>
+              <a href="https://onboarding.athleticos.net/" target="_blank" class="btn-submit" style="margin-bottom: 10px;">Step 1: Map Your Facilities</a>
+              <a href="https://portal.athleticos.net/login" target="_blank" class="btn-submit" style="background-color: var(--border); color: var(--text-main);">Access Masterclass & Community</a>
             </div>
           </div>
 
@@ -1035,8 +1037,8 @@
             <div class="card-header">Video Guides</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Watch over-the-shoulder tutorials on navigating the dashboard and logging scores.</p>
             <div style="margin-top: auto;">
-              <a href="https://www.youtube.com/@AthleticOS_HQ" target="_blank" class="btn-submit" style="background-color: var(--wizard-step-text); margin-bottom: 10px;">📹 Watch Dashboard Tutorial</a>
-              <a href="https://portal.athleticos.net/login" target="_blank" class="btn-submit" style="background-color: var(--wizard-step-text);">🎓 Explore Masterclass</a>
+              <a href="https://www.youtube.com/@AthleticOS_HQ" target="_blank" class="btn-submit" style="margin-bottom: 10px;">📹 Watch Dashboard Tutorial</a>
+              <a href="https://portal.athleticos.net/login" target="_blank" class="btn-submit" style="background-color: var(--border); color: var(--text-main);">🎓 Explore Masterclass</a>
             </div>
           </div>
         </div>
@@ -1045,12 +1047,12 @@
       <!-- RESOURCES SECTION -->
       <div id="section-help-resources" class="sub-section">
         <div class="action-grid" style="grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));">
-          <div class="card" style="border-color: var(--primary); background-color: #F8FAFC;">
-            <div class="card-header" style="color: var(--primary);">League Resources</div>
+          <div class="card" style="border-color: var(--border); background-color: #0F172A;">
+            <div class="card-header" style="color: var(--accent);">League Resources</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Access the live official rules, regulations, and age cutoff dates below.</p>
             <div style="margin-top: auto;">
-              <a href="https://bisal.athleticos.net" target="_blank" class="btn-submit" style="background-color: var(--primary); margin-bottom: 10px;">🌍 View Public Fan Portal</a>
-              <a href="https://AthleticOS.github.io/league-hq-portal/handbook.html" target="_blank" class="btn-submit" style="background-color: var(--primary);">📖 Official League Handbook</a>
+              <a href="https://bisal.athleticos.net" target="_blank" class="btn-submit" style="margin-bottom: 10px;">🌍 View Public Fan Portal</a>
+              <a href="https://AthleticOS.github.io/league-hq-portal/handbook.html" target="_blank" class="btn-submit" style="background-color: var(--border); color: var(--text-main);">📖 Official League Handbook</a>
             </div>
           </div>
 
@@ -1058,8 +1060,8 @@
             <div class="card-header">Contact League Admin</div>
             <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Reach out for official roster changes or match disputes.</p>
             <div style="margin-top: auto;">
-              <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: #1A1A1A;">✉️ Email Admin</a>
-              <a href="https://wa.me/1234567890" target="_blank" class="btn-submit" style="background-color: var(--text-main); color: white;">💬 WhatsApp Admin</a>
+              <a href="mailto:admin@yourleague.com" class="btn-submit" style="margin-bottom: 10px; background-color: var(--border); color: var(--text-main);">✉️ Email Admin</a>
+              <a href="https://wa.me/1234567890" target="_blank" class="btn-submit">💬 WhatsApp Admin</a>
             </div>
           </div>
         </div>
@@ -1071,7 +1073,7 @@
           
           <!-- 1. Games & Scoring -->
           <div class="card">
-            <div class="card-header" style="color:var(--primary);">📅 Games & Scoring</div>
+            <div class="card-header" style="color:var(--accent);">📅 Games & Scoring</div>
             <details class="faq-item">
               <summary>How do I report a final score?</summary>
               <p>Click any match directly on the <strong>Calendar View</strong> or List View to instantly pull up the interactive scorecard, enter the results, and tap 'Update Match'.</p>
@@ -1088,7 +1090,7 @@
 
           <!-- 2. Teams & Rosters -->
           <div class="card">
-            <div class="card-header" style="color:var(--primary);">👥 Teams & Rosters</div>
+            <div class="card-header" style="color:var(--accent);">👥 Teams & Rosters</div>
             <details class="faq-item">
               <summary>How do I remove a team from the league?</summary>
               <p>In the Teams tab, click the red <strong>Withdraw</strong> button next to the squad. This performs a soft-delete, removing them from matchmaking while preserving historical roster data.</p>
@@ -1105,7 +1107,7 @@
 
           <!-- 3. Availability & Facilities -->
           <div class="card">
-            <div class="card-header" style="color:var(--primary);">🏟️ Availability & Facilities</div>
+            <div class="card-header" style="color:var(--accent);">🏟️ Availability & Facilities</div>
             <details class="faq-item">
               <summary>What is "Travel Only" vs "Not Available"?</summary>
               <p>"Not Available" means your team cannot play at all (e.g., a school holiday). "Travel Only" means your physical facility is booked, but your team is still available to play an away game.</p>
@@ -1122,7 +1124,7 @@
 
           <!-- 4. Staff & Account Management -->
           <div class="card">
-            <div class="card-header" style="color:var(--primary);">🛡️ Staff & Account Management</div>
+            <div class="card-header" style="color:var(--accent);">🛡️ Staff & Account Management</div>
             <details class="faq-item">
               <summary>How do I give my assistant coach access?</summary>
               <p>ADs can use the 'Manage Staff' pill in the Teams tab to provision an account. An automated email containing a secure PIN will be dispatched to them instantly.</p>
@@ -1139,7 +1141,7 @@
 
           <!-- 5. Messages & Comms -->
           <div class="card">
-            <div class="card-header" style="color:var(--primary);">💬 Messages & Comms</div>
+            <div class="card-header" style="color:var(--accent);">💬 Messages & Comms</div>
             <details class="faq-item">
               <summary>How do I join my specific league chats?</summary>
               <p>The Comms Hub automatically generates direct links to Google Chat spaces based on your school's geographic region and registered sports.</p>
@@ -1156,7 +1158,7 @@
 
           <!-- 6. League Health & Compliance -->
           <div class="card">
-            <div class="card-header" style="color:var(--primary);">📈 League Compliance</div>
+            <div class="card-header" style="color:var(--accent);">📈 League Compliance</div>
             <details class="faq-item">
               <summary>Why is a 100% compliance rate important?</summary>
               <p>Our automation engines rely on complete data. Achieving 100% Facility Mapping and Roster Utilization ensures the matchmaking and scheduling matrices run flawlessly without manual intervention.</p>
@@ -1176,10 +1178,10 @@
 
       <!-- UNIVERSAL FOOTER: SYSTEM ARCHITECTURE (Always Visible) -->
       <div style="margin-top: 15px; display: flex; justify-content: center;">
-        <div class="card" style="background-color: var(--primary); color: #fff; border-color: var(--primary); display: flex; flex-direction: column; width: 100%; max-width: 400px;">
+        <div class="card" style="background-color: #0B0F19; color: #fff; border-color: var(--border); display: flex; flex-direction: column; width: 100%; max-width: 400px;">
           <div class="card-header" style="color: var(--accent);">System Architecture</div>
           <div style="display: flex; align-items: center; gap: 15px; margin-top: 10px; margin-bottom: 15px;">
-            <div style="background: #fff; border-radius: 8px; padding: 5px; height: 55px; width: 55px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+            <div style="background: #1E293B; border-radius: 8px; padding: 5px; height: 55px; width: 55px; flex-shrink: 0; display: flex; justify-content: center; align-items: center; box-shadow: 0 2px 4px rgba(0,0,0,0.5); border: 1px solid var(--border);">
               <img src="https://raw.githubusercontent.com/AthleticOS/league-hq-portal/main/Logo%20Icon.png" style="max-height: 100%; max-width: 100%; object-fit: contain;">
             </div>
             <div>
@@ -1501,10 +1503,10 @@
 
             if (assignedTeams.length === 0) {
                 document.getElementById('app-container').innerHTML = `
-                  <div class="card" style="border-color: #DC2626; background-color: #FEF2F2; text-align: center; padding: 40px 20px;">
-                    <h3 style="color: #991B1B; margin-top: 0;">⚠️ No Teams Assigned</h3>
-                    <p style="color: #7F1D1D; font-size: 0.9rem;">Your secure account is active, but you have not been granted visibility to any specific teams yet.</p>
-                    <p style="color: #7F1D1D; font-size: 0.9rem;">Please contact your Athletic Director to update your coaching assignments.</p>
+                  <div class="card" style="border-color: #DC2626; background-color: #7F1D1D; text-align: center; padding: 40px 20px;">
+                    <h3 style="color: #FECACA; margin-top: 0;">⚠️ No Teams Assigned</h3>
+                    <p style="color: #FCA5A5; font-size: 0.9rem;">Your secure account is active, but you have not been granted visibility to any specific teams yet.</p>
+                    <p style="color: #FCA5A5; font-size: 0.9rem;">Please contact your Athletic Director to update your coaching assignments.</p>
                   </div>
                 `;
                 hideGlobalLoader();
@@ -1547,7 +1549,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.3</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.4</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1702,31 +1704,31 @@
                     const scoreText = document.getElementById('kpi-bar-score-text');
                     scoreBar.style.width = `${d.scoreReporting.percentage}%`;
                     scoreText.innerText = `${d.scoreReporting.percentage}%`;
-                    scoreBar.style.backgroundColor = d.scoreReporting.percentage >= 80 ? '#166534' : '#ea580c';
+                    scoreBar.style.backgroundColor = d.scoreReporting.percentage >= 80 ? '#059669' : '#D97706';
                     
                     // Animate Facility Progress Bar
                     const facBar = document.getElementById('kpi-bar-facility');
                     const facText = document.getElementById('kpi-bar-facility-text');
                     facBar.style.width = `${d.facilityMapping.percentage}%`;
                     facText.innerText = `${d.facilityMapping.percentage}%`;
-                    facBar.style.backgroundColor = d.facilityMapping.percentage === 100 ? '#166534' : '#ca8a04';
+                    facBar.style.backgroundColor = d.facilityMapping.percentage === 100 ? '#059669' : '#D97706';
                     
                     // Animate Roster Progress Bar
                     const rosBar = document.getElementById('kpi-bar-roster');
                     const rosText = document.getElementById('kpi-bar-roster-text');
                     rosBar.style.width = `${d.rosterUtilization.percentage}%`;
                     rosText.innerText = `${d.rosterUtilization.percentage}%`;
-                    rosBar.style.backgroundColor = d.rosterUtilization.percentage === 100 ? '#166534' : '#991B1B';
+                    rosBar.style.backgroundColor = d.rosterUtilization.percentage === 100 ? '#059669' : '#DC2626';
 
                     let tierName = "Tier 3: Standard";
-                    let healthColor = "#ea580c";
+                    let healthColor = "#D97706";
                     let completedTasks = "";
                     let missingTasks = "";
                     let nextAction = "";
 
                     if (d.facilityMapping.percentage === 100 && d.rosterUtilization.percentage === 100 && d.scoreReporting.percentage >= 80) {
                         tierName = "Tier 1: Enterprise Auto-Pilot";
-                        healthColor = "#166534";
+                        healthColor = "#059669";
                         completedTasks = "<li>100% Facility Mapping</li><li>100% Roster Utilization</li><li>>80% Score Reporting</li>";
                         missingTasks = "<li>None! You are fully compliant.</li>";
                         nextAction = "Keep up the great work! Your league is running at peak automation efficiency.";
@@ -1750,31 +1752,31 @@
                     const tierContainer = document.getElementById('kpi-tier-container');
                     if (tierContainer) {
                         tierContainer.innerHTML = `
-                          <div style="background:#FFFFFF; border:2px solid ${healthColor}; padding:20px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.05);">
+                          <div style="background:var(--card-bg); border:2px solid ${healthColor}; padding:20px; border-radius:12px; margin-bottom:15px; box-shadow:0 4px 6px rgba(0,0,0,0.3);">
                              <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:15px; border-bottom:1px solid var(--border); padding-bottom:10px;">
                                 <div>
                                   <span style="display:block; font-size:0.7rem; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:1px;">League Compliance Tier</span>
-                                  <span style="display:block; font-size:1.2rem; font-weight:900; color:var(--primary); line-height:1.2;">${tierName}</span>
+                                  <span style="display:block; font-size:1.2rem; font-weight:900; color:var(--text-main); line-height:1.2;">${tierName}</span>
                                 </div>
-                                <span style="background-color:${healthColor}15; color:${healthColor}; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; border:1px solid ${healthColor}40;">${d.scoreReporting.percentage >= 80 ? 'Active' : 'Warning'}</span>
+                                <span style="background-color:${healthColor}25; color:${healthColor}; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; border:1px solid ${healthColor}40;">${d.scoreReporting.percentage >= 80 ? 'Active' : 'Warning'}</span>
                              </div>
 
                              <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
-                               <div style="background:#F0FDF4; border:1px solid #BBF7D0; padding:10px; border-radius:6px;">
-                                 <span style="display:block; font-size:0.7rem; font-weight:900; color:#166534; text-transform:uppercase; margin-bottom:6px;">✅ Met Milestones</span>
-                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#166534; line-height:1.4;">
+                               <div style="background:#064E3B; border:1px solid #059669; padding:10px; border-radius:6px;">
+                                 <span style="display:block; font-size:0.7rem; font-weight:900; color:#A7F3D0; text-transform:uppercase; margin-bottom:6px;">✅ Met Milestones</span>
+                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#A7F3D0; line-height:1.4;">
                                     ${completedTasks}
                                  </ul>
                                </div>
-                               <div style="background:#FEF2F2; border:1px solid #FECACA; padding:10px; border-radius:6px;">
-                                 <span style="display:block; font-size:0.7rem; font-weight:900; color:#991B1B; text-transform:uppercase; margin-bottom:6px;">⚠️ Action Required</span>
-                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#991B1B; line-height:1.4;">
+                               <div style="background:#7F1D1D; border:1px solid #DC2626; padding:10px; border-radius:6px;">
+                                 <span style="display:block; font-size:0.7rem; font-weight:900; color:#FECACA; text-transform:uppercase; margin-bottom:6px;">⚠️ Action Required</span>
+                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#FECACA; line-height:1.4;">
                                     ${missingTasks}
                                  </ul>
                                </div>
                              </div>
 
-                             <div style="background:#F8FAFC; border-left:3px solid ${healthColor}; padding:10px; border-radius:0 6px 6px 0;">
+                             <div style="background:#0F172A; border-left:3px solid ${healthColor}; padding:10px; border-radius:0 6px 6px 0;">
                                 <span style="font-size:0.7rem; font-weight:900; color:var(--text-main); display:block; margin-bottom:2px; text-transform:uppercase;">System Note:</span>
                                 <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted); line-height:1.4;">${nextAction}</span>
                              </div>
@@ -1871,7 +1873,7 @@
           let teamsEditHtml = "";
           if (!isRevoked && !isSelf) {
                const cleanEmailId = email.replace(/[^a-zA-Z0-9]/g, '');
-               let teamsCheckboxesHtml = `<div style="display:grid; grid-template-columns:1fr; gap:8px; background:#F8FAFC; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:8px; max-height: 150px; overflow-y: auto;">`;
+               let teamsCheckboxesHtml = `<div style="display:grid; grid-template-columns:1fr; gap:8px; background:#0F172A; border:1px solid var(--border); padding:10px; border-radius:6px; margin-bottom:8px; max-height: 150px; overflow-y: auto;">`;
 
                const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
                
@@ -1895,7 +1897,7 @@
                <div style="margin-top:10px; padding-top:10px; border-top:1px dashed var(--border);">
                    <label style="font-size:0.65rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">EDIT ASSIGNED TEAMS</label>
                    ${teamsCheckboxesHtml}
-                   <button id="btn-edit-teams-${cleanEmailId}" class="btn-submit btn-small" style="background-color:var(--text-muted); margin-top:0; width:auto;" onclick="editStaffTeams('${email}', 'edit-staff-team-cb-${cleanEmailId}', 'btn-edit-teams-${cleanEmailId}')">Save Team Assignments</button>
+                   <button id="btn-edit-teams-${cleanEmailId}" class="btn-submit btn-small" style="background-color:var(--border); color: var(--text-main); margin-top:0; width:auto;" onclick="editStaffTeams('${email}', 'edit-staff-team-cb-${cleanEmailId}', 'btn-edit-teams-${cleanEmailId}')">Save Team Assignments</button>
                </div>`;
           }
 
@@ -1903,10 +1905,10 @@
           const badgeText = isRevoked ? "REVOKED" : role.toUpperCase();
           
           container.innerHTML += `
-          <div style="border:1px solid var(--border); padding:10px; border-radius:6px; background:#fff; margin-bottom:8px;">
+          <div style="border:1px solid var(--border); padding:10px; border-radius:6px; background:#0F172A; margin-bottom:8px;">
               <div style="display:flex; justify-content:space-between; align-items:center;">
                   <div>
-                      <span style="font-weight:800; font-size:0.85rem; color:var(--primary);">${name}</span>
+                      <span style="font-weight:800; font-size:0.85rem; color:var(--accent);">${name}</span>
                       <div style="font-size:0.75rem; color:var(--text-muted);">${email}</div>
                       <div style="font-size:0.7rem; margin-top:4px;">Visibility: <b>${displayVisibility}</b></div>
                   </div>
@@ -1998,7 +2000,7 @@
 
         let conflictBadgeHtml = "";
         if (!String(cStatus).includes("Clear") && String(cStatus).trim() !== "") {
-            conflictBadgeHtml = `<div style="background-color: #FEF2F2; border-left: 4px solid #DC2626; color: #991B1B; padding: 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; margin-bottom: 12px; line-height: 1.4;">🚨 WATCHDOG ALERT: ${cStatus}</div>`;
+            conflictBadgeHtml = `<div style="background-color: #7F1D1D; border-left: 4px solid #DC2626; color: #FECACA; padding: 10px; font-size: 0.75rem; font-weight: 800; border-radius: 4px; margin-bottom: 12px; line-height: 1.4;">🚨 WATCHDOG ALERT: ${cStatus}</div>`;
         }
 
         if (mStatus === "Pending Verification") {
@@ -2014,7 +2016,7 @@
         } else if (mStatus === "Completed" || mStatus === "Disputed") {
           isScoreLocked = true;
           scoreActionButtonsHtml = "";
-          scoreBadgeHtml = mStatus === "Disputed" ? `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px; background-color:#FEE2E2; color:#991B1B; border-color:#FCA5A5;">⚠️ DISPUTED</div>` : `<div class="prop-status-text approved" style="text-align:center; margin-bottom:12px;">✓ Verified</div>`;
+          scoreBadgeHtml = mStatus === "Disputed" ? `<div class="prop-status-text action-needed" style="text-align:center; margin-bottom:12px; background-color:#7F1D1D; color:#FECACA; border-color:#DC2626;">⚠️ DISPUTED</div>` : `<div class="prop-status-text approved" style="text-align:center; margin-bottom:12px;">✓ Verified</div>`;
         }
 
         let proposalsHtml = "";
@@ -2053,19 +2055,19 @@
             proposalsHtml += `<div style="font-size:0.8rem; color:var(--text-muted); margin-bottom:10px;">Waiting for system logic to suggest optimal dates, or propose a custom override below.</div>`;
           }
 
-          proposalsHtml += `<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #FFEDD5;">
+          proposalsHtml += `<div style="margin-top:10px; padding-top:10px; border-top:1px dashed #78350F;">
             <label style="font-size:0.7rem; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">MANUAL OVERRIDE PROPOSAL</label>
             <div style="display:flex; gap:10px; margin-bottom:8px;">
                <input type="date" id="custom-date-${gId}" class="text-input" style="margin-bottom:0; flex:1;">
                <input type="time" id="custom-time-${gId}" class="text-input" style="margin-bottom:0; flex:1;">
             </div>
-            <button class="btn-submit btn-small" style="background-color:#C2410C;" onclick="submitCustomProposal('${gId}')">Propose Custom Date</button>
+            <button class="btn-submit btn-small" style="background-color:#C2410C; color:#FFF;" onclick="submitCustomProposal('${gId}')">Propose Custom Date</button>
           </div>`;
 
           proposalsHtml += `</div>`;
         }
         
-        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div class="matchup-team-box">${hLogoHtml}<div class="matchup-acronym-text">${hAcr}</div><div style="font-size: 0.65rem; color: #64748B; font-weight:800; margin-top:2px;">HOME</div></div><div style="color: #E2E8F0; padding: 0 10px; font-weight:900;">VS</div><div class="matchup-team-box">${aLogoHtml}<div class="matchup-acronym-text">${aAcr}</div><div style="font-size: 0.65rem; color: #64748B; font-weight:800; margin-top:2px;">AWAY</div></div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
+        card.innerHTML = `<div class="card-header">${readFlexibleObjectValue(game, "Date") || 'TBD'} | ${getTeamDisplayName(sId, dId, globalSportsData, globalDivisionsData)}</div>${conflictBadgeHtml}${scoreBadgeHtml}<div class="matchup"><div class="matchup-team-box">${hLogoHtml}<div class="matchup-acronym-text">${hAcr}</div><div style="font-size: 0.65rem; color: var(--text-muted); font-weight:800; margin-top:2px;">HOME</div></div><div style="color: var(--text-muted); padding: 0 10px; font-weight:900;">VS</div><div class="matchup-team-box">${aLogoHtml}<div class="matchup-acronym-text">${aAcr}</div><div style="font-size: 0.65rem; color: var(--text-muted); font-weight:800; margin-top:2px;">AWAY</div></div></div><select class="status-select" id="status-${gId}" ${isScoreLocked ? 'disabled' : ''}>${optionsHtml}</select><div class="matchup"><input type="number" class="score-input" id="homeScore-${gId}" value="${readFlexibleObjectValue(game, "HomeScore") !== undefined ? readFlexibleObjectValue(game, "HomeScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}><input type="number" class="score-input" id="awayScore-${gId}" value="${readFlexibleObjectValue(game, "AwayScore") !== undefined ? readFlexibleObjectValue(game, "AwayScore") : ''}" placeholder="0" ${isScoreLocked ? 'disabled' : ''}></div>${scoreActionButtonsHtml}${proposalsHtml}`;
         
         wrapper.appendChild(card);
         container.appendChild(wrapper);
@@ -2117,17 +2119,17 @@
               <span class="summary-num" style="color: var(--text-main);">${cSched}</span>
               <span class="summary-lbl" style="color: var(--text-muted);">Scheduled</span>
            </div>
-           <div class="summary-card" style="border-bottom-color: #ca8a04; background: #fefce8;">
-              <span class="summary-num" style="color: #ca8a04;">${cPend}</span>
-              <span class="summary-lbl" style="color: #a16207;">Pending Verif.</span>
+           <div class="summary-card" style="border-bottom-color: #D97706; background: #451A03;">
+              <span class="summary-num" style="color: #FBBF24;">${cPend}</span>
+              <span class="summary-lbl" style="color: #FDE68A;">Pending Verif.</span>
            </div>
-           <div class="summary-card" style="border-bottom-color: #991B1B; background: #FEF2F2;">
-              <span class="summary-num" style="color: #991B1B;">${cPost}</span>
-              <span class="summary-lbl" style="color: #7F1D1D;">Postponed</span>
+           <div class="summary-card" style="border-bottom-color: #DC2626; background: #7F1D1D;">
+              <span class="summary-num" style="color: #FCA5A5;">${cPost}</span>
+              <span class="summary-lbl" style="color: #FECACA;">Postponed</span>
            </div>
-           <div class="summary-card" style="border-bottom-color: #166534; background: #F0FDF4;">
-              <span class="summary-num" style="color: #166534;">${cComp}</span>
-              <span class="summary-lbl" style="color: #14532d;">Completed</span>
+           <div class="summary-card" style="border-bottom-color: #059669; background: #064E3B;">
+              <span class="summary-num" style="color: #34D399;">${cComp}</span>
+              <span class="summary-lbl" style="color: #A7F3D0;">Completed</span>
            </div>
          `;
       }
@@ -2220,7 +2222,7 @@
             const status = readFlexibleObjectValue(g, "MatchStatus");
             const sId = readFlexibleObjectValue(g, "SportID");
             const sColor = sportColors[sId] || '#333';
-            const bgRgba = hexToRgba(sColor, 0.1);
+            const bgRgba = hexToRgba(sColor, 0.25);
             
             const hTeamId = String(readFlexibleObjectValue(g, "HomeTeamID")).trim();
             const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
@@ -2461,7 +2463,7 @@
         
         let withdrawBtn = '';
         if (!isWithdrawn) {
-            withdrawBtn = `<button class="btn-submit btn-small" style="background-color: #991B1B; width:auto; padding: 6px 12px; margin:0;" onclick="withdrawTeam('${readFlexibleObjectValue(team, "TeamID")}')">Withdraw</button>`;
+            withdrawBtn = `<button class="btn-submit btn-small" style="background-color: #991B1B; color: #FFF; width:auto; padding: 6px 12px; margin:0;" onclick="withdrawTeam('${readFlexibleObjectValue(team, "TeamID")}')">Withdraw</button>`;
         }
 
         document.getElementById('reg-team').innerHTML += `<option value="${readFlexibleObjectValue(team, "TeamID")}">${displayName}</option>`;
@@ -2550,7 +2552,7 @@
 
         const toggleBtnHtml = isArchived 
            ? `<button class="btn-submit btn-small" style="background-color: #166534;" onclick="togglePlayerStatus('${rId}', 'Restore')">↺ Restore</button>`
-           : `<button class="btn-submit btn-small" style="background-color: #991B1B;" onclick="togglePlayerStatus('${rId}', 'Archived')">🗑️ Archive</button>`;
+           : `<button class="btn-submit btn-small" style="background-color: #991B1B; color:#FFF;" onclick="togglePlayerStatus('${rId}', 'Archived')">🗑️ Archive</button>`;
 
         container.innerHTML += `
         <div class="player-card">
@@ -2561,7 +2563,7 @@
           <input type="text" class="text-input" id="nick-${rId}" value="${readFlexibleObjectValue(player, "Nickname") || ''}" placeholder="Player Name" ${isArchived ? 'disabled' : ''}>
           <input type="number" class="text-input" id="jersey-${rId}" value="${readFlexibleObjectValue(player, "JerseyNumber") || ''}" placeholder="Jersey Number" ${isArchived ? 'disabled' : ''}>
           <div style="display:flex; gap:10px;">
-            <button class="btn-submit btn-small" id="btn-update-player-${rId}" style="background-color: var(--text-muted);" onclick="updatePlayer('${rId}')" ${isArchived ? 'disabled' : ''}>Save Changes</button>
+            <button class="btn-submit btn-small" id="btn-update-player-${rId}" style="background-color: var(--border); color: var(--text-main);" onclick="updatePlayer('${rId}')" ${isArchived ? 'disabled' : ''}>Save Changes</button>
             ${toggleBtnHtml}
           </div>
         </div>`;
@@ -2806,7 +2808,7 @@
       const syncBtn = document.getElementById('btn-sync-staged');
       
       if (stagedExceptions.length === 0) {
-        container.innerHTML = '<p style="font-size:0.8rem; color:var(--text-muted); text-align:center;">Queue is empty.</p>';
+        container.innerHTML = '<p style="font-size:0.8rem; color:#A7F3D0; text-align:center;">Queue is empty.</p>';
         syncBtn.style.display = 'none';
         return;
       }
@@ -2826,13 +2828,13 @@
         }
         
         container.innerHTML += `
-          <div style="border:1px dashed var(--accent); padding:8px; border-radius:6px; background:#FFFFFF; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
+          <div style="border:1px dashed var(--accent); padding:8px; border-radius:6px; background:#0F172A; margin-bottom: 8px; display:flex; justify-content:space-between; align-items:center;">
             <div>
-              <span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${title}</span>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--accent);">${title}</span>
               <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">${exc.startDate} to ${exc.endDate}</div>
-              <div style="font-size:0.7rem; color:#166534; font-weight:600;">${exc.constraint}</div>
+              <div style="font-size:0.7rem; color:#A7F3D0; font-weight:600;">${exc.constraint}</div>
             </div>
-            <button onclick="removeStagedException(${index})" style="background:var(--primary); border:none; border-radius:4px; padding:4px 8px; cursor:pointer; color:#FFFFFF; font-size:0.6rem; font-weight:800;">✕</button>
+            <button onclick="removeStagedException(${index})" style="background:#7F1D1D; border:none; border-radius:4px; padding:4px 8px; cursor:pointer; color:#FECACA; font-size:0.6rem; font-weight:800;">✕</button>
           </div>
         `;
       });
@@ -2975,15 +2977,15 @@
         const reasonText = readFlexibleObjectValue(item, "Reason") || "Constraint Applied";
 
         container.innerHTML += `
-          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#F8FAFC; margin-bottom: 8px;" class="flex justify-between items-center">
+          <div style="border:1px solid var(--border); padding:8px; border-radius:6px; background:#0F172A; margin-bottom: 8px;" class="flex justify-between items-center">
             <div>
-              <span style="font-weight:800; font-size:0.75rem; color:var(--primary);">${title}</span>
+              <span style="font-weight:800; font-size:0.75rem; color:var(--accent);">${title}</span>
               <div style="font-size:0.7rem; color:var(--text-muted); margin-top:2px;">Range: ${readFlexibleObjectValue(item, "StartDate")} to ${readFlexibleObjectValue(item, "EndDate")}</div>
-              <div style="font-size:0.7rem; color:var(--primary); font-weight:600; margin-top:2px;">Reason: ${reasonText}</div>
+              <div style="font-size:0.7rem; color:var(--text-main); font-weight:600; margin-top:2px;">Reason: ${reasonText}</div>
             </div>
             <div style="display:flex; gap:8px; align-items:center;">
               <span class="${badgeClass}" style="font-size:0.65rem;">Logged</span>
-              <button onclick="deleteAvailability('${availId}')" style="background:none; border:none; cursor:pointer; color:#991B1B;" title="Delete Blackout">🗑️</button>
+              <button onclick="deleteAvailability('${availId}')" style="background:none; border:none; cursor:pointer; color:#FCA5A5;" title="Delete Blackout">🗑️</button>
             </div>
           </div>`;
       });
@@ -3004,13 +3006,13 @@
         confLink = readFlexibleObjectValue(globalSettingsData, "South_Conf_Chat_Link") || '#'; confName = 'South Conference';
       }
 
-      container.innerHTML += `<a href="${leagueLink}" target="_blank" class="btn-submit btn-small" style="background-color:var(--primary); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">🌍 League Chat</a>`;
+      container.innerHTML += `<a href="${leagueLink}" target="_blank" class="btn-submit btn-small" style="margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">🌍 League Chat</a>`;
 
       if(targetSchoolRegion) {
-         container.innerHTML += `<a href="${confLink}" target="_blank" class="btn-submit btn-small" style="background-color:#1A1A1A; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📍 ${confName} Chat</a>`;
+         container.innerHTML += `<a href="${confLink}" target="_blank" class="btn-submit btn-small" style="background-color:#334155; color:#FFF; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📍 ${confName} Chat</a>`;
       }
 
-      container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#334155; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
+      container.innerHTML += `<a href="${publicLink}" target="_blank" class="btn-submit btn-small" style="background-color:#1E293B; color:var(--text-main); border:1px solid var(--border); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">📢 Public Bulletin</a>`;
 
       const schoolTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
       const activeSportIds = [...new Set(schoolTeams.map(t => readFlexibleObjectValue(t, "SportID")).filter(Boolean))];
@@ -3020,7 +3022,7 @@
           const sport = globalSportsData.find(s => String(readFlexibleObjectValue(s, "SportID")).trim().toLowerCase() === String(sId).trim().toLowerCase());
           if(sport) {
             const sportName = readFlexibleObjectValue(sport, "Name") || sId; const chatUrl = readFlexibleObjectValue(sport, "ChatSpaceLink") || '#';
-            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:var(--wizard-step-text); margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
+            container.innerHTML += `<a href="${chatUrl}" target="_blank" class="btn-submit btn-small" style="background-color:#064E3B; color:#A7F3D0; margin-bottom:8px; display:inline-block; width:auto; padding:8px 15px; margin-right:8px;">💬 ${sportName}</a>`;
           }
         });
       }
@@ -3052,7 +3054,7 @@
          msgs.forEach(msg => {
            const topic = readFlexibleObjectValue(msg, "TopicSubject") || readFlexibleObjectValue(msg, "Topic_Subject") || 'Announcement';
            const body = readFlexibleObjectValue(msg, "Content") || '';
-           const targetBadge = readFlexibleObjectValue(msg, "TargetID") ? `<span style="font-size:0.65rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:800; color:var(--text-muted);">🎯 ${readFlexibleObjectValue(msg, "TargetID")}</span>` : '';
+           const targetBadge = readFlexibleObjectValue(msg, "TargetID") ? `<span style="font-size:0.65rem; background:var(--border); padding:2px 6px; border-radius:4px; margin-left:8px; font-weight:800; color:var(--text-main);">🎯 ${readFlexibleObjectValue(msg, "TargetID")}</span>` : '';
            groupHtml += `<div class="message-item"><div class="message-title" style="display:flex; justify-content:space-between; align-items:center;"><span>${topic} ${targetBadge}</span></div><div class="message-date">${readFlexibleObjectValue(msg, "Timestamp") || 'Recent'}</div><div class="message-body">${body}</div></div>`;
          });
          container.innerHTML += `<div class="card" style="margin-bottom:15px; border-color:var(--accent);">${groupHtml}</div>`;
