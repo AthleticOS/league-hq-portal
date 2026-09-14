@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V5.9 -->
+<!-- AthleticOS Coaches Portal V6.0 -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -143,9 +143,20 @@
       .action-grid .card { margin-bottom: 0; display: flex; flex-direction: column; }
     }
 
-    .explainer-box { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 12px; border-radius: 0 8px 8px 0; margin-bottom: 15px; font-size: 0.8rem; line-height: 1.4; color: #334155; }
-    .explainer-box.info { background-color: #F0FDF4; border-left-color: var(--accent); color: #166534; }
-    .explainer-box strong { display: block; margin-bottom: 3px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+    /* ACCORDION EXPLAINER BOXES */
+    .explainer-accordion-grid { display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 15px; }
+    @media (min-width: 768px) {
+      .explainer-accordion-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    details.explainer-accordion { background-color: #F8FAFC; border-left: 4px solid var(--text-muted); padding: 10px 12px; border-radius: 0 8px 8px 0; border: 1px solid var(--border); border-left-width: 4px; transition: all 0.2s ease; }
+    details.explainer-accordion.info { background-color: #F0FDF4; border-left-color: var(--accent); }
+    details.explainer-accordion summary { font-size: 0.8rem; font-weight: 800; cursor: pointer; display: flex; justify-content: space-between; align-items: center; user-select: none; outline: none; text-transform: uppercase; letter-spacing: 0.5px; }
+    details.explainer-accordion.info summary { color: #166534; }
+    details.explainer-accordion summary::-webkit-details-marker { display: none; }
+    details.explainer-accordion summary::after { content: '▼'; font-size: 0.7rem; transition: transform 0.2s; font-weight: 400; color: var(--text-muted); }
+    details.explainer-accordion[open] summary::after { transform: rotate(180deg); }
+    details.explainer-accordion .accordion-content { margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--border); font-size: 0.8rem; line-height: 1.4; color: #334155; }
 
     .wizard-card { border: 2px solid var(--wizard-step-border); background-color: #FFFFFF; }
     .wizard-badge { background-color: var(--wizard-step-bg); color: var(--wizard-step-text); font-size: 0.7rem; font-weight: 800; padding: 4px 8px; border-radius: 4px; display: inline-block; margin-bottom: 10px; text-transform: uppercase; }
@@ -337,22 +348,29 @@
         <button class="sub-nav-btn" id="btn-games-tournaments" onclick="switchSubTab('games', 'tournaments')">🏆 Tournaments</button>
       </div>
 
-      <!-- UNIVERSAL MATCH DAY OPERATIONS (Always Visible) -->
-      <div class="explainer-box info" style="margin-bottom: 15px;">
-        <strong>Match Day Operations</strong>
-        <ul style="margin: 5px 0 0 20px; padding: 0; font-size: 0.8rem;">
-          <li>An adult supervisor must accompany the team to all fixtures.</li>
-          <li>Communicate any travel delays immediately to the host school.</li>
-          <li>Verify and submit final match scores within 24 hours of conclusion.</li>
-        </ul>
+      <!-- COLLAPSIBLE ACCORDION INSTRUCTIONS (SIDE-BY-SIDE GRID) -->
+      <div class="explainer-accordion-grid">
+        <details class="explainer-accordion info">
+          <summary>📌 Match Day Operations</summary>
+          <div class="accordion-content">
+            <ul style="margin: 0; padding-left: 20px;">
+              <li>An adult supervisor must accompany the team to all fixtures.</li>
+              <li>Communicate any travel delays immediately to the host school.</li>
+              <li>Verify and submit final match scores within 24 hours of conclusion.</li>
+            </ul>
+          </div>
+        </details>
+
+        <details class="explainer-accordion">
+          <summary>🗓 Interactive Rescheduling & Export</summary>
+          <div class="accordion-content">
+            Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.
+          </div>
+        </details>
       </div>
 
       <!-- CALENDAR VIEW (DEFAULT) -->
       <div id="section-games-calendar" class="sub-section active">
-        <div class="explainer-box" style="margin-bottom: 15px;">
-          <strong>Interactive Rescheduling & Export</strong>
-          <p style="margin: 5px 0 0 0; font-size: 0.8rem;">Click any match to log scores or view details. To propose a reschedule, drag a <strong>Postponed</strong> match onto a new date. Click 'Export' to download an iCal file of your schedule.</p>
-        </div>
         <div class="card" style="padding: 10px;">
           <div class="game-cal-controls">
              <div style="display:flex; gap:8px;">
@@ -445,7 +463,16 @@
         </div>
         
         <div class="card">
-          <div class="card-header">Your Registered Teams</div>
+          <div class="card-header" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <span>Your Registered Teams <span id="registered-teams-tally" style="color:var(--primary); font-weight:800;">(0)</span></span>
+            <div style="display:flex; align-items:center; gap:6px;">
+              <span style="font-size:0.7rem; color:var(--text-muted); font-weight:700;">Sort By:</span>
+              <select id="sort-registered-teams" class="status-select" style="margin-bottom:0; width:auto; padding:4px 8px; font-size:0.75rem;" onchange="renderTeamsData(globalTeamsData, globalSportsData, globalDivisionsData)">
+                <option value="sport">Sport Name</option>
+                <option value="gender">Gender</option>
+              </select>
+            </div>
+          </div>
           <div id="current-teams-list" style="display: flex; flex-direction: column; gap: 10px;"></div>
         </div>
       </div>
@@ -609,9 +636,14 @@
           </div>
 
           <div class="card" id="admin-card-metrics" style="display: flex; flex-direction: column;">
-            <div class="card-header">📊 Ledger Integrity Metrics</div>
-            <p style="font-size: 0.8rem; color: var(--text-muted); margin-top: 0; margin-bottom:10px;">Review synchronized real-time cross-tab totals sitting inside the core ledger framework.</p>
-            <div style="font-size:0.75rem; space-y-1.5" class="text-slate-600">
+            <div class="card-header" style="display:flex; justify-content:space-between; align-items:center;">
+              <span>📊 Ledger Integrity Metrics</span>
+              <span style="font-size:0.6rem; background:#DBEAFE; color:#1E40AF; padding:2px 6px; border-radius:4px; font-weight:800; border:1px solid #BFDBFE;">🌐 LEAGUE-WIDE SCOPE</span>
+            </div>
+            <div class="explainer-box info" style="margin-bottom:10px; font-size:0.7rem; padding:8px;">
+              <strong>Note:</strong> These metrics reflect the total active rows sitting across the entire league ledger.
+            </div>
+            <div style="font-size:0.75rem;" class="space-y-1.5 text-slate-600">
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding-bottom:4px;"><span>Total Registered Athletes:</span><b id="meta-stat-players" style="font-family:monospace;">-</b></div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Active Mapped Facilities:</span><b id="meta-stat-venues" style="font-family:monospace;">-</b></div>
               <div style="display:flex; justify-content:space-between; border-bottom:1px solid var(--border); padding:4px 0;"><span>Total Active Fixtures:</span><b id="meta-stat-fixtures" style="font-family:monospace;">-</b></div>
@@ -1500,7 +1532,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V5.9</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.0</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -2360,7 +2392,30 @@
       document.getElementById('manage-team').innerHTML = '<option value="">Select Team to View Roster...</option>'; 
       document.getElementById('current-teams-list').innerHTML = '';
 
-      const schoolTeams = teams.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+      let schoolTeams = teams.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
+      
+      // Update Live Tally
+      const tallyElem = document.getElementById('registered-teams-tally');
+      if (tallyElem) tallyElem.innerText = `(${schoolTeams.length})`;
+
+      // Sorting Logic
+      const sortType = document.getElementById('sort-registered-teams') ? document.getElementById('sort-registered-teams').value : 'sport';
+      
+      schoolTeams.sort((a, b) => {
+        const divA = divisionsData.find(d => String(readFlexibleObjectValue(d, "DivisionID")).trim().toLowerCase() === String(readFlexibleObjectValue(a, "DivisionID")).trim().toLowerCase());
+        const divB = divisionsData.find(d => String(readFlexibleObjectValue(d, "DivisionID")).trim().toLowerCase() === String(readFlexibleObjectValue(b, "DivisionID")).trim().toLowerCase());
+        
+        if (sortType === 'gender') {
+           const genderA = divA ? String(readFlexibleObjectValue(divA, "Gender")).toLowerCase() : '';
+           const genderB = divB ? String(readFlexibleObjectValue(divB, "Gender")).toLowerCase() : '';
+           if (genderA !== genderB) return genderA.localeCompare(genderB);
+        }
+        
+        const nameA = getTeamDisplayName(readFlexibleObjectValue(a, "SportID"), readFlexibleObjectValue(a, "DivisionID"), sportsData, divisionsData);
+        const nameB = getTeamDisplayName(readFlexibleObjectValue(b, "SportID"), readFlexibleObjectValue(b, "DivisionID"), sportsData, divisionsData);
+        return nameA.localeCompare(nameB);
+      });
+
       schoolTeams.forEach(team => {
         const displayName = getTeamDisplayName(readFlexibleObjectValue(team, "SportID"), readFlexibleObjectValue(team, "DivisionID"), sportsData, divisionsData);
         const teamStatus = readFlexibleObjectValue(team, "RegistrationStatus") || 'Active';
