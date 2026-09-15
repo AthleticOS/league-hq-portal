@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V6.6 (Hardened Authentication) -->
+<!-- AthleticOS Coaches Portal V6.7 (Background Caching & Retry Engine) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -61,6 +61,10 @@
     .preloader-fill { height: 100%; background: linear-gradient(to right, #52C920, #F9FF00); width: 0%; transition: width 0.15s ease-out; }
     .preloader-meta { display: flex; justify-content: space-between; font-size: 0.65rem; color: #A3A3A3; text-transform: uppercase; letter-spacing: 0.1em; margin-top: 8px; font-weight: 800;}
     .preloader-powered { margin-top: 30px; font-size: 0.55rem; color: #64748B; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 800; }
+
+    /* SILENT BACKGROUND SYNC INDICATOR */
+    #minimal-sync-indicator { display:none; position:fixed; top:15px; left:50%; transform:translateX(-50%); background:#0F172A; border:1px solid var(--accent); padding:6px 12px; border-radius:20px; z-index:9999; color:#A7F3D0; font-size:0.7rem; font-weight:800; align-items:center; gap:6px; box-shadow:0 4px 10px rgba(0,0,0,0.5); }
+    .pulse-dot { width:8px; height:8px; background:var(--accent); border-radius:50%; animation: pulse-opacity 1s infinite; }
     
     @keyframes spin-forward { 100% { transform: rotate(360deg); } }
     @keyframes spin-reverse { 100% { transform: rotate(-360deg); } }
@@ -285,6 +289,12 @@
   </style>
 </head>
 <body>
+
+  <!-- MINIMAL BACKGROUND SYNC INDICATOR -->
+  <div id="minimal-sync-indicator">
+    <div class="pulse-dot"></div>
+    <span id="minimal-sync-text">Background Sync...</span>
+  </div>
 
   <!-- ATHLETICOS PRELOADER -->
   <div id="athleticos-preloader" style="display:none;">
@@ -1260,18 +1270,16 @@
     let calSelectStart = null;
     let calSelectEnd = null;
     
-    // --- PRELOADER LOGIC ---
+    // --- PRELOADER & UI LOGIC ---
     let preloaderInterval;
     
     function showGlobalLoader(msg) {
         document.getElementById('app-container').style.display = 'none';
         document.getElementById('bottom-nav').style.display = 'none';
-        
         const preloader = document.getElementById('athleticos-preloader');
         preloader.style.display = 'flex';
         preloader.style.opacity = '1';
         document.getElementById('athleticos-preloader-msg').innerText = msg || "Syncing Database Core Matrices...";
-
         const progressBar = document.getElementById('preloader-progress');
         const progressText = document.getElementById('preloader-text');
         let currentProgress = 0;
@@ -1293,16 +1301,23 @@
         const preloader = document.getElementById('athleticos-preloader');
         const progressBar = document.getElementById('preloader-progress');
         const progressText = document.getElementById('preloader-text');
-        
         if(progressBar) progressBar.style.width = '100%';
         if(progressText) progressText.innerText = '100%';
-        
         setTimeout(() => {
             if(preloader) {
                 preloader.style.opacity = '0';
                 setTimeout(() => { preloader.style.display = 'none'; }, 700);
             }
         }, 300);
+    }
+
+    function showMinimalLoader(msg) {
+        document.getElementById('minimal-sync-text').innerText = msg || "Background Sync...";
+        document.getElementById('minimal-sync-indicator').style.display = "flex";
+    }
+
+    function hideMinimalLoader() {
+        document.getElementById('minimal-sync-indicator').style.display = "none";
     }
 
     window.onerror = function(message, source, lineno, colno, error) {
@@ -1360,12 +1375,49 @@
       sessionStorage.removeItem('auth_pin');
       sessionStorage.removeItem('leagueRole');
       sessionStorage.removeItem('userRole');
+      localStorage.removeItem('athleticos_db_cache');
       window.location.reload();
     }
 
     ['click', 'mousemove', 'keypress', 'scroll', 'touchstart'].forEach(evt => {
       document.addEventListener(evt, resetIdleTimer, true);
     });
+
+    // --- EXPONENTIAL BACKOFF RETRY ENGINE ---
+    async function fetchWithRetry(url, options, retries = 3, backoff = 1000) {
+      for (let i = 0; i < retries; i++) {
+        try {
+          const response = await fetch(url, options);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          
+          const text = await response.text();
+          try {
+            return JSON.parse(text);
+          } catch(e) {
+            if (i === retries - 1) throw new Error("Server returned an invalid non-JSON response.");
+          }
+        } catch (err) {
+          if (i === retries - 1) throw err;
+          await new Promise(res => setTimeout(res, backoff * Math.pow(2, i)));
+        }
+      }
+    }
+
+    async function secureApiCall(payload) {
+      const securePayload = buildSecurePayload(payload);
+      const result = await fetchWithRetry(API_URL, {
+        method: "POST",
+        redirect: "follow",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: securePayload
+      }, 3, 500); 
+
+      if (result && result.status === "error" && String(result.message).includes("403")) {
+        alert("Session Expired: Please log in again.");
+        signOut();
+      }
+      return result;
+    }
 
     function getSchoolLogo(sch) {
       if (!sch) return '';
@@ -1416,26 +1468,13 @@
       uiLockButton('btn-unlock', 'Verifying Identity Matrix...');
 
       try {
-        const response = await fetch(API_URL, { 
-          method: "POST",
-          redirect: "follow",
-          headers: { "Content-Type": "text/plain;charset=utf-8" },
-          body: JSON.stringify({ 
+        const result = await secureApiCall({ 
             action: "verifyPIN", 
             schoolId: targetSchoolID, 
             email: emailInput, 
             pin: pinInput,
             consentGiven: true
-          }) 
         });
-
-        const responseText = await response.text();
-        let result;
-        try {
-          result = JSON.parse(responseText);
-        } catch(e) {
-          throw new Error("Server returned non-JSON output or Google timeout page.");
-        }
 
         if (result.status === "success") {
           sessionStorage.setItem(`auth_active_user`, "true");
@@ -1461,25 +1500,16 @@
       }
     }
 
-    async function initApp() {
-      showGlobalLoader("Syncing Database Core Matrices...");
-      document.getElementById('btn-signout').style.display = 'block'; 
-      resetIdleTimer(); 
-
-      try {
-        const response = await fetch(API_URL + "?t=" + new Date().getTime(), { cache: "no-store" });
-        if (!response.ok) throw new Error("HTTP connection failed against Web App URL");
-        const data = await response.json();
-        if (data && data.status === "error") throw new Error(data.message);
-
-        globalUsersData = data.Users || [];
-        globalRosterData = data.Roster || [];
-        globalTeamsData = data.Teams || []; 
-        globalDivisionsData = data.Divisions || [];
-        globalVenuesData = data.Venues || []; 
-        globalAvailabilityData = data.School_Availability || [];
-        globalSportsData = data.Sports || [];
-        globalSchoolsData = data.Schools || [];
+    // --- SEPARATED RENDER LOGIC FOR CACHING ---
+    function processAppMatrix(data) {
+        globalUsersData = data.Users || globalUsersData;
+        globalRosterData = data.Roster || globalRosterData;
+        globalTeamsData = data.Teams || globalTeamsData; 
+        globalDivisionsData = data.Divisions || globalDivisionsData;
+        globalVenuesData = data.Venues || globalVenuesData; 
+        globalAvailabilityData = data.School_Availability || globalAvailabilityData;
+        globalSportsData = data.Sports || globalSportsData;
+        globalSchoolsData = data.Schools || globalSchoolsData;
         
         const savedEmail = sessionStorage.getItem(`auth_email`);
         let userSchoolRole = String(sessionStorage.getItem(`userRole`)).toLowerCase();
@@ -1558,7 +1588,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.6</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.7</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
@@ -1577,7 +1607,6 @@
         populateSportsMenu(globalSportsData);
         populateStaffTeamsMenu();
         
-        // Reset staged exceptions on init
         stagedExceptions = [];
         calSelectStart = null;
         calSelectEnd = null;
@@ -1592,18 +1621,15 @@
           document.getElementById('btn-teams-staff').style.display = 'inline-block';
           renderStaffList();
 
-          // Command Console Visibility Logic
           if(validAdmins.includes(userLeagueRole)) {
-            // League HQ View
             document.getElementById('admin-card-scheduler').style.display = 'flex';
-            document.getElementById('admin-card-scheduler').style.flexDirection = 'column'; // FIXED MOBILE VIEW
+            document.getElementById('admin-card-scheduler').style.flexDirection = 'column'; 
             document.getElementById('btn-sheet-link').style.display = 'block';
             document.getElementById('btn-audit-scores').innerText = "Run Global Ledger Audit";
             document.getElementById('btn-audit-scores').onclick = () => triggerScoreAudit("global");
             document.getElementById('admin-staff-name').innerText = staffDisplayName;
             document.getElementById('btn-admin-kpis').style.display = 'inline-block';
           } else {
-            // Local School AD View
             document.getElementById('admin-card-scheduler').style.display = 'none';
             document.getElementById('btn-sheet-link').style.display = 'none';
             document.getElementById('btn-audit-scores').innerText = "Run Local Conflict Watchdog";
@@ -1614,12 +1640,11 @@
 
           document.getElementById('meta-stat-players').innerText = globalRosterData.length;
           document.getElementById('meta-stat-venues').innerText = globalVenuesData.length;
-          document.getElementById('meta-stat-fixtures').innerText = (data.Fixtures || []).length;
-          document.getElementById('meta-stat-schools').innerText = (data.Schools || []).length;
+          document.getElementById('meta-stat-fixtures').innerText = (appFixtures).length;
+          document.getElementById('meta-stat-schools').innerText = (globalSchoolsData).length;
           document.getElementById('meta-stat-teams').innerText = globalTeamsData.length;
           document.getElementById('meta-stat-divisions').innerText = globalDivisionsData.length;
           
-          // Calculate School Demographics (For the Admin Console)
           let schoolDemographicsTeams = globalTeamsData.filter(t => String(readFlexibleObjectValue(t, "SchoolID")).trim().toLowerCase() === String(targetSchoolID).trim().toLowerCase());
           let schoolDemoTeamIds = schoolDemographicsTeams.map(t => readFlexibleObjectValue(t, "TeamID"));
           
@@ -1629,11 +1654,7 @@
              return schoolDemoTeamIds.includes(tId) && status !== "Archived";
           });
           
-          let demoBoys = 0;
-          let demoGirls = 0;
-          let demoSports = new Set();
-          let demoAges = new Set();
-
+          let demoBoys = 0; let demoGirls = 0; let demoSports = new Set(); let demoAges = new Set();
           schoolDemoAthletes.forEach(p => {
              const pTeam = schoolDemographicsTeams.find(t => readFlexibleObjectValue(t, "TeamID") === readFlexibleObjectValue(p, "TeamID"));
              if (pTeam) {
@@ -1651,15 +1672,12 @@
              if(div) {
                  const age = readFlexibleObjectValue(div, "Age_Limit");
                  if(age) demoAges.add("U" + String(age).replace(/\D/g, ''));
-                 
                  const sportId = readFlexibleObjectValue(div, "SportID");
                  if(sportId) demoSports.add(sportId);
              }
           });
 
-          let gamesPlayed = 0;
-          let wins = 0, losses = 0, draws = 0;
-
+          let gamesPlayed = 0; let wins = 0; let losses = 0; let draws = 0;
           window.currentSchoolGames.forEach(g => {
               const status = readFlexibleObjectValue(g, "MatchStatus");
               if (status === "Completed") {
@@ -1668,18 +1686,12 @@
                   const aTeamId = String(readFlexibleObjectValue(g, "AwayTeamID")).trim();
                   const hScore = parseInt(readFlexibleObjectValue(g, "HomeScore")) || 0;
                   const aScore = parseInt(readFlexibleObjectValue(g, "AwayScore")) || 0;
-                  
                   const isHome = schoolDemoTeamIds.includes(hTeamId);
                   const isAway = schoolDemoTeamIds.includes(aTeamId);
-
                   if (isHome) {
-                      if (hScore > aScore) wins++;
-                      else if (hScore < aScore) losses++;
-                      else draws++;
+                      if (hScore > aScore) wins++; else if (hScore < aScore) losses++; else draws++;
                   } else if (isAway) {
-                      if (aScore > hScore) wins++;
-                      else if (aScore < hScore) losses++;
-                      else draws++;
+                      if (aScore > hScore) wins++; else if (aScore < hScore) losses++; else draws++;
                   }
               }
           });
@@ -1702,27 +1714,22 @@
             adminSchedSelect.innerHTML += `<option value="${readFlexibleObjectValue(div, "DivisionID")}">${label}</option>`;
           });
 
-          // Fetch Live KPIs if HQ
           if (userLeagueRole.includes("hq")) {
              secureApiCall({ action: "fetchkpis", schoolId: targetSchoolID }).then(res => {
                  if(res.status === "success" && res.data) {
                     const d = res.data;
-                    
-                    // Animate Score Progress Bar
                     const scoreBar = document.getElementById('kpi-bar-score');
                     const scoreText = document.getElementById('kpi-bar-score-text');
                     scoreBar.style.width = `${d.scoreReporting.percentage}%`;
                     scoreText.innerText = `${d.scoreReporting.percentage}%`;
                     scoreBar.style.backgroundColor = d.scoreReporting.percentage >= 80 ? '#059669' : '#D97706';
                     
-                    // Animate Facility Progress Bar
                     const facBar = document.getElementById('kpi-bar-facility');
                     const facText = document.getElementById('kpi-bar-facility-text');
                     facBar.style.width = `${d.facilityMapping.percentage}%`;
                     facText.innerText = `${d.facilityMapping.percentage}%`;
                     facBar.style.backgroundColor = d.facilityMapping.percentage === 100 ? '#059669' : '#D97706';
                     
-                    // Animate Roster Progress Bar
                     const rosBar = document.getElementById('kpi-bar-roster');
                     const rosText = document.getElementById('kpi-bar-roster-text');
                     rosBar.style.width = `${d.rosterUtilization.percentage}%`;
@@ -1731,31 +1738,20 @@
 
                     let tierName = "Tier 3: Standard";
                     let healthColor = "#D97706";
-                    let completedTasks = "";
-                    let missingTasks = "";
-                    let nextAction = "";
+                    let completedTasks = ""; let missingTasks = ""; let nextAction = "";
 
                     if (d.facilityMapping.percentage === 100 && d.rosterUtilization.percentage === 100 && d.scoreReporting.percentage >= 80) {
-                        tierName = "Tier 1: Enterprise Auto-Pilot";
-                        healthColor = "#059669";
+                        tierName = "Tier 1: Enterprise Auto-Pilot"; healthColor = "#059669";
                         completedTasks = "<li>100% Facility Mapping</li><li>100% Roster Utilization</li><li>>80% Score Reporting</li>";
                         missingTasks = "<li>None! You are fully compliant.</li>";
                         nextAction = "Keep up the great work! Your league is running at peak automation efficiency.";
                     } else {
                         if (d.facilityMapping.percentage === 100 && d.scoreReporting.percentage >= 80) tierName = "Tier 2: Core Operational";
-                        
-                        if (d.facilityMapping.percentage === 100) completedTasks += "<li>100% Facility Mapping</li>";
-                        else missingTasks += "<li>Complete Facility Mapping</li>";
-
-                        if (d.rosterUtilization.percentage === 100) completedTasks += "<li>100% Roster Utilization</li>";
-                        else missingTasks += "<li>Complete Roster Utilization</li>";
-
-                        if (d.scoreReporting.percentage >= 80) completedTasks += "<li>>80% Score Reporting</li>";
-                        else missingTasks += "<li>Improve Score Reporting (Current: " + d.scoreReporting.percentage + "%)</li>";
-                        
+                        if (d.facilityMapping.percentage === 100) completedTasks += "<li>100% Facility Mapping</li>"; else missingTasks += "<li>Complete Facility Mapping</li>";
+                        if (d.rosterUtilization.percentage === 100) completedTasks += "<li>100% Roster Utilization</li>"; else missingTasks += "<li>Complete Roster Utilization</li>";
+                        if (d.scoreReporting.percentage >= 80) completedTasks += "<li>>80% Score Reporting</li>"; else missingTasks += "<li>Improve Score Reporting (Current: " + d.scoreReporting.percentage + "%)</li>";
                         nextAction = "Complete the missing milestones above to ensure the league's scheduling and matchmaking engines operate smoothly without manual intervention.";
                     }
-
                     if (completedTasks === "") completedTasks = "<li>Getting Started...</li>";
 
                     const tierContainer = document.getElementById('kpi-tier-container');
@@ -1769,28 +1765,21 @@
                                 </div>
                                 <span style="background-color:${healthColor}25; color:${healthColor}; padding:6px 12px; border-radius:20px; font-size:0.75rem; font-weight:900; text-transform:uppercase; letter-spacing:0.5px; border:1px solid ${healthColor}40;">${d.scoreReporting.percentage >= 80 ? 'Active' : 'Warning'}</span>
                              </div>
-
                              <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-bottom:15px;">
                                <div style="background:#064E3B; border:1px solid #059669; padding:10px; border-radius:6px;">
                                  <span style="display:block; font-size:0.7rem; font-weight:900; color:#A7F3D0; text-transform:uppercase; margin-bottom:6px;">✅ Met Milestones</span>
-                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#A7F3D0; line-height:1.4;">
-                                    ${completedTasks}
-                                 </ul>
+                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#A7F3D0; line-height:1.4;">${completedTasks}</ul>
                                </div>
                                <div style="background:#7F1D1D; border:1px solid #DC2626; padding:10px; border-radius:6px;">
                                  <span style="display:block; font-size:0.7rem; font-weight:900; color:#FECACA; text-transform:uppercase; margin-bottom:6px;">⚠️ Action Required</span>
-                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#FECACA; line-height:1.4;">
-                                    ${missingTasks}
-                                 </ul>
+                                 <ul style="margin:0; padding-left:15px; font-size:0.75rem; color:#FECACA; line-height:1.4;">${missingTasks}</ul>
                                </div>
                              </div>
-
                              <div style="background:#0F172A; border-left:3px solid ${healthColor}; padding:10px; border-radius:0 6px 6px 0;">
                                 <span style="font-size:0.7rem; font-weight:900; color:var(--text-main); display:block; margin-bottom:2px; text-transform:uppercase;">System Note:</span>
                                 <span style="font-size:0.8rem; font-weight:600; color:var(--text-muted); line-height:1.4;">${nextAction}</span>
                              </div>
-                          </div>
-                        `;
+                          </div>`;
                     }
                  }
              }).catch(e => console.error("KPI fetch failed:", e));
@@ -1799,11 +1788,48 @@
         
         document.getElementById('app-container').style.display = 'block'; 
         document.getElementById('bottom-nav').style.display = 'flex';
-        hideGlobalLoader(); 
+    }
+
+    async function initApp() {
+      const cachedPayload = localStorage.getItem('athleticos_db_cache');
+      
+      if (cachedPayload) {
+          try {
+              const cachedData = JSON.parse(cachedPayload);
+              processAppMatrix(cachedData);
+              showMinimalLoader("Syncing Background Changes...");
+          } catch(e) {
+              localStorage.removeItem('athleticos_db_cache');
+              showGlobalLoader("Syncing Database Core Matrices...");
+          }
+      } else {
+          showGlobalLoader("Syncing Database Core Matrices...");
+      }
+
+      document.getElementById('btn-signout').style.display = 'block'; 
+      resetIdleTimer(); 
+
+      try {
+        const data = await fetchWithRetry(API_URL + "?t=" + new Date().getTime(), { cache: "no-store" }, 3, 1000);
+        if (data && data.status === "error") throw new Error(data.message);
+
+        // SILENT CACHE SYNC: Update Local Storage and Re-render instantly
+        localStorage.setItem('athleticos_db_cache', JSON.stringify(data));
+        processAppMatrix(data);
+        
+        hideGlobalLoader();
+        hideMinimalLoader();
       } catch (error) { 
         hideGlobalLoader();
-        document.getElementById('portal-crash-terminal').style.display = 'block';
-        document.getElementById('crash-log-text').innerText = `🛑 SYSTEM INTERCEPT (Sync Failure Warning)\n\n${error.message}`;
+        hideMinimalLoader();
+        
+        // If we have no cache to fall back on, show the crash terminal
+        if (!cachedPayload) {
+            document.getElementById('portal-crash-terminal').style.display = 'block';
+            document.getElementById('crash-log-text').innerText = `🛑 SYSTEM INTERCEPT (Sync Failure Warning)\n\n${error.message}`;
+        } else {
+            console.warn("Background sync failed. Using cached data.");
+        }
       }
     }
 
@@ -3400,21 +3426,6 @@
       } finally { 
         uiUnlockButton('btn-add-player');
       } 
-    }
-
-    async function secureApiCall(payload) {
-      const securePayload = buildSecurePayload(payload);
-      const response = await fetch(API_URL, {
-        method: "POST",
-        body: securePayload
-      });
-      if (!response.ok) throw new Error("HTTP connection failed");
-      const result = await response.json();
-      if (result.status === "error" && String(result.message).includes("403")) {
-        alert("Session Expired: Please log in again.");
-        signOut();
-      }
-      return result;
     }
 
     document.addEventListener("DOMContentLoaded", () => {
