@@ -1,4 +1,4 @@
-<!-- AthleticOS Coaches Portal V6.5 (Dark Mode Outboard Scores) -->
+<!-- AthleticOS Coaches Portal V6.6 (Hardened Authentication) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -613,7 +613,7 @@
             <br><br>
             Once confirmed, the board seamlessly integrates with the Tournament Manager, automatically pushing official tournament invites to targeted sports groups and populating committed teams directly into your bracket engine.
           </div>
-          <button class="btn-submit" style="background-color: var(--border); color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Events Board</button>
+          <button class="btn-submit" style="background-color: var(--border); color: var(--text-muted); margin-top: 10px; cursor: not-allowed; opacity: 0.7;" disabled>Launch Matchmaker Exchange</button>
         </div>
       </div>
     </div>
@@ -1403,12 +1403,12 @@
       const pinInput = document.getElementById('auth-pin').value.trim();
       const consentChecked = document.getElementById('auth-consent').checked;
       
-      if(!emailInput || !pinInput) {
+      if (!emailInput || !pinInput) {
         alert("Authentication Error:\n\nYou must provide both your registered email address and secure 6-digit PIN.");
         return;
       }
 
-      if(!consentChecked) {
+      if (!consentChecked) {
         alert("Compliance Check:\n\nYou must agree to the Privacy Policy and operational communications to access the portal.");
         return;
       }
@@ -1417,7 +1417,9 @@
 
       try {
         const response = await fetch(API_URL, { 
-          method: "POST", 
+          method: "POST",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
           body: JSON.stringify({ 
             action: "verifyPIN", 
             schoolId: targetSchoolID, 
@@ -1426,7 +1428,14 @@
             consentGiven: true
           }) 
         });
-        const result = await response.json();
+
+        const responseText = await response.text();
+        let result;
+        try {
+          result = JSON.parse(responseText);
+        } catch(e) {
+          throw new Error("Server returned non-JSON output or Google timeout page.");
+        }
 
         if (result.status === "success") {
           sessionStorage.setItem(`auth_active_user`, "true");
@@ -1442,11 +1451,11 @@
           document.getElementById('pin-screen').style.display = 'none';
           initApp();
         } else {
-          alert("Security Matrix Rejection:\n\n" + result.message);
+          alert("Security Matrix Rejection:\n\n" + (result.message || "Invalid Email or PIN combination."));
           document.getElementById('auth-pin').value = '';
         }
       } catch (err) {
-        alert("Network transaction dropped during authentication sequence loop.");
+        alert("Authentication Handshake Failed:\n\n" + err.message);
       } finally {
         uiUnlockButton('btn-unlock');
       }
@@ -1549,7 +1558,7 @@
           }
         }
         
-        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.5</span>`;
+        document.getElementById('school-title').innerHTML = `${String(targetSchoolName).toUpperCase()} <span style="font-size:0.6rem; color:var(--text-muted); font-weight:800; letter-spacing:0.5px; margin-left:8px;">V6.6</span>`;
 
         renderGames(appFixtures, globalSchoolsData, globalSportsData, globalDivisionsData, globalTeamsData);
         renderLeagueDivisions(globalDivisionsData, globalSportsData);
